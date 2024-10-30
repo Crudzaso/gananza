@@ -1,0 +1,11 @@
+{
+    "name": "Raffle",
+    "alias": "raffle",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\Raffle\\Providers\\RaffleServiceProvider"
+    ],
+    "files": []
+}

@@ -11,6 +11,7 @@
         "laravel/jetstream": "^5.3",
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.9",
+        "nwidart/laravel-modules": "^11.1",
         "tightenco/ziggy": "^2.0"
     },
     "require-dev": {
@@ -67,7 +68,8 @@
         "sort-packages": true,
         "allow-plugins": {
             "pestphp/pest-plugin": true,
-            "php-http/discovery": true
+            "php-http/discovery": true,
+            "wikimedia/composer-merge-plugin": true
         }
     },
     "minimum-stability": "stable",
