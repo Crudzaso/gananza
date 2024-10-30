@@ -11,7 +11,11 @@ import TextInput from '@/Components/TextInput.vue';
 const form = useForm({
     name: '',
     email: '',
+    lastname: '', // Agregado el campo lastname
     password: '',
+    document: '',         // Campo de documento
+    document_type: '',    // Campo de tipo de documento
+    phone_number: '',     // Campo de número de teléfono
     password_confirmation: '',
     terms: false,
 });
@@ -47,6 +51,19 @@ const submit = () => {
             </div>
 
             <div class="mt-4">
+                <InputLabel for="lastname" value="Last Name" /> <!-- Campo de apellido -->
+                <TextInput
+                    id="lastname"
+                    v-model="form.lastname"
+                    type="text"
+                    class="mt-1 block w-full"
+                    required
+                    autocomplete="family-name"
+                />
+                <InputError class="mt-2" :message="form.errors.lastname" />
+            </div>
+
+            <div class="mt-4">
                 <InputLabel for="email" value="Email" />
                 <TextInput
                     id="email"
@@ -57,6 +74,45 @@ const submit = () => {
                     autocomplete="username"
                 />
                 <InputError class="mt-2" :message="form.errors.email" />
+            </div>
+
+            <div class="mt-4">
+                <InputLabel for="document" value="Document" /> <!-- Campo de documento -->
+                <TextInput
+                    id="document"
+                    v-model="form.document"
+                    type="text"
+                    class="mt-1 block w-full"
+                    required
+                    autocomplete="off"
+                />
+                <InputError class="mt-2" :message="form.errors.document" />
+            </div>
+
+            <div class="mt-4">
+                <InputLabel for="document_type" value="Document Type" /> <!-- Campo de tipo de documento -->
+                <TextInput
+                    id="document_type"
+                    v-model="form.document_type"
+                    type="text"
+                    class="mt-1 block w-full"
+                    required
+                    autocomplete="off"
+                />
+                <InputError class="mt-2" :message="form.errors.document_type" />
+            </div>
+
+            <div class="mt-4">
+                <InputLabel for="phone_number" value="Phone Number" /> <!-- Campo de número de teléfono -->
+                <TextInput
+                    id="phone_number"
+                    v-model="form.phone_number"
+                    type="text"
+                    class="mt-1 block w-full"
+                    required
+                    autocomplete="off"
+                />
+                <InputError class="mt-2" :message="form.errors.phone_number" />
             </div>
 
             <div class="mt-4">
@@ -110,3 +166,4 @@ const submit = () => {
         </form>
     </AuthenticationCard>
 </template>
+
