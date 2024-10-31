@@ -13,7 +13,14 @@ return new class extends Migration
     {
         Schema::create('raffles', function (Blueprint $table) {
             $table->id();
-            
+            $table->foreignId('organizer_id')->constrained('users');
+            $table->foreignId('lottery_id')->constrained('lotteries');
+            $table->decimal('ticket_price', 10, 2);
+            $table->integer('total_tickets');
+            $table->integer('tickets_sold')->default(0);
+            $table->text('description')->nullable();
+            $table->dateTime('start_date');
+            $table->dateTime('end_date');
             $table->timestamps();
         });
     }

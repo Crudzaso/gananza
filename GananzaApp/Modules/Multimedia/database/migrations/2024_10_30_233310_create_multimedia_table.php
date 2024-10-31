@@ -13,7 +13,13 @@ return new class extends Migration
     {
         Schema::create('multimedia', function (Blueprint $table) {
             $table->id();
-            
+            $table->string('file_name');
+            $table->string('file_path');
+            $table->enum('file_type', ['VIDEO', 'PDF', 'IMAGEN'])->nullable();
+            $table->string('mime_type', 50)->nullable();
+            $table->integer('size')->nullable();
+            $table->unsignedBigInteger('model_id');
+            $table->enum('model_type', ['raffles', 'tickets'])->nullable();
             $table->timestamps();
         });
     }

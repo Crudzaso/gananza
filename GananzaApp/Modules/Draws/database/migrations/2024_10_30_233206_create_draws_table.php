@@ -13,7 +13,9 @@ return new class extends Migration
     {
         Schema::create('draws', function (Blueprint $table) {
             $table->id();
-            
+            $table->foreignId('lottery_id')->constrained('lotteries');
+            $table->dateTime('draw_date');
+            $table->string('winning_numbers')->nullable();
             $table->timestamps();
         });
     }
