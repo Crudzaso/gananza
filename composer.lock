@@ -5,6 +5,7 @@
         "This file is @generated automatically"
     ],
     "content-hash": "47e6a03ef883e1f27732327e9cce73ad",
+
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -2855,6 +2856,7 @@
             "time": "2024-09-22T20:04:49+00:00"
         },
         {
+
             "name": "paragonie/constant_time_encoding",
             "version": "v3.0.0",
             "source": {
@@ -6384,6 +6386,7 @@
                 "source": "https://github.com/wikimedia/composer-merge-plugin/tree/v2.1.0"
             },
             "time": "2023-04-15T19:07:00+00:00"
+
         }
     ],
     "packages-dev": [
@@ -9546,11 +9549,13 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {},
+
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
         "php": "^8.2"
     },
     "platform-dev": {},
+
     "plugin-api-version": "2.6.0"
 }
