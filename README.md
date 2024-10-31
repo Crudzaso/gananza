@@ -42,3 +42,4 @@ Para más información y detalles técnicos, puedes consultar la [documentación
 - **Alejandro Velasquez** (Fullstack)
 - **Diego Ramirez** (Fullstack)
 - **Jafet Lozano** (Fullstack)
+prueba testeo
