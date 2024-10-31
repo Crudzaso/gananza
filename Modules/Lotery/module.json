@@ -1,0 +1,11 @@
+{
+    "name": "Lotery",
+    "alias": "lotery",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\Lotery\\Providers\\LoteryServiceProvider"
+    ],
+    "files": []
+}
