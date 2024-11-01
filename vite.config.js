@@ -17,4 +17,5 @@ export default defineConfig({
             },
         }),
     ],
+    base: process.env.APP_URL || '/', // Asegura que las URLs usen HTTPS en producción
 });
