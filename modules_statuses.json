@@ -1,0 +1,10 @@
+{
+    "Payment": true,
+    "Multimedia": true,
+    "Raffle": true,
+    "Ticket": true,
+    "Draws": true,
+    "Audit": true,
+    "Reward": true,
+    "Lotery": true
+}
