@@ -1,68 +1,262 @@
 <script setup>
 import { Head, Link } from '@inertiajs/vue3';
+import { ref, onMounted, onBeforeUnmount, computed } from 'vue';
+import {
+    Sun, Moon, Trophy, ArrowRight,
+    Bell, History, Shield, ChevronRight,
+    Star
+} from 'lucide-vue-next';
 
-defineProps({
-    canLogin: {
-        type: Boolean,
-    },
-    canRegister: {
-        type: Boolean,
-    },
-    laravelVersion: {
-        type: String,
-        required: true,
-    },
-    phpVersion: {
-        type: String,
-        required: true,
-    },
+const props = defineProps({
+    canLogin: Boolean,
+    canRegister: Boolean,
+    laravelVersion: String,
+    phpVersion: String,
 });
 
-function handleImageError() {
-    document.getElementById('screenshot-container')?.classList.add('!hidden');
-    document.getElementById('docs-card')?.classList.add('!row-span-1');
-    document.getElementById('docs-card-content')?.classList.add('!flex-row');
-    document.getElementById('background')?.classList.add('!hidden');
-}
+const isDarkMode = ref(false);
+const currentSlide = ref(0);
+
+const theme = computed(() => ({
+    primary: isDarkMode.value ? '#42A5F5' : '#1565C0',
+    secondary: isDarkMode.value ? '#26C6DA' : '#00A9A5',
+    emphasis: isDarkMode.value ? '#FFCA28' : '#FFC107',
+    textPrimary: isDarkMode.value ? '#E0E0E0' : '#212121',
+    backgroundText: isDarkMode.value ? '#212121' : '#E0E0E0',
+    textSecondary: isDarkMode.value ? '#B0BEC5' : '#757575',
+    background: isDarkMode.value ? '#121212' : '#F9FAFB',
+    cardBackground: isDarkMode.value ? '#1E1E1E' : '#FFFFFF',
+    border: isDarkMode.value ? '#424242' : '#E0E0E0',
+    success: '#4CAF50',
+    gradient: isDarkMode.value
+        ? 'linear-gradient(135deg, #1E1E1E 0%, #2A2A2A 100%)'
+        : 'linear-gradient(135deg, #FFFFFF 0%, #F5F5F5 100%)'
+}));
+
+const lotteryResults = [
+    { name: 'Lotería de Medellín', numbers: '1234', date: 'Hoy 8:00 PM', premio_mayor: 100000 },
+    { name: 'Lotería de Bogotá', numbers: '5678', date: 'Hoy 9:00 PM', premio_mayor: 50000 },
+    { name: 'Lotería del Meta', numbers: '9012', date: 'Mañana 7:00 PM', premio_mayor: 30000 }
+];
+
+const features = [
+    {
+        icon: Bell,
+        title: 'Notificaciones en tiempo real',
+        description: 'Recibe alertas instantáneas sobre tus rifas favoritas'
+    },
+    {
+        icon: History,
+        title: 'Historial completo',
+        description: 'Accede a tu historial de participaciones y ganancias'
+    },
+    {
+        icon: Shield,
+        title: 'Seguridad garantizada',
+        description: 'Transacciones seguras y reguladas'
+    }
+];
+
+const testimonials = [
+    { name: 'Juan P.', text: 'Gané mi primer iPhone gracias a Gananza. ¡Increíble!', rating: 5 },
+    { name: 'María A.', text: 'La plataforma más confiable para rifas que he usado.', rating: 5 },
+    { name: 'Carlos R.', text: 'Super fácil de usar y los premios son reales.', rating: 5 }
+];
+
+let slideInterval;
+
+onMounted(() => {
+    slideInterval = setInterval(() => {
+        currentSlide.value = (currentSlide.value + 1) % testimonials.length;
+    }, 5000);
+});
+
+onBeforeUnmount(() => {
+    if (slideInterval) clearInterval(slideInterval);
+});
 </script>
 
 <template>
 
     <Head title="Welcome" />
-    <div
-        class="bg-gradient-to-r from-blue-500 to-purple-600 text-white relative min-h-screen flex flex-col items-center justify-center">
-        <div class="relative w-full max-w-2xl px-6 lg:max-w-7xl">
-            <header class="flex flex-col items-center py-10">
-                <svg class="h-20 w-auto text-white mb-4" viewBox="0 0 62 65" fill="none"
-                    xmlns="http://www.w3.org/2000/svg">
-                    <path
-                        d="M61.8548 14.6253C61.8778 14.7102 61.8895 14.7978 61.8897 14.8858V28.5615C61.8898 28.737 61.8434 28.9095 61.7554 29.0614C61.6675 29.2132 61.5409 29.3392 61.3887 29.4265L49.9104 36.0351V49.1337C49.9104 49.4902 49.7209 49.8192 49.4118 49.9987L25.4519 63.7916C25.3971 63.8227 25.3372 63.8427 25.2774 63.8639C25.255 63.8714 25.2338 63.8851 25.2101 63.8913C25.0426 63.9354 24.8666 63.9354 24.6991 63.8913C24.6716 63.8838 24.6467 63.8689 24.6205 63.8589C24.5657 63.8389 24.5084 63.8215 24.456 63.7916L0.501061 49.9987C0.348882 49.9113 0.222437 49.7853 0.134469 49.6334C0.0465019 49.4816 0.000120578 49.3092 0 49.1337L0 8.10652C0 8.01678 0.0124642 7.92953 0.0348998 7.84477C0.0423783 7.8161 0.0598282 7.78993 0.0697995 7.76126C0.0884958 7.70891 0.105946 7.65531 0.133367 7.6067C0.152063 7.5743 0.179485 7.54812 0.20192 7.51821C0.230588 7.47832 0.256763 7.43719 0.290416 7.40229C0.319084 7.37362 0.356476 7.35243 0.388883 7.32751C0.425029 7.29759 0.457436 7.26518 0.498568 7.2415L12.4779 0.345059C12.6296 0.257786 12.8015 0.211853 12.9765 0.211853C13.1515 0.211853 13.3234 0.257786 13.475 0.345059L25.4531 7.2415H25.4556C25.4955 7.26643 25.5292 7.29759 25.5653 7.32626C25.5977 7.35119 25.6339 7.37362 25.6625 7.40104C25.6974 7.43719 25.7224 7.47832 25.7523 7.51821C25.7735 7.54812 25.8021 7.5743 25.8196 7.6067C25.8483 7.65656 25.8645 7.70891 25.8844 7.76126C25.8944 7.78993 25.9118 7.8161 25.9193 7.84602C25.9423 7.93096 25.954 8.01853 25.9542 8.10652V33.7317L35.9355 27.9844V14.8846C35.9355 14.7973 35.948 14.7088 35.9704 14.6253C35.9792 14.5954 35.9954 14.5692 36.0053 14.5405C36.0253 14.4882 36.0427 14.4346 36.0702 14.386C36.0888 14.3536 36.1163 14.3274 36.1375 14.2975C36.1674 14.2576 36.1923 14.2165 36.2272 14.1816C36.2559 14.1529 36.292 14.1317 36.3244 14.1068C36.3618 14.0769 36.3942 14.0445 36.4341 14.0208L48.4147 7.12434C48.5663 7.03694 48.7383 6.99094 48.9133 6.99094C49.0883 6.99094 49.2602 7.03694 49.4118 7.12434L61.3899 14.0208C61.4323 14.0457 61.4647 14.0769 61.5021 14.1055C61.5333 14.1305 61.5694 14.1529 61.5981 14.1803C61.633 14.2165 61.6579 14.2576 61.6878 14.2975C61.7103 14.3274 61.7377 14.3536 61.7551 14.386C61.7838 14.4346 61.8 14.4882 61.8199 14.5405C61.8312 14.5692 61.8474 14.5954 61.8548 14.6253ZM59.893 27.9844V16.6121L55.7013 19.0252L49.9104 22.3593V33.7317L59.8942 27.9844H59.893ZM47.9149 48.5566V37.1768L42.2187 40.4299L25.953 49.7133V61.2003L47.9149 48.5566ZM1.99677 9.83281V48.5566L23.9562 61.199V49.7145L12.4841 43.2219L12.4804 43.2194L12.4754 43.2169C12.4368 43.1945 12.4044 43.1621 12.3682 43.1347C12.3371 43.1097 12.3009 43.0898 12.2735 43.0624L12.271 43.0586C12.2386 43.0275 12.2162 42.9888 12.1887 42.9539C12.1638 42.9203 12.1339 42.8916 12.114 42.8567L12.1127 42.853C12.0903 42.8156 12.0766 42.7707 12.0604 42.7283C12.0442 42.6909 12.023 42.656 12.013 42.6161C12.0005 42.5688 11.998 42.5177 11.9931 42.4691C11.9881 42.4317 11.9781 42.3943 11.9781 42.3569V15.5801L6.18848 12.2446L1.99677 9.83281ZM12.9777 2.36177L2.99764 8.10652L12.9752 13.8513L22.9541 8.10527L12.9752 2.36177H12.9777ZM18.1678 38.2138L23.9574 34.8809V9.83281L19.7657 12.2459L13.9749 15.5801V40.6281L18.1678 38.2138ZM48.9133 9.14105L38.9344 14.8858L48.9133 20.6305L58.8909 14.8846L48.9133 9.14105ZM47.9149 22.3593L42.124 19.0252L37.9323 16.6121V27.9844L43.7219 31.3174L47.9149 33.7317V22.3593ZM24.9533 47.987L39.59 39.631L46.9065 35.4555L36.9352 29.7145L25.4544 36.3242L14.9907 42.3482L24.9533 47.987Z"
-                        fill="currentColor" />
-                </svg>
-                <nav v-if="canLogin" class="flex flex-col items-center">
-                    <template v-if="$page.props.auth.user">
-                        <Link :href="route('dashboard')"
-                            class="rounded-md px-4 py-2 text-white ring-1 ring-transparent transition hover:text-white/70 focus:outline-none focus-visible:ring focus-visible:ring-blue-300">
-                        Dashboard
-                        </Link>
-                    </template>
-                    <template v-else>
-                        <Link :href="route('login')"
-                            class="bg-white text-[#FF2D20] rounded-md py-4 px-8 text-lg font-semibold transition-all duration-200 hover:bg-gray-200 focus:outline-none focus-visible:ring focus-visible:ring-blue-300 mb-4">
-                        Log in
-                        </Link>
 
-                        <Link v-if="canRegister" :href="route('register')"
-                            class="bg-white text-[#FF2D20] rounded-md py-4 px-8 text-lg font-semibold transition-all duration-200 hover:bg-gray-200 focus:outline-none focus-visible:ring focus-visible:ring-blue-300">
-                        Register
-                        </Link>
-                    </template>
-                </nav>
-            </header>
+    <div :style="{ background: theme.background }" class="min-h-screen transition-colors duration-500">
+        <!-- Header -->
+        <header :style="{ background: theme.gradient }" class="p-6 border-b">
+            <div class="max-w-6xl mx-auto flex justify-between items-center">
+                <div class="flex items-center gap-2">
+                    <Trophy :size="32" :style="{ color: theme.emphasis }" />
+                    <h1 :style="{ color: theme.textPrimary }" class="text-2xl font-bold">
+                        Gananza
+                    </h1>
+                </div>
 
-            <footer class="py-16 text-center text-sm text-white/70">
-                Laravel v{{ laravelVersion }} (PHP v{{ phpVersion }})
-            </footer>
-        </div>
+                <div class="flex items-center gap-4">
+                    <Link v-if="canLogin && !$page.props.auth.user" :href="route('login')"
+                        class="px-4 py-2 rounded-lg hover:bg-opacity-90 transition-transform duration-200 hover:scale-105"
+                        :style="{ color: theme.textPrimary, background: theme.backgroundText }">
+                    Iniciar Sesión
+                    </Link>
+
+                    <Link v-if="canRegister && !$page.props.auth.user" :href="route('register')"
+                        class="px-4 py-2 rounded-lg text-white hover:bg-opacity-90 transition-transform duration-200 hover:scale-105"
+                        :style="{ background: theme.primary }">
+                    Registrarse
+                    </Link>
+
+                    <Link v-if="$page.props.auth.user" :href="route('dashboard')"
+                        class="px-4 py-2 rounded-lg text-white hover:bg-opacity-90 transition-transform duration-200 hover:scale-105"
+                        :style="{ background: theme.primary }">
+                    Dashboard
+                    </Link>
+
+                    <button @click="isDarkMode = !isDarkMode"
+                        class="p-2 rounded-full transition-transform duration-200 hover:scale-105"
+                        :style="{ background: theme.cardBackground }">
+                        <Sun v-if="isDarkMode" :size="24" :color="theme.emphasis" />
+                        <Moon v-else :size="24" :color="theme.primary" />
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Hero Section -->
+        <section class="py-16 px-6">
+            <div class="max-w-6xl mx-auto">
+                <div class="text-center space-y-6">
+                    <h2 :style="{ color: theme.textPrimary }" class="text-5xl font-bold tracking-tight">
+                        Más cerca de ganar
+                    </h2>
+                    <p :style="{ color: theme.textSecondary }" class="text-xl max-w-2xl mx-auto">
+                        Explora rifas en tiempo real y elige la tuya para ganar en grande.
+                    </p>
+                    <button :style="{ background: theme.primary }"
+                        class="px-8 py-3 rounded-lg text-white text-lg font-medium shadow-lg inline-flex items-center gap-2 transition-transform duration-200 hover:scale-105">
+                        <a href="register">¡Empieza a jugar y gana!</a>
+                        <ArrowRight :size="20" />
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Live Results Section -->
+        <section :style="{ background: theme.gradient }" class="py-12 px-6">
+            <div class="max-w-6xl mx-auto text-center space-y-6 ">
+                <div class="text-center mb-8">
+                    <h3 :style="{ color: theme.textPrimary }" class="text-2xl font-bold mb-2">
+                        Resultados en Vivo
+                    </h3>
+                    <p :style="{ color: theme.textSecondary }">
+                        Últimos resultados de loterías en Antioquia
+                    </p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div v-for="(result, index) in lotteryResults" :key="index"
+                        :style="{ background: theme.cardBackground }"
+                        class="p-6 rounded-xl shadow-lg transform transition-all duration-300 hover:scale-105">
+                        <h4 :style="{ color: theme.textPrimary }" class="font-semibold mb-2">
+                            {{ result.name }}
+                        </h4>
+                        <div :style="{ color: theme.emphasis }" class="text-3xl font-bold mb-2">
+                            {{ result.numbers }}
+                        </div>
+                        <p :style="{ color: theme.textSecondary }">
+                            {{ result.date }}
+                        </p>
+                        <p :style="{ color: theme.emphasis }" class="text-4xl font-bold mb-2">
+                            {{ result.premio_mayor }}
+                        </p>
+                    </div>
+                </div>
+                <button :style="{ background: theme.primary }"
+                    class="px-8 py-3 rounded-lg text-white text-lg font-medium shadow-lg inline-flex items-center gap-2 transition-transform duration-200 hover:scale-105">
+                    ¡Ver resultados!
+                    <ArrowRight :size="20" />
+                </button>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section class="py-16 px-6">
+            <div class="max-w-6xl mx-auto">
+                <div class="text-center mb-12">
+                    <h3 :style="{ color: theme.textPrimary }" class="text-2xl font-bold mb-2">
+                        ¿Por qué registrarse en Gananza?
+                    </h3>
+                    <p :style="{ color: theme.textSecondary }">
+                        Descubre todos los beneficios de ser parte de nuestra comunidad
+                    </p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div v-for="(feature, index) in features" :key="index"
+                        class="text-center space-y-4 transform transition-all duration-300 hover:scale-105">
+                        <div class="w-16 h-16 rounded-full mx-auto flex items-center justify-center"
+                            :style="{ background: `${theme.secondary}15` }">
+                            <component :is="feature.icon" :size="32" :style="{ color: theme.secondary }" />
+                        </div>
+                        <h4 :style="{ color: theme.textPrimary }" class="text-xl font-semibold">
+                            {{ feature.title }}
+                        </h4>
+                        <p :style="{ color: theme.textSecondary }">
+                            {{ feature.description }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Testimonials Section -->
+        <section :style="{ background: theme.gradient }" class="py-16 px-6">
+            <div class="max-w-6xl mx-auto">
+                <div class="text-center space-y-8">
+                    <h3 :style="{ color: theme.textPrimary }" class="text-2xl font-bold">
+                        Lo que dicen nuestros usuarios
+                    </h3>
+                    <div :style="{ background: theme.cardBackground }"
+                        class="max-w-2xl mx-auto p-8 rounded-xl transform transition-all duration-300">
+                        <div class="flex justify-center mb-4">
+                            <Star v-for="n in testimonials[currentSlide].rating" :key="n" :size="20"
+                                :fill="theme.emphasis" :color="theme.emphasis" />
+                        </div>
+                        <p :style="{ color: theme.textPrimary }" class="text-lg mb-4 italic">
+                            "{{ testimonials[currentSlide].text }}"
+                        </p>
+                        <p :style="{ color: theme.textSecondary }" class="font-medium">
+                            {{ testimonials[currentSlide].name }}
+                        </p>
+                    </div>
+                    <div class="flex justify-center gap-2">
+                        <button v-for="(_, index) in testimonials" :key="index" @click="currentSlide = index"
+                            class="w-2 h-2 rounded-full transition-all duration-300" :style="{
+                                background: currentSlide === index ? theme.primary : theme.border,
+                                transform: currentSlide === index ? 'scale(1.5)' : 'scale(1)'
+                            }" />
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA Section -->
+        <section class="py-16 px-6">
+            <div class="max-w-6xl mx-auto">
+                <div class="text-center space-y-6">
+                    <h3 :style="{ color: theme.textPrimary }" class="text-3xl font-bold">
+                        ¿Preparado para ganar?
+                    </h3>
+                    <p :style="{ color: theme.textSecondary }" class="text-xl">
+                        Solo te falta un paso: ¡Regístrate en Gananza!
+                    </p>
+                    <button :style="{ background: theme.primary }"
+                        class="px-8 py-3 rounded-lg text-white text-lg font-medium shadow-lg inline-flex items-center gap-2 transition-transform duration-200 hover:scale-105">
+                        <a href="register">Crear cuenta gratis</a>
+                        <ChevronRight :size="20" />
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <footer class="py-16 text-center text-sm" :style="{ color: theme.textSecondary }">
+            Laravel v{{ laravelVersion }} (PHP v{{ phpVersion }})
+        </footer>
     </div>
 </template>
