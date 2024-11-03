@@ -17,5 +17,7 @@ export default defineConfig({
             },
         }),
     ],
-    base: process.env.APP_URL || '/',
+
+    base: (process.env.APP_URL ? process.env.APP_URL + '/build/' : '/'), // Asegura que las URLs usen HTTPS en producción
+    //https://url-base/build/assets/...
 });
