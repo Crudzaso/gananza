@@ -10,9 +10,9 @@
         "laravel/framework": "^11.9",
         "laravel/jetstream": "^5.3",
         "laravel/sanctum": "^4.0",
+        "laravel/socialite": "^5.16",
         "laravel/tinker": "^2.9",
         "nwidart/laravel-modules": "^11.1",
-
         "tightenco/ziggy": "^2.0"
     },
     "require-dev": {
