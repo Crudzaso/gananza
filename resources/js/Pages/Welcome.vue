@@ -7,6 +7,7 @@ import {
     Star
 } from 'lucide-vue-next';
 
+// Definición de props
 const props = defineProps({
     canLogin: Boolean,
     canRegister: Boolean,
@@ -14,9 +15,11 @@ const props = defineProps({
     phpVersion: String,
 });
 
+// Estado del modo oscuro
 const isDarkMode = ref(false);
 const currentSlide = ref(0);
 
+// Computed para el tema
 const theme = computed(() => ({
     primary: isDarkMode.value ? '#42A5F5' : '#1565C0',
     secondary: isDarkMode.value ? '#26C6DA' : '#00A9A5',
@@ -33,12 +36,14 @@ const theme = computed(() => ({
         : 'linear-gradient(135deg, #FFFFFF 0%, #F5F5F5 100%)'
 }));
 
+// Datos para la lotería
 const lotteryResults = [
     { name: 'Lotería de Medellín', numbers: '1234', date: 'Hoy 8:00 PM', premio_mayor: 100000 },
     { name: 'Lotería de Bogotá', numbers: '5678', date: 'Hoy 9:00 PM', premio_mayor: 50000 },
     { name: 'Lotería del Meta', numbers: '9012', date: 'Mañana 7:00 PM', premio_mayor: 30000 }
 ];
 
+// Funcionalidades de características
 const features = [
     {
         icon: Bell,
@@ -57,20 +62,33 @@ const features = [
     }
 ];
 
+// Testimonios
 const testimonials = [
     { name: 'Juan P.', text: 'Gané mi primer iPhone gracias a Gananza. ¡Increíble!', rating: 5 },
     { name: 'María A.', text: 'La plataforma más confiable para rifas que he usado.', rating: 5 },
     { name: 'Carlos R.', text: 'Super fácil de usar y los premios son reales.', rating: 5 }
 ];
 
+// Intervalo para el carrusel de testimonios
 let slideInterval;
 
+// Cargar el estado de localStorage al iniciar el componente
 onMounted(() => {
+    const savedMode = localStorage.getItem('isDarkMode');
+    isDarkMode.value = savedMode === 'true'; // Convertir a booleano
+
     slideInterval = setInterval(() => {
         currentSlide.value = (currentSlide.value + 1) % testimonials.length;
     }, 5000);
 });
 
+// Cambiar el modo oscuro y guardarlo en localStorage
+const toggleDarkMode = () => {
+    isDarkMode.value = !isDarkMode.value;
+    localStorage.setItem('isDarkMode', isDarkMode.value); // Guardar como string
+};
+
+// Limpiar el intervalo al desmontar el componente
 onBeforeUnmount(() => {
     if (slideInterval) clearInterval(slideInterval);
 });
@@ -110,7 +128,7 @@ onBeforeUnmount(() => {
                     Dashboard
                     </Link>
 
-                    <button @click="isDarkMode = !isDarkMode"
+                    <button @click="toggleDarkMode"
                         class="p-2 rounded-full transition-transform duration-200 hover:scale-105"
                         :style="{ background: theme.cardBackground }">
                         <Sun v-if="isDarkMode" :size="24" :color="theme.emphasis" />
@@ -255,8 +273,24 @@ onBeforeUnmount(() => {
             </div>
         </section>
 
-        <footer class="py-16 text-center text-sm" :style="{ color: theme.textSecondary }">
-            Laravel v{{ laravelVersion }} (PHP v{{ phpVersion }})
+        <footer class="py-8 bg-gray-100 text-center"
+            :style="{ background: theme.cardBackground, color: theme.textSecondary }">
+            <div class="max-w-6xl mx-auto space-y-4">
+                <div class="flex justify-center space-x-8">
+                    <Link href="/terms" class="hover:underline transition-colors duration-200"
+                        :style="{ color: theme.textSecondary }">Términos y Condiciones</Link>
+                    <Link href="/privacy" class="hover:underline transition-colors duration-200"
+                        :style="{ color: theme.textSecondary }">Política de Privacidad</Link>
+                    <Link href="https://github.com/tu-repositorio" target="_blank"
+                        class="hover:underline transition-colors duration-200" :style="{ color: theme.textSecondary }">
+                    Repositorio en GitHub</Link>
+                    <Link href="/contact" class="hover:underline transition-colors duration-200"
+                        :style="{ color: theme.textSecondary }">Contáctanos</Link>
+                    <Link href="/about" class="hover:underline transition-colors duration-200"
+                        :style="{ color: theme.textSecondary }">Sobre Nosotros</Link>
+                </div>
+                <p class="text-sm mt-4">Laravel v{{ laravelVersion }} (PHP v{{ phpVersion }})</p>
+            </div>
         </footer>
     </div>
 </template>
