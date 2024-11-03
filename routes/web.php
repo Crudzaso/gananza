@@ -29,3 +29,10 @@ Route::get('/auth/callback/github', [AuthController::class, 'handleGitHubCallbac
 
 Route::get('/auth/redirect/google', [AuthController::class, 'redirectToGoogle'])->name('google.login');
 Route::get('/auth/google/callback', [AuthController::class, 'handleGoogleCallback'])->name('google.callback');
+
+
+Route::middleware(['role:client'])->group(function () {
+    Route::get('/test-client', function () {
+        return Inertia::render('Profile/TestClient');
+    });
+});
