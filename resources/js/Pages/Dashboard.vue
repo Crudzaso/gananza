@@ -7,7 +7,7 @@ import NavBar from '@/Components/NavBar.vue';
 </script>
 
 <template>
-    <NavBar/>
+    <NavBar />
     <Aside />
-   
+
 </template>
