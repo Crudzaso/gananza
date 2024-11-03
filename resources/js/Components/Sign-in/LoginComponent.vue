@@ -19,12 +19,13 @@
             <div :style="{ background: theme.cardBackground }"
                 class="d-flex flex-column-fluid justify-content-center p-12">
                 <!-- Botón flotante para alternar tema -->
-                <button @click="isDarkMode = !isDarkMode"
+                <button @click="toggleDarkMode"
                     class="theme-toggle-btn p-2 rounded-full transition-transform duration-200 hover:scale-105"
                     :style="{ background: theme.cardBackground }">
                     <component :is="isDarkMode ? 'Sun' : 'Moon'" :size="24"
                         :color="isDarkMode ? theme.emphasis : theme.primary" />
                 </button>
+
 
                 <!-- Contenedor del formulario con ajuste de ancho y centrado -->
                 <div class="form-container d-flex flex-column align-items-center"
@@ -107,7 +108,7 @@
 </template>
 
 <script>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue'; // Importar onMounted
 import { Sun, Moon } from 'lucide-vue-next';
 import { useForm } from '@inertiajs/vue3';
 
@@ -123,6 +124,18 @@ export default {
         });
 
         const isDarkMode = ref(false);
+
+        // Cargar el valor de localStorage al iniciar el componente
+        onMounted(() => {
+            const savedMode = localStorage.getItem('isDarkMode');
+            isDarkMode.value = savedMode === 'true'; // Convertir a booleano
+        });
+
+        // Cambiar el modo oscuro y guardarlo en localStorage
+        const toggleDarkMode = () => {
+            isDarkMode.value = !isDarkMode.value;
+            localStorage.setItem('isDarkMode', isDarkMode.value); // Guardar como string
+        };
 
         const theme = computed(() => ({
             primary: isDarkMode.value ? '#42A5F5' : '#1565C0',
@@ -161,6 +174,7 @@ export default {
             submit,
             loginWithGoogle,
             loginWithGitHub,
+            toggleDarkMode, // Asegúrate de incluir toggleDarkMode en el return
         };
     }
 };

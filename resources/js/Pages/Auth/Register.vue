@@ -1,194 +1,252 @@
-<script setup>
-import { Head, Link, useForm } from '@inertiajs/vue3';
-import AuthenticationCard from '@/Components/AuthenticationCard.vue';
-import AuthenticationCardLogo from '@/Components/AuthenticationCardLogo.vue';
-import Checkbox from '@/Components/Checkbox.vue';
-import InputError from '@/Components/InputError.vue';
-import InputLabel from '@/Components/InputLabel.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
-import TextInput from '@/Components/TextInput.vue';
+<template>
+    <div :style="{ background: theme.background }" class="d-flex flex-column flex-root transition-colors duration-500">
+        <div class="d-flex flex-column flex-lg-row flex-column-fluid">
+            <!-- Formulario de Registro -->
+            <div :style="{ background: theme.cardBackground }"
+                class="d-flex flex-column-fluid justify-content-center p-12 w-100 w-lg-50">
+                <!-- Botón de cambio de tema -->
+                <button @click="toggleDarkMode"
+                    class="theme-toggle-btn p-2 rounded-full transition-transform duration-200 hover:scale-105"
+                    :style="{ background: theme.cardBackground }">
+                    <component :is="isDarkMode ? 'Sun' : 'Moon'" :size="24"
+                        :color="isDarkMode ? theme.emphasis : theme.primary" />
+                </button>
 
-const form = useForm({
-    name: '',
-    email: '',
-    lastname: '',
-    password: '',
-    document: '',
-    document_type: '',
-    phone_number: '',
-    password_confirmation: '',
-    terms: false,
-});
+                <div class="form-container d-flex flex-column align-items-center"
+                    style="max-width: 600px; margin: 0 auto;">
+                    <form class="form w-100" @submit.prevent="submit"
+                        :style="{ background: theme.cardBackground, color: theme.textPrimary, borderColor: theme.border }">
+                        <div class="text-center mb-5">
+                            <h1 :style="{ color: theme.textPrimary }" class="fw-bolder mb-3 register-title">Registrate
+                            </h1>
+                            <div :style="{ color: theme.textSecondary }" class="fw-semibold fs-6">Crea una cuenta para
+                                acceder a nuestros servicios.</div>
+                        </div>
 
-const submit = () => {
-    form.post(route('register'), {
-        onFinish: () => form.reset('password', 'password_confirmation'),
-    });
+                        <!-- Opciones de Registro con Redes Sociales -->
+                        <div class="row g-3 mb-5">
+                            <div class="col-md-6">
+                                <button @click.prevent="registerWithGoogle" class="btn btn-flex btn-outline w-100"
+                                    :style="{ background: theme.cardBackground, color: theme.textPrimary, borderColor: theme.border }">
+                                    <img alt="Google" src="assets/media/svg/brand-logos/google-icon.svg"
+                                        class="h-15px me-3" />
+                                    Google
+                                </button>
+                            </div>
+                            <div class="col-md-6">
+                                <button @click.prevent="registerWithApple" class="btn btn-flex btn-outline w-100"
+                                    :style="{ background: theme.cardBackground, color: theme.textPrimary, borderColor: theme.border }">
+                                    <img alt="Apple" src="assets/media/svg/brand-logos/github-1.svg"
+                                        class="theme-light-show h-15px me-3" />
+                                    <img alt="Apple Dark" src="assets/media/svg/brand-logos/github-icon.svg"
+                                        class="theme-dark-show h-15px me-3" />
+                                    GitHub
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Separador -->
+                        <div class="separator separator-content my-10" :style="{ color: theme.textSecondary }">
+                            <span>O usa tu correo</span>
+                        </div>
+
+                        <!-- Campos de Registro -->
+                        <div class="row g-3">
+                            <div class="col-md-6 mb-4">
+                                <input type="text" placeholder="Nombre" name="name" v-model="form.name" required
+                                    class="form-control custom-input"
+                                    :style="{ background: theme.background, color: theme.textPrimary, borderColor: theme.border }" />
+                            </div>
+                            <div class="col-md-6 mb-4">
+                                <input type="text" placeholder="Apellido" name="lastname" v-model="form.lastname"
+                                    required class="form-control custom-input"
+                                    :style="{ background: theme.background, color: theme.textPrimary, borderColor: theme.border }" />
+                            </div>
+                            <div class="col-md-6 mb-4">
+                                <input type="text" placeholder="Documento" name="document" v-model="form.document"
+                                    required class="form-control custom-input"
+                                    :style="{ background: theme.background, color: theme.textPrimary, borderColor: theme.border }" />
+                            </div>
+                            <div class="col-md-6 mb-4">
+                                <select name="document_type" v-model="form.document_type" required
+                                    class="form-control custom-input"
+                                    :style="{ background: theme.background, color: theme.textPrimary, borderColor: theme.border }">
+                                    <option value="" disabled selected>Tipo de Documento</option>
+                                    <option value="ID">Cédula</option>
+                                    <option value="Passport">Pasaporte</option>
+                                    <option value="Other">Otro</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-4">
+                                <input type="text" placeholder="Teléfono" name="phone_number"
+                                    v-model="form.phone_number" required class="form-control custom-input"
+                                    :style="{ background: theme.background, color: theme.textPrimary, borderColor: theme.border }" />
+                            </div>
+                            <div class="col-md-6 mb-4">
+                                <input type="email" placeholder="Correo Electrónico" name="email" v-model="form.email"
+                                    required class="form-control custom-input"
+                                    :style="{ background: theme.background, color: theme.textPrimary, borderColor: theme.border }" />
+                            </div>
+                            <div class="col-md-6 mb-4">
+                                <input type="password" placeholder="Contraseña" name="password" v-model="form.password"
+                                    required class="form-control custom-input"
+                                    :style="{ background: theme.background, color: theme.textPrimary, borderColor: theme.border }" />
+                            </div>
+                            <div class="col-md-6 mb-4">
+                                <input type="password" placeholder="Confirmar Contraseña" name="confirmPassword"
+                                    v-model="form.confirmPassword" required class="form-control custom-input"
+                                    :style="{ background: theme.background, color: theme.textPrimary, borderColor: theme.border }" />
+                            </div>
+                        </div>
+
+                        <!-- Aceptación de Términos -->
+                        <div class="fv-row mb-5">
+                            <label class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" v-model="form.termsAccepted" />
+                                <span class="form-check-label fw-semibold" :style="{ color: theme.textSecondary }">
+                                    Acepto los <a href="#" :style="{ color: theme.primary }">Términos y Condiciones</a>
+                                </span>
+                            </label>
+                        </div>
+
+                        <!-- Botón de Envío -->
+                        <div class="d-grid mb-5">
+                            <button type="submit" class="btn" :style="{ background: theme.primary, color: '#fff' }"
+                                :disabled="!form.termsAccepted || form.processing">
+                                <span v-if="!form.processing" class="indicator-label">Registrarse</span>
+                                <span v-else class="indicator-progress">Por favor espera...
+                                    <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                                </span>
+                            </button>
+                        </div>
+
+                        <!-- Enlace a Iniciar Sesión -->
+                        <div class="text-center fw-semibold fs-6" :style="{ color: theme.textSecondary }">
+                            ¿Ya tienes una cuenta?
+                            <a href="/login" class="link-primary" :style="{ color: theme.primary }">Inicia sesión</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="d-none d-lg-flex flex-column flex-center p-10 w-50">
+                <img v-if="!isDarkMode" class="mx-auto mw-100 mb-5" src="assets/media/auth/agency.png"
+                    alt="Gananza Logo" style="width: 300px; max-width: 500px;" />
+                <img v-else class="mx-auto mw-100 mb-5" src="assets/media/auth/agency-dark.png" alt="Gananza Logo"
+                    style="width: 300px; max-width: 500px;" />
+                <h1 :style="{ color: theme.textPrimary }" class="fs-2qx fw-bold text-center mb-5">¡Descubre Gananza!
+                </h1>
+                <div :style="{ color: theme.textSecondary }" class="fs-base text-center fw-semibold">
+                    Organiza rifas y compra tus boletos para ganar increíbles premios.
+                    <br />La fortuna está de tu lado, y cada ticket es una oportunidad para el éxito.
+                    <br />¡Únete a nuestra comunidad y comienza a jugar con la suerte a tu favor!
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script>
+import { ref, computed, onMounted } from 'vue'; // Importar onMounted
+import { Sun, Moon } from 'lucide-vue-next';
+import { useForm } from '@inertiajs/vue3';
+
+export default {
+    components: {
+        Sun,
+        Moon,
+    },
+    setup() {
+        const form = useForm({
+            name: '',
+            lastname: '',
+            document: '',
+            document_type: '',
+            phone_number: '',
+            email: '',
+            password: '',
+            confirmPassword: '',
+            termsAccepted: false,
+        });
+
+        const isDarkMode = ref(false);
+
+        // Cargar el valor de localStorage al iniciar el componente
+        onMounted(() => {
+            const savedMode = localStorage.getItem('isDarkMode');
+            isDarkMode.value = savedMode === 'true'; // Convertir a booleano
+        });
+
+        // Cambiar el modo oscuro y guardarlo en localStorage
+        const toggleDarkMode = () => {
+            isDarkMode.value = !isDarkMode.value;
+            localStorage.setItem('isDarkMode', isDarkMode.value); // Guardar como string
+        };
+
+        const theme = computed(() => ({
+            primary: isDarkMode.value ? '#42A5F5' : '#1565C0',
+            emphasis: isDarkMode.value ? '#FFCA28' : '#FFC107',
+            textPrimary: isDarkMode.value ? '#E0E0E0' : '#212121',
+            textSecondary: isDarkMode.value ? '#B0BEC5' : '#757575',
+            background: isDarkMode.value ? '#121212' : '#F9FAFB',
+            cardBackground: isDarkMode.value ? '#1E1E1E' : '#FFFFFF',
+            border: isDarkMode.value ? '#424242' : '#E0E0E0',
+        }));
+
+        const submit = () => {
+            form.post(route('register'), {
+                onFinish: () => form.reset('password', 'confirmPassword'),
+            });
+        };
+
+        const registerWithGoogle = () => {
+            window.location.href = route('google.register');
+        };
+
+        const registerWithApple = () => {
+            window.location.href = route('apple.register');
+        };
+
+        return {
+            form,
+            isDarkMode,
+            theme,
+            submit,
+            registerWithGoogle,
+            registerWithApple,
+            toggleDarkMode, // Asegúrate de incluir toggleDarkMode en el return
+        };
+    },
 };
 </script>
 
-<template>
-    <Head title="Register" />
+<style scoped>
+.form-container {
+    padding: 1.85rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
 
-    <AuthenticationCard>
-        <template #logo>
-            <AuthenticationCardLogo />
-        </template>
+.custom-input {
+    height: 50px;
+    border-radius: 8px;
+    padding: 0 15px;
+    font-size: 1.1rem;
+}
 
-        <div class="mb-6 text-center">
-            <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Crear cuenta</h2>
-            <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">Por favor completa tus datos para registrarte</p>
-        </div>
+.custom-input::placeholder {
+    color: #aaa;
+}
 
-        <form @submit.prevent="submit" class="space-y-4">
-            <!-- Grid para nombre y apellido -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                    <InputLabel for="name" value="Nombre" class="text-gray-700 dark:text-gray-300" />
-                    <TextInput
-                        id="name"
-                        v-model="form.name"
-                        type="text"
-                        class="mt-1 block w-full border-gray-300 dark:border-gray-600 focus:border-indigo-500 focus:ring-indigo-500 rounded-lg shadow-sm"
-                        required
-                        autofocus
-                        autocomplete="name"
-                    />
-                    <InputError class="mt-1" :message="form.errors.name" />
-                </div>
+.theme-toggle-btn {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    z-index: 10;
+}
 
-                <div>
-                    <InputLabel for="lastname" value="Apellido" class="text-gray-700 dark:text-gray-300" />
-                    <TextInput
-                        id="lastname"
-                        v-model="form.lastname"
-                        type="text"
-                        class="mt-1 block w-full border-gray-300 dark:border-gray-600 focus:border-indigo-500 focus:ring-indigo-500 rounded-lg shadow-sm"
-                        required
-                        autocomplete="family-name"
-                    />
-                    <InputError class="mt-1" :message="form.errors.lastname" />
-                </div>
-            </div>
-
-            <!-- Email -->
-            <div>
-                <InputLabel for="email" value="Email" class="text-gray-700 dark:text-gray-300" />
-                <TextInput
-                    id="email"
-                    v-model="form.email"
-                    type="email"
-                    class="mt-1 block w-full border-gray-300 dark:border-gray-600 focus:border-indigo-500 focus:ring-indigo-500 rounded-lg shadow-sm"
-                    required
-                    autocomplete="username"
-                />
-                <InputError class="mt-1" :message="form.errors.email" />
-            </div>
-
-            <!-- Grid para documento y tipo de documento -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                    <InputLabel for="document_type" value="Tipo de Documento" class="text-gray-700 dark:text-gray-300" />
-                    <select
-                        id="document_type"
-                        v-model="form.document_type"
-                        class="mt-1 block w-full border-gray-300 dark:border-gray-600 focus:border-indigo-500 focus:ring-indigo-500 rounded-lg shadow-sm"
-                        required
-                    >
-                        <option value="">Seleccionar...</option>
-                        <option value="DNI">DNI</option>
-                        <option value="Pasaporte">Pasaporte</option>
-                        <option value="CE">Carné de Extranjería</option>
-                    </select>
-                    <InputError class="mt-1" :message="form.errors.document_type" />
-                </div>
-
-                <div>
-                    <InputLabel for="document" value="Número de Documento" class="text-gray-700 dark:text-gray-300" />
-                    <TextInput
-                        id="document"
-                        v-model="form.document"
-                        type="text"
-                        class="mt-1 block w-full border-gray-300 dark:border-gray-600 focus:border-indigo-500 focus:ring-indigo-500 rounded-lg shadow-sm"
-                        required
-                    />
-                    <InputError class="mt-1" :message="form.errors.document" />
-                </div>
-            </div>
-
-            <!-- Teléfono -->
-            <div>
-                <InputLabel for="phone_number" value="Teléfono" class="text-gray-700 dark:text-gray-300" />
-                <TextInput
-                    id="phone_number"
-                    v-model="form.phone_number"
-                    type="tel"
-                    class="mt-1 block w-full border-gray-300 dark:border-gray-600 focus:border-indigo-500 focus:ring-indigo-500 rounded-lg shadow-sm"
-                    required
-                />
-                <InputError class="mt-1" :message="form.errors.phone_number" />
-            </div>
-
-            <!-- Grid para contraseñas -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                    <InputLabel for="password" value="Contraseña" class="text-gray-700 dark:text-gray-300" />
-                    <TextInput
-                        id="password"
-                        v-model="form.password"
-                        type="password"
-                        class="mt-1 block w-full border-gray-300 dark:border-gray-600 focus:border-indigo-500 focus:ring-indigo-500 rounded-lg shadow-sm"
-                        required
-                        autocomplete="new-password"
-                    />
-                    <InputError class="mt-1" :message="form.errors.password" />
-                </div>
-
-                <div>
-                    <InputLabel for="password_confirmation" value="Confirmar Contraseña" class="text-gray-700 dark:text-gray-300" />
-                    <TextInput
-                        id="password_confirmation"
-                        v-model="form.password_confirmation"
-                        type="password"
-                        class="mt-1 block w-full border-gray-300 dark:border-gray-600 focus:border-indigo-500 focus:ring-indigo-500 rounded-lg shadow-sm"
-                        required
-                        autocomplete="new-password"
-                    />
-                    <InputError class="mt-1" :message="form.errors.password_confirmation" />
-                </div>
-            </div>
-
-            <!-- Términos y condiciones -->
-            <div v-if="$page.props.jetstream.hasTermsAndPrivacyPolicyFeature" class="mt-6">
-                <InputLabel for="terms">
-                    <div class="flex items-center">
-                        <Checkbox id="terms" v-model:checked="form.terms" name="terms" required 
-                            class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
-                        <div class="ms-2 text-sm text-gray-600 dark:text-gray-400">
-                            Acepto los <a target="_blank" :href="route('terms.show')" 
-                                class="text-indigo-600 hover:text-indigo-500 underline">Términos de Servicio</a> y la 
-                            <a target="_blank" :href="route('policy.show')" 
-                                class="text-indigo-600 hover:text-indigo-500 underline">Política de Privacidad</a>
-                        </div>
-                    </div>
-                    <InputError class="mt-1" :message="form.errors.terms" />
-                </InputLabel>
-            </div>
-
-            <!-- Botones de acción -->
-            <div class="flex flex-col sm:flex-row items-center justify-between gap-4 mt-6">
-                <Link :href="route('login')" 
-                    class="text-sm text-indigo-600 dark:text-indigo-400 hover:text-indigo-500 underline">
-                    ¿Ya tienes una cuenta? Inicia sesión
-                </Link>
-
-                <PrimaryButton 
-                    class="w-full sm:w-auto justify-center bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200"
-                    :class="{ 'opacity-25': form.processing }" 
-                    :disabled="form.processing">
-                    Registrarse
-                </PrimaryButton>
-            </div>
-        </form>
-    </AuthenticationCard>
-</template>
+.register-title {
+    font-size: 2rem;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+</style>
