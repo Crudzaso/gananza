@@ -80,12 +80,16 @@
 
                         <!-- Recordatorio de contraseña -->
                         <div class="d-flex flex-stack flex-wrap gap-3 fs-base fw-semibold mb-8">
-                            <a href="authentication/layouts/overlay/reset-password.html" class="link-primary"
+                            <a href="/reset-password/some-fake-token" class="link-primary"
                                 :style="{ color: theme.primary }">¿Olvidaste tu contraseña?</a>
                         </div>
 
                         <!-- Botón de envío -->
                         <div class="d-grid mb-10">
+                            <button type="button" class="btn btn-secondary" @click="cancel"
+                                style="margin-bottom: 10px;">
+                                Cancelar
+                            </button>
                             <button type="submit" id="kt_sign_in_submit" class="btn"
                                 :style="{ background: theme.primary, color: '#fff' }" :disabled="form.processing">
                                 <span v-if="!form.processing" class="indicator-label">Iniciar Sesión</span>
@@ -167,6 +171,10 @@ export default {
             window.location.href = route('github.login');
         };
 
+        const cancel = () => {
+            window.location.href = '/'; // Cambia esto según tu ruta real
+        };
+
         return {
             form,
             isDarkMode,
@@ -175,6 +183,7 @@ export default {
             loginWithGoogle,
             loginWithGitHub,
             toggleDarkMode, // Asegúrate de incluir toggleDarkMode en el return
+            cancel
         };
     }
 };
@@ -183,7 +192,7 @@ export default {
 <style scoped>
 /* Personalización de elementos del formulario */
 .form {
-    padding: 4.75rem;
+    padding: 2.70rem;
     border-radius: 8px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
