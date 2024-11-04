@@ -281,7 +281,7 @@ onBeforeUnmount(() => {
                         :style="{ color: theme.textSecondary }">Términos y Condiciones</Link>
                     <Link href="/privacy" class="hover:underline transition-colors duration-200"
                         :style="{ color: theme.textSecondary }">Política de Privacidad</Link>
-                    <Link href="https://github.com/tu-repositorio" target="_blank"
+                    <Link href="https://github.com/Crudzaso/gananza.git" target="_blank"
                         class="hover:underline transition-colors duration-200" :style="{ color: theme.textSecondary }">
                     Repositorio en GitHub</Link>
                     <Link href="/contact" class="hover:underline transition-colors duration-200"
