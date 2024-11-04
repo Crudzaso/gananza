@@ -4,9 +4,9 @@
             <div class="d-flex flex-lg-row-fluid">
                 <div class="d-flex flex-column flex-center pb-0 pb-lg-10 p-10 w-100">
                     <img v-if="!isDarkMode" class="mx-auto mw-100 mb-10 mb-lg-20" :src="agencyImage"
-                        alt="Reset Password" style="width: 400px; max-width: 800px;" />
+                        alt="Reset Password" style="width: 500px; max-width: 800px;" />
                     <img v-else class="mx-auto mw-100 mb-10 mb-lg-20" :src="agencyDarkImage" alt="Reset Password"
-                        style="width: 400px; max-width: 800px;" />
+                        style="width: 500px; max-width: 800px;" />
                     <h1 :style="{ color: theme.textPrimary }" class="fs-2qx fw-bold text-center mb-7">Restablecer
                         Contraseña</h1>
                     <div :style="{ color: theme.textSecondary }" class="fs-base text-center fw-semibold mb-5">
@@ -80,8 +80,8 @@ import { Sun, Moon } from 'lucide-vue-next';
 import { useForm } from '@inertiajs/vue3';
 
 // Importa las imágenes
-import agencyImage from '../../../../public/assets/media/auth/agency.png';
-import agencyDarkImage from '../../../../public/assets/media/auth/agency-dark.png';
+import agencyImage from '../../../../public/assets/media/auth/Login-Page.svg';
+import agencyDarkImage from '../../../../public/assets/media/auth/Login-Page.svg';
 
 export default {
     components: {

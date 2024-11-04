@@ -3,10 +3,10 @@
         <div class="d-flex flex-column flex-lg-row flex-column-fluid">
             <div class="d-flex flex-lg-row-fluid">
                 <div class="d-flex flex-column flex-center pb-0 pb-lg-10 p-10 w-100">
-                    <img v-if="!isDarkMode" class="mx-auto mw-100 mb-10 mb-lg-20"
-                        src="assets/media/auth/Login-image.svg" alt="" style="width: 400px; max-width: 800px;" />
-                    <img v-else class="mx-auto mw-100 w-150px w-lg-300px mb-10 mb-lg-20"
-                        src="assets/media/auth/agency-dark.png" alt="" />
+                    <img v-if="!isDarkMode" class="mx-auto mw-100 mb-10 mb-lg-20" src="assets/media/auth/Login-Page.svg"
+                        alt="" style="width: 500px; max-width: 800px;" />
+                    <img v-else class="mx-auto mw-100 mb-10 mb-lg-20" src="assets/media/auth/Login-Page.svg" alt=""
+                        style="width: 500px; max-width: 800px;" />
                     <h1 :style="{ color: theme.textPrimary }" class="fs-2qx fw-bold text-center mb-7">¡Más cerca de
                         ganar!</h1>
                     <div :style="{ color: theme.textSecondary }" class="fs-base text-center fw-semibold">
@@ -18,7 +18,6 @@
             </div>
             <div :style="{ background: theme.cardBackground }"
                 class="d-flex flex-column-fluid justify-content-center p-12">
-                <!-- Botón flotante para alternar tema -->
                 <button @click="toggleDarkMode"
                     class="theme-toggle-btn p-2 rounded-full transition-transform duration-200 hover:scale-105"
                     :style="{ background: theme.cardBackground }">
@@ -26,8 +25,6 @@
                         :color="isDarkMode ? theme.emphasis : theme.primary" />
                 </button>
 
-
-                <!-- Contenedor del formulario con ajuste de ancho y centrado -->
                 <div class="form-container d-flex flex-column align-items-center"
                     style="max-width: 500px; margin: 0 auto;">
                     <form class="form w-100" id="kt_sign_in_form" @submit.prevent="submit"
@@ -45,8 +42,7 @@
                                 <a href="#" @click.prevent="loginWithGoogle" class="btn btn-flex btn-outline w-100"
                                     :style="{ background: theme.cardBackground, color: theme.textPrimary, borderColor: theme.border }">
                                     <img alt="Google" src="assets/media/svg/brand-logos/google-icon.svg"
-                                        class="h-15px me-3" />
-                                    Google
+                                        class="h-15px me-3" />Google
                                 </a>
                             </div>
                             <div class="col-md-6">
@@ -55,8 +51,7 @@
                                     <img alt="GitHub" src="assets/media/svg/brand-logos/github-1.svg"
                                         class="theme-light-show h-15px me-3" />
                                     <img alt="GitHub Dark" src="assets/media/svg/brand-logos/github-icon.svg"
-                                        class="theme-dark-show h-15px me-3" />
-                                    GitHub
+                                        class="theme-dark-show h-15px me-3" />GitHub
                                 </a>
                             </div>
                         </div>
@@ -66,16 +61,19 @@
                             <span>O con tu correo</span>
                         </div>
 
-                        <!-- Campos de entrada -->
+                        <!-- Campos de entrada con errores -->
                         <div class="fv-row mb-8">
                             <input type="email" placeholder="Correo Electrónico" name="email" v-model="form.email"
                                 required class="form-control custom-input"
                                 :style="{ background: theme.background, color: theme.textPrimary, borderColor: theme.border }" />
+                            <InputError :message="form.errors.email" /> <!-- Error de correo electrónico -->
                         </div>
+
                         <div class="fv-row mb-3">
                             <input type="password" placeholder="Contraseña" name="password" v-model="form.password"
                                 required class="form-control custom-input"
                                 :style="{ background: theme.background, color: theme.textPrimary, borderColor: theme.border }" />
+                            <InputError :message="form.errors.password" /> <!-- Error de contraseña -->
                         </div>
 
                         <!-- Recordatorio de contraseña -->
@@ -87,9 +85,7 @@
                         <!-- Botón de envío -->
                         <div class="d-grid mb-10">
                             <button type="button" class="btn btn-secondary" @click="cancel"
-                                style="margin-bottom: 10px;">
-                                Cancelar
-                            </button>
+                                style="margin-bottom: 10px;">Cancelar</button>
                             <button type="submit" id="kt_sign_in_submit" class="btn"
                                 :style="{ background: theme.primary, color: '#fff' }" :disabled="form.processing">
                                 <span v-if="!form.processing" class="indicator-label">Iniciar Sesión</span>
@@ -111,15 +107,19 @@
     </div>
 </template>
 
+
 <script>
 import { ref, computed, onMounted } from 'vue'; // Importar onMounted
 import { Sun, Moon } from 'lucide-vue-next';
 import { useForm } from '@inertiajs/vue3';
+import InputError from '@/Components/InputError.vue'; // Importar InputError
+
 
 export default {
     components: {
         Sun,
         Moon,
+        InputError,
     },
     setup() {
         const form = useForm({
