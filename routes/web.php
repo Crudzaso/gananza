@@ -23,6 +23,21 @@ Route::middleware([
     })->name('dashboard');
 });
 
+Route::get('/lottery-results', function () {
+    return Inertia::render('LotteryResults', [
+        'theme' => [
+            'background' => '#f3f4f6',
+            'cardBackground' => '#ffffff',
+            'border' => '#e5e7eb',
+            'primary' => '#1f2937',
+            'textPrimary' => '#111827',
+            'textSecondary' => '#6b7280',
+            'emphasis' => '#d97706',
+            'gradient' => 'linear-gradient(90deg, #d97706 0%, #fb923c 100%)'
+        ]
+    ]);
+})->name('lottery-results');
+
 
 Route::get('/auth/redirect/github', [AuthController::class, 'redirectToGitHub'])->name('github.login');
 Route::get('/auth/callback/github', [AuthController::class, 'handleGitHubCallback'])->name('github.callback');
