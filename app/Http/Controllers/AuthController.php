@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Laravel\Socialite\Facades\Socialite;
 use App\Models\User;
+use Modules\Notification\Notifications\DiscordNotification;
 
 class AuthController extends Controller
 {
@@ -90,6 +91,13 @@ class AuthController extends Controller
 
             // Iniciar sesión con el usuario autenticado
             Auth::login($authUser, true);
+
+            // $message = "¡Nuevo registro desde Google!\n" .
+            //            "Nombre: {$authUser->name}\n" .
+            //            "Correo: {$authUser->email}\n" .
+            //            "Fecha: " . now()->format('Y-m-d H:i:s');
+                       
+            // $authUser->notify(new DiscordNotification($message)); 
 
             // Redirigir a la página deseada
             return redirect()->route('dashboard'); // Cambia a la ruta que desees

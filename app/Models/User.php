@@ -14,6 +14,7 @@ class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, HasProfilePhoto, Notifiable, TwoFactorAuthenticatable;
     use HasRoles;
+    use Notifiable;
 
     protected $fillable = [
         'name',

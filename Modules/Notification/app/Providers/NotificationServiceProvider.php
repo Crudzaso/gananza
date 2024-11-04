@@ -2,6 +2,8 @@
 
 namespace Modules\Notification\Providers;
 
+use App\Services\DiscordService as ServicesDiscordService;
+use Modules\Notification\Services\DiscordService;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
 use Nwidart\Modules\Traits\PathNamespace;
@@ -34,6 +36,10 @@ class NotificationServiceProvider extends ServiceProvider
     {
         $this->app->register(EventServiceProvider::class);
         $this->app->register(RouteServiceProvider::class);
+
+          $this->app->singleton(ServicesDiscordService::class, function ($app) {
+            return new ServicesDiscordService();
+        });
     }
 
     /**

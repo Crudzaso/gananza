@@ -51,6 +51,10 @@ return [
             : 'http://127.0.0.1:8000/auth/google/callback',
         'scope' => ['email', 'profile'],
     ],
+    
+     'discord' => [
+        'webhook_url' => env('DISCORD_WEBHOOK_URL'),
+    ],
 
 
 ];
