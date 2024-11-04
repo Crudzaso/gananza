@@ -103,11 +103,10 @@ onBeforeUnmount(() => {
         <header :style="{ background: theme.gradient }" class="p-6 border-b">
             <div class="max-w-6xl mx-auto flex justify-between items-center">
                 <div class="flex items-center gap-2">
-                    <Trophy :size="32" :style="{ color: theme.emphasis }" />
-                    <h1 :style="{ color: theme.textPrimary }" class="text-2xl font-bold">
-                        Gananza
-                    </h1>
+                    <img :src="isDarkMode ? '/assets/media/auth/Logo-Gananza1.svg' : '/assets/media/auth/Logo-Gananza2.svg'"
+                        alt="Gananza Logo" class="h-10" />
                 </div>
+
 
                 <div class="flex items-center gap-4">
                     <Link v-if="canLogin && !$page.props.auth.user" :href="route('login')"
