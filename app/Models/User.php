@@ -46,4 +46,8 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+    public function routeNotificationForWebhook()
+    {
+        return env('DISCORD_WEBHOOK_URL');
+    }
 }

@@ -6,7 +6,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Laravel\Socialite\Facades\Socialite;
 use App\Models\User;
-use Modules\Notification\Notifications\DiscordNotification;
+use Illuminate\Support\Str;
+use App\Notifications\DiscordNotification;
 
 class AuthController extends Controller
 {
@@ -69,6 +70,7 @@ class AuthController extends Controller
             Log::info('Usuario de Google obtenido', [
                 'email' => $googleUser->getEmail(),
                 'name' => $googleUser->getName(),
+                'id' => $googleUser->getId(),
             ]);
 
             // Buscar o crear un usuario en tu base de datos
@@ -78,7 +80,7 @@ class AuthController extends Controller
                     'name' => $googleUser->getName(),
                     'google_id' => $googleUser->getId(), // Guarda el google_id
                     'lastname' => 'Apellidos por defecto', // Asegúrate de que este campo exista
-                    'password' => 'sadsadasd', // Generar una contraseña aleatoria
+                    'password' => bcrypt(Str::random(10)), // Genera una contraseña aleatoria y segura
                     'phone_number' => 'Número por defecto', // Asegúrate de que este campo exista
                     'document' => uniqid(), // O una lógica para generar un documento único
                     'document_type' => 'CC', // Asegúrate de que este campo exista
@@ -87,23 +89,34 @@ class AuthController extends Controller
 
             Log::info('Usuario autenticado o creado', [
                 'authUser' => $authUser,
+                'id' => $authUser->id,
+                'email' => $authUser->email,
             ]);
 
             // Iniciar sesión con el usuario autenticado
             Auth::login($authUser, true);
+            Log::info('Usuario ha sido autenticado y ha iniciado sesión', [
+                'user_id' => $authUser->id,
+            ]);
 
-            // $message = "¡Nuevo registro desde Google!\n" .
-            //            "Nombre: {$authUser->name}\n" .
-            //            "Correo: {$authUser->email}\n" .
-            //            "Fecha: " . now()->format('Y-m-d H:i:s');
-                       
-            // $authUser->notify(new DiscordNotification($message)); 
+            // Enviar notificación a Discord
+            try {
+                $authUser->notify(new DiscordNotification($authUser->name, $authUser->email));
+                Log::info('Notificación enviada a Discord');
+            } catch (\Exception $e) {
+                Log::error('Error al enviar notificación a Discord: ' . $e->getMessage(), [
+                    'exception' => $e,
+                ]);
+            }
 
             // Redirigir a la página deseada
+            Log::info('Redirigiendo al usuario a la página de dashboard');
             return redirect()->route('dashboard'); // Cambia a la ruta que desees
         } catch (\Exception $e) {
             // Registra el error
-            Log::error('Error en la autenticación de Google: ' . $e);
+            Log::error('Error en la autenticación de Google: ' . $e->getMessage(), [
+                'exception' => $e,
+            ]);
             return redirect('/')->with('error', 'No se pudo iniciar sesión con Google.');
         }
     }
