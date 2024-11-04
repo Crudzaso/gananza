@@ -15,6 +15,26 @@ const props = defineProps({
     phpVersion: String,
 });
 
+const heroSlides = [
+    { title: 'Más cerca de ganar', description: 'Explora rifas en tiempo real y elige la tuya para ganar en grande.', textButton: 'Empezar', route: 'register' },
+    { title: '¡Tu suerte está a un clic!', description: 'Participa y gana increíbles premios todos los días.', textButton: 'Participar', route: 'participate' },
+    { title: 'Rifas seguras y emocionantes', description: 'Únete a nuestra comunidad y empieza a jugar.', textButton: 'Unirme', route: 'join' },
+    { title: 'Gana con nosotros', description: 'Disfruta de la emoción de ganar mientras participas en nuestras rifas únicas.', textButton: 'Jugar', route: 'play' },
+    { title: 'Premios increíbles te esperan', description: 'No te pierdas la oportunidad de ganar fantásticos premios cada semana.', textButton: 'Empezar', route: 'register' },
+    { title: 'La mejor plataforma de rifas', description: 'Únete a miles de usuarios satisfechos y empieza a jugar hoy.', textButton: 'Unirme', route: 'join' },
+    { title: 'Transparencia y confianza', description: 'Nuestras rifas son seguras y transparentes, así puedes jugar con confianza.', textButton: 'Jugar', route: 'play' },
+    { title: 'Participa y haz tus sueños realidad', description: 'Con cada ticket, estás un paso más cerca de tus sueños.', textButton: 'Participar', route: 'participate' },
+    { title: 'Accede a rifas exclusivas', description: 'Solo para miembros: accede a rifas con premios extraordinarios.', textButton: 'Acceder', route: 'exclusive' },
+    { title: 'Gana mientras te diviertes', description: 'Cada participación es una nueva oportunidad de ganar y disfrutar.', textButton: 'Jugar', route: 'play' },
+];
+
+
+
+const currentHeroSlide = ref(0);
+let heroSlideInterval;
+
+
+
 // Estado del modo oscuro
 const isDarkMode = ref(false);
 const currentSlide = ref(0);
@@ -77,6 +97,10 @@ onMounted(() => {
     const savedMode = localStorage.getItem('isDarkMode');
     isDarkMode.value = savedMode === 'true'; // Convertir a booleano
 
+    heroSlideInterval = setInterval(() => {
+        currentHeroSlide.value = (currentHeroSlide.value + 1) % heroSlides.length;
+    }, 5000); // Cambia cada 5 segundos
+
     slideInterval = setInterval(() => {
         currentSlide.value = (currentSlide.value + 1) % testimonials.length;
     }, 5000);
@@ -91,6 +115,8 @@ const toggleDarkMode = () => {
 // Limpiar el intervalo al desmontar el componente
 onBeforeUnmount(() => {
     if (slideInterval) clearInterval(slideInterval);
+    if (heroSlideInterval) clearInterval(heroSlideInterval);
+
 });
 </script>
 
@@ -104,7 +130,7 @@ onBeforeUnmount(() => {
             <div class="max-w-6xl mx-auto flex justify-between items-center">
                 <div class="flex items-center gap-2">
                     <img :src="isDarkMode ? '/assets/media/auth/Logo-Gananza1.svg' : '/assets/media/auth/Logo-Gananza2.svg'"
-                        alt="Gananza Logo" class="h-10" />
+                        alt="Gananza Logo" class="h-12" />
                 </div>
 
 
@@ -142,19 +168,23 @@ onBeforeUnmount(() => {
             <div class="max-w-6xl mx-auto">
                 <div class="text-center space-y-6">
                     <h2 :style="{ color: theme.textPrimary }" class="text-5xl font-bold tracking-tight">
-                        Más cerca de ganar
+                        {{ heroSlides[currentHeroSlide].title }}
                     </h2>
                     <p :style="{ color: theme.textSecondary }" class="text-xl max-w-2xl mx-auto">
-                        Explora rifas en tiempo real y elige la tuya para ganar en grande.
+                        {{ heroSlides[currentHeroSlide].description }}
                     </p>
                     <button :style="{ background: theme.primary }"
                         class="px-8 py-3 rounded-lg text-white text-lg font-medium shadow-lg inline-flex items-center gap-2 transition-transform duration-200 hover:scale-105">
-                        <a href="register">¡Empieza a jugar y gana!</a>
-                        <ArrowRight :size="20" />
+                        <a :href="heroSlides[currentHeroSlide].route" class="flex items-center">
+                            {{ heroSlides[currentHeroSlide].textButton }}
+                            <ArrowRight :size="20" class="ml-2" />
+                        </a>
                     </button>
                 </div>
             </div>
         </section>
+
+
 
         <!-- Live Results Section -->
         <section :style="{ background: theme.gradient }" class="py-12 px-6">
@@ -187,7 +217,7 @@ onBeforeUnmount(() => {
                 </div>
                 <button :style="{ background: theme.primary }"
                     class="px-8 py-3 rounded-lg text-white text-lg font-medium shadow-lg inline-flex items-center gap-2 transition-transform duration-200 hover:scale-105">
-                    <a href="lottery-results">¡Ver resultados!</a>
+                    ¡Ver resultados!
                     <ArrowRight :size="20" />
                 </button>
             </div>
