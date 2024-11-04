@@ -22,7 +22,17 @@ const cardStyle = computed(() => ({
 
 const fetchLotteryResults = async () => {
     try {
-        const response = await fetch('https://apilotteries.onrender.com/api/lotteries');
+        const response = await fetch('https://apilotteries.onrender.com/api/lotteries', {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${import.meta.env.VITE_TOKEN_LOTTERIES_API}`
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+
         const data = await response.json();
         lotteryResults.value = data.data.slice(0, 11).map(lottery => ({
             name: lottery.firstH1,
@@ -43,6 +53,8 @@ const fetchLotteryResults = async () => {
         isLoading.value = false;
     }
 };
+
+
 
 onMounted(() => {
     fetchLotteryResults();
