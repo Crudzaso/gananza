@@ -111,6 +111,10 @@
 
                         <!-- Botón de Envío -->
                         <div class="d-grid mb-5">
+                            <button type="button" class="btn btn-secondary" @click="cancel"
+                                style="margin-bottom: 10px;">
+                                Cancelar
+                            </button>
                             <button type="submit" class="btn" :style="{ background: theme.primary, color: '#fff' }"
                                 :disabled="!form.termsAccepted || form.processing">
                                 <span v-if="!form.processing" class="indicator-label">Registrarse</span>
@@ -207,6 +211,10 @@ export default {
             window.location.href = route('apple.register');
         };
 
+        const cancel = () => {
+            window.location.href = '/'; // Cambia esto según tu ruta real
+        };
+
         return {
             form,
             isDarkMode,
@@ -215,6 +223,7 @@ export default {
             registerWithGoogle,
             registerWithApple,
             toggleDarkMode, // Asegúrate de incluir toggleDarkMode en el return
+            cancel
         };
     },
 };
@@ -222,7 +231,7 @@ export default {
 
 <style scoped>
 .form-container {
-    padding: 1.85rem;
+
     border-radius: 8px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
