@@ -217,7 +217,7 @@ onBeforeUnmount(() => {
                 </div>
                 <button :style="{ background: theme.primary }"
                     class="px-8 py-3 rounded-lg text-white text-lg font-medium shadow-lg inline-flex items-center gap-2 transition-transform duration-200 hover:scale-105">
-                    ¡Ver resultados!
+                    <a href="lottery-results">¡Ver resultados!</a>
                     <ArrowRight :size="20" />
                 </button>
             </div>
