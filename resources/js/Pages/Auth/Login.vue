@@ -29,13 +29,6 @@ const submit = () => {
     });
 };
 
-const loginWithGithub = () => {
-    window.location.href = route('github.login');
-};
-
-const loginWithGoogle = () => {
-    window.location.href = route('google.login');
-};
 </script>
 
 <template>

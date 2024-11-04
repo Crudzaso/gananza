@@ -56,17 +56,23 @@
                                 <input type="text" placeholder="Nombre" name="name" v-model="form.name" required
                                     class="form-control custom-input"
                                     :style="{ background: theme.background, color: theme.textPrimary, borderColor: theme.border }" />
+                                <InputError :message="form.errors.name" /> <!-- Error de Nombre -->
                             </div>
+
                             <div class="col-md-6 mb-4">
                                 <input type="text" placeholder="Apellido" name="lastname" v-model="form.lastname"
                                     required class="form-control custom-input"
                                     :style="{ background: theme.background, color: theme.textPrimary, borderColor: theme.border }" />
+                                <InputError :message="form.errors.lastname" /> <!-- Error de Apellido -->
                             </div>
+
                             <div class="col-md-6 mb-4">
                                 <input type="text" placeholder="Documento" name="document" v-model="form.document"
                                     required class="form-control custom-input"
                                     :style="{ background: theme.background, color: theme.textPrimary, borderColor: theme.border }" />
+                                <InputError :message="form.errors.document" /> <!-- Error de Documento -->
                             </div>
+
                             <div class="col-md-6 mb-4">
                                 <select name="document_type" v-model="form.document_type" required
                                     class="form-control custom-input"
@@ -76,38 +82,50 @@
                                     <option value="Passport">Pasaporte</option>
                                     <option value="Other">Otro</option>
                                 </select>
+                                <InputError :message="form.errors.document_type" /> <!-- Error de Tipo de Documento -->
                             </div>
+
                             <div class="col-md-6 mb-4">
                                 <input type="text" placeholder="Teléfono" name="phone_number"
                                     v-model="form.phone_number" required class="form-control custom-input"
                                     :style="{ background: theme.background, color: theme.textPrimary, borderColor: theme.border }" />
+                                <InputError :message="form.errors.phone_number" /> <!-- Error de Teléfono -->
                             </div>
+
                             <div class="col-md-6 mb-4">
                                 <input type="email" placeholder="Correo Electrónico" name="email" v-model="form.email"
                                     required class="form-control custom-input"
                                     :style="{ background: theme.background, color: theme.textPrimary, borderColor: theme.border }" />
+                                <InputError :message="form.errors.email" /> <!-- Error de Correo Electrónico -->
                             </div>
+
                             <div class="col-md-6 mb-4">
                                 <input type="password" placeholder="Contraseña" name="password" v-model="form.password"
                                     required class="form-control custom-input"
                                     :style="{ background: theme.background, color: theme.textPrimary, borderColor: theme.border }" />
+                                <InputError :message="form.errors.password" /> <!-- Error de Contraseña -->
                             </div>
+
                             <div class="col-md-6 mb-4">
-                                <input type="password" placeholder="Confirmar Contraseña" name="confirmPassword"
-                                    v-model="form.confirmPassword" required class="form-control custom-input"
+                                <input type="password" placeholder="Confirmar Contraseña" name="password_confirmation"
+                                    v-model="form.password_confirmation" required class="form-control custom-input"
                                     :style="{ background: theme.background, color: theme.textPrimary, borderColor: theme.border }" />
+                                <InputError :message="form.errors.password_confirmation" />
+                                <!-- Error de Confirmar Contraseña -->
                             </div>
                         </div>
 
                         <!-- Aceptación de Términos -->
                         <div class="fv-row mb-5">
                             <label class="form-check form-check-inline">
-                                <input class="form-check-input" type="checkbox" v-model="form.termsAccepted" />
+                                <input class="form-check-input" type="checkbox" v-model="form.terms" />
                                 <span class="form-check-label fw-semibold" :style="{ color: theme.textSecondary }">
                                     Acepto los <a href="#" :style="{ color: theme.primary }">Términos y Condiciones</a>
                                 </span>
                             </label>
+                            <InputError :message="form.errors.terms" /> <!-- Error de Términos y Condiciones -->
                         </div>
+
 
                         <!-- Botón de Envío -->
                         <div class="d-grid mb-5">
@@ -116,7 +134,7 @@
                                 Cancelar
                             </button>
                             <button type="submit" class="btn" :style="{ background: theme.primary, color: '#fff' }"
-                                :disabled="!form.termsAccepted || form.processing">
+                                :disabled="!form.terms || form.processing">
                                 <span v-if="!form.processing" class="indicator-label">Registrarse</span>
                                 <span v-else class="indicator-progress">Por favor espera...
                                     <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
@@ -134,10 +152,10 @@
             </div>
 
             <div class="d-none d-lg-flex flex-column flex-center p-10 w-50">
-                <img v-if="!isDarkMode" class="mx-auto mw-100 mb-5" src="assets/media/auth/agency.png"
-                    alt="Gananza Logo" style="width: 300px; max-width: 500px;" />
-                <img v-else class="mx-auto mw-100 mb-5" src="assets/media/auth/agency-dark.png" alt="Gananza Logo"
-                    style="width: 300px; max-width: 500px;" />
+                <img v-if="!isDarkMode" class="mx-auto mw-100 mb-5" src="assets/media/auth/Login-Page.svg"
+                    alt="Gananza Logo" style="width: 500px; max-width: 500px;" />
+                <img v-else class="mx-auto mw-100 mb-5" src="assets/media/auth/Login-Page.svg" alt="Gananza Logo"
+                    style="width: 500px; max-width: 500px;" />
                 <h1 :style="{ color: theme.textPrimary }" class="fs-2qx fw-bold text-center mb-5">¡Descubre Gananza!
                 </h1>
                 <div :style="{ color: theme.textSecondary }" class="fs-base text-center fw-semibold">
@@ -154,11 +172,14 @@
 import { ref, computed, onMounted } from 'vue'; // Importar onMounted
 import { Sun, Moon } from 'lucide-vue-next';
 import { useForm } from '@inertiajs/vue3';
+import InputError from '@/Components/InputError.vue'; // Importar InputError
+
 
 export default {
     components: {
         Sun,
         Moon,
+        InputError,
     },
     setup() {
         const form = useForm({
@@ -169,9 +190,10 @@ export default {
             phone_number: '',
             email: '',
             password: '',
-            confirmPassword: '',
-            termsAccepted: false,
+            password_confirmation: '',
+            terms: false, // Cambia termsAccepted a terms
         });
+
 
         const isDarkMode = ref(false);
 
@@ -199,7 +221,7 @@ export default {
 
         const submit = () => {
             form.post(route('register'), {
-                onFinish: () => form.reset('password', 'confirmPassword'),
+                onFinish: () => form.reset('password', 'password_confirmation'),
             });
         };
 
@@ -231,7 +253,12 @@ export default {
 
 <style scoped>
 .form-container {
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
 
+.form {
+    padding: 1.70rem;
     border-radius: 8px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
