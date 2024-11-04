@@ -11,19 +11,19 @@
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,400,500,600,700" />
-    <link rel="shortcut icon" href="assets/media/logos/favicon.ico" />
+    <link rel="shortcut icon" href="{{ asset('assets/media/logos/favicon.ico') }}" />
     <link rel="canonical" href="http://preview.keenthemes.comauthentication/layouts/overlay/sign-in.html" />
-
-
-
 
     <!-- CSS Links -->
     <link rel="preload" href="{{ asset('assets/plugins/global/plugins.bundle.css') }}" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="{{ asset('assets/plugins/global/plugins.bundle.css') }}"></noscript>
-    
-    
+    <noscript>
+        <link rel="stylesheet" href="{{ asset('assets/plugins/global/plugins.bundle.css') }}">
+    </noscript>
+
     <link rel="preload" href="{{ asset('assets/css/style.bundle.css') }}" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="{{ asset('assets/css/style.bundle.css') }}"></noscript>
+    <noscript>
+        <link rel="stylesheet" href="{{ asset('assets/css/style.bundle.css') }}">
+    </noscript>
 
     <!-- Scripts -->
     @routes
