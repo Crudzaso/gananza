@@ -18,8 +18,12 @@
 
 
     <!-- CSS Links -->
-    <link href="{{ asset('assets/plugins/global/plugins.bundle.css') }}" rel="stylesheet" type="text/css" />
-    <link href="{{ asset('assets/css/style.bundle.css') }}" rel="stylesheet" type="text/css" />
+    <link rel="preload" href="{{ asset('assets/plugins/global/plugins.bundle.css') }}" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="{{ asset('assets/plugins/global/plugins.bundle.css') }}"></noscript>
+    
+    
+    <link rel="preload" href="{{ asset('assets/css/style.bundle.css') }}" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="{{ asset('assets/css/style.bundle.css') }}"></noscript>
 
     <!-- Scripts -->
     @routes
