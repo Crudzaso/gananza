@@ -4,6 +4,10 @@
     <header :style="{ background: theme.primary }" class="p-8 text-center">
       <h1 class="text-4xl font-bold mb-2">Acerca de Gananza</h1>
       <p class="text-lg">Más cerca de ganar</p>
+
+      <a href="/" class="absolute left-8 top-4">
+        <img src="/assets/media/logo/gananzaLogo.png" alt="Logo de Gananza" class="w-32 h-32 object-contain cursor-pointer" />
+      </a>
     </header>
 
     <!-- Descripción del proyecto -->
@@ -88,7 +92,7 @@ const teamMembers = ref([
     name: 'Jafet Ibarguen',
     role: 'Full Stack Developer',
     bio: 'Especializado en el diseño de componentes y en la experiencia de usuario, su trabajo se centra en crear interfaces intuitivas y atractivas para los usuarios de la plataforma de rifas.',
-    photo: '/assets/team/member3.jpg'
+    photo: '/assets/team/member3.jpeg'
   }
 ]);
 </script>
