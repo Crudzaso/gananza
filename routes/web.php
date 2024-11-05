@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AboutController;
 use App\Http\Controllers\AuthController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -51,3 +52,7 @@ Route::middleware(['role:client'])->group(function () {
         return Inertia::render('Profile/TestClient');
     });
 });
+
+Route::get('/about', function () {
+    return Inertia::render('About');
+})->name('about');
