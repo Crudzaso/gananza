@@ -22,7 +22,8 @@
       <h2 class="text-3xl font-semibold mb-8" :style="{ color: theme.accent }">Nuestro Equipo</h2>
       <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
         <div v-for="(member, index) in teamMembers" :key="index" class="text-center p-6 rounded-lg shadow-lg transition-transform duration-300 hover:scale-105" :style="{ background: theme.cardBackground }">
-          <img :src="member.photo" alt="Foto de {{ member.name }}" class="w-32 h-32 mx-auto rounded-full mb-4" />
+          <img :src="member.photo" alt="Foto de {{ member.name }}" class="w-40 h-40 mx-auto rounded-full mb-4 object-cover" />
+
           <h3 class="text-2xl font-semibold" :style="{ color: theme.textPrimary }">{{ member.name }}</h3>
           <p class="text-lg" :style="{ color: theme.textSecondary }">{{ member.role }}</p>
           <p class="mt-2" :style="{ color: theme.textSecondary }">{{ member.bio }}</p>
@@ -72,21 +73,21 @@ const theme = computed(() => ({
 // Información del equipo
 const teamMembers = ref([
   {
-    name: 'Desarrollador 1',
-    role: 'Backend Developer',
-    bio: 'Especializado en desarrollo de backend con amplia experiencia en PHP y Laravel.',
+    name: 'Alejandro Velasquez',
+    role: 'Full Stack Developer',
+    bio: 'Como desarrollador tanto de backend como de frontend y Scrum Master, se encarga de liderar las sprints y coordinar al equipo para asegurar que cada fase del desarrollo esté alineada con los objetivos del proyecto',
     photo: '/assets/team/member1.jpg'
   },
   {
-    name: 'Desarrollador 2',
-    role: 'Frontend Developer',
-    bio: 'Apasionado por el diseño y desarrollo de interfaces de usuario con Vue.js.',
-    photo: '/assets/team/member2.jpg'
+    name: 'Diego Andres Ramirez',
+    role: 'Full Stack Developer',
+    bio: 'Como desarrollador full stack y encargado de la administración de GitHub, su rol es crucial para mantener la coherencia y la calidad del código. Gracias a su dominio en backend y frontend, es capaz de abordar cualquier problema técnico de manera integral, garantizando que los desarrollos sean consistentes y escalables',
+    photo: '/assets/team/member2.jpeg'
   },
   {
-    name: 'Desarrollador 3',
+    name: 'Jafet Ibarguen',
     role: 'Full Stack Developer',
-    bio: 'Experto en desarrollo full stack y arquitecturas de sistemas escalables.',
+    bio: 'Especializado en el diseño de componentes y en la experiencia de usuario, su trabajo se centra en crear interfaces intuitivas y atractivas para los usuarios de la plataforma de rifas.',
     photo: '/assets/team/member3.jpg'
   }
 ]);
