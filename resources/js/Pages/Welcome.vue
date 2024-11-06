@@ -315,8 +315,9 @@ onBeforeUnmount(() => {
                     Repositorio en GitHub</Link>
                     <Link href="/contact" class="hover:underline transition-colors duration-200"
                         :style="{ color: theme.textSecondary }">Contáctanos</Link>
-                    <Link :href="route('about')" class="hover:underline transition-colors duration-200" :style="{ color: theme.textSecondary }">
-                        Sobre Nosotros</Link>
+                    <Link :href="route('about')" class="hover:underline transition-colors duration-200"
+                        :style="{ color: theme.textSecondary }">
+                    Sobre Nosotros</Link>
                 </div>
                 <p class="text-sm mt-4">Laravel v{{ laravelVersion }} (PHP v{{ phpVersion }})</p>
             </div>
