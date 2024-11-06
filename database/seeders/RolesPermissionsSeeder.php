@@ -24,7 +24,7 @@ class RolesPermissionsSeeder extends Seeder
         $roles = [
             'userPublic' => [],
             'client' => ['view_rifas'],
-            'organizador' => ['view_rifas', 'create_rifas', 'edit_rifas', 'delete_rifas'],
+            'organizer' => ['view_rifas', 'create_rifas', 'edit_rifas', 'delete_rifas'],
             'admin' => ['manage_users', 'view_rifas', 'create_rifas', 'edit_rifas', 'delete_rifas']
         ];
 
