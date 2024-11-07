@@ -1,11 +1,12 @@
 <?php
 
 namespace Database\Seeders;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+
 use Illuminate\Database\Seeder;
+use App\Models\User; // Asegúrate de importar el modelo User
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
-
+use Illuminate\Support\Facades\Hash;
 
 class RolesPermissionsSeeder extends Seeder
 {
@@ -32,5 +33,17 @@ class RolesPermissionsSeeder extends Seeder
             $role = Role::firstOrCreate(['name' => $roleName]);
             $role->syncPermissions($perms);
         }
+
+        // Crear un usuario administrador
+        $adminUser = User::firstOrCreate(
+            ['email' => 'admin@admin.com'], // Cambia este email si es necesario
+            [
+                'name' => 'Admin User',
+                'password' => Hash::make('admin123'), // Cambia esta contraseña si es necesario
+            ]
+        );
+
+        // Asignar el rol de admin al usuario creado
+        $adminUser->assignRole('admin');
     }
 }
