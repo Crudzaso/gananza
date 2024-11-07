@@ -56,3 +56,7 @@ Route::middleware(['role:client'])->group(function () {
 Route::get('/about', function () {
     return Inertia::render('About');
 })->name('about');
+
+Route::get('/crear-rifa', function () {
+    return Inertia::render('RaffleCreate');
+})->name('raffle-create');
