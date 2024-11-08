@@ -4,19 +4,32 @@ namespace Modules\Raffle\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-// use Modules\Raffle\Database\Factories\RaffleFactory;
+use App\Models\User; // Importar User para la relación
+use Modules\Lotery\Models\Lotery;
+use Modules\Lottery\Models\Lottery; // Importar Lottery para la relación
 
 class Raffle extends Model
 {
     use HasFactory;
 
-    /**
-     * The attributes that are mass assignable.
-     */
-    protected $fillable = [];
+    protected $fillable = [
+        'organizer_id',
+        'lottery_id',
+        'ticket_price',
+        'total_tickets',
+        'tickets_sold',
+        'description',
+        'start_date',
+        'end_date',
+    ];
 
-    // protected static function newFactory(): RaffleFactory
-    // {
-    //     // return RaffleFactory::new();
-    // }
+    public function organizer()
+    {
+        return $this->belongsTo(User::class, 'organizer_id');
+    }
+
+    public function lottery()
+    {
+        return $this->belongsTo(Lotery::class, 'lottery_id');
+    }
 }

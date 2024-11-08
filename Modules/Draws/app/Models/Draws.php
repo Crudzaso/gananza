@@ -4,7 +4,7 @@ namespace Modules\Draws\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-// use Modules\Draws\Database\Factories\DrawsFactory;
+use Modules\Lotery\Models\Lotery;
 
 class Draws extends Model
 {
@@ -13,10 +13,17 @@ class Draws extends Model
     /**
      * The attributes that are mass assignable.
      */
-    protected $fillable = [];
+    protected $fillable = [
+        'lottery_id',
+        'draw_date',
+        'winning_numbers',
+    ];
 
-    // protected static function newFactory(): DrawsFactory
-    // {
-    //     // return DrawsFactory::new();
-    // }
+    /**
+     * Get the lottery associated with the draw.
+     */
+    public function lottery()
+    {
+        return $this->belongsTo(Lotery::class);
+    }
 }
