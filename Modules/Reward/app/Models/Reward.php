@@ -4,19 +4,26 @@ namespace Modules\Reward\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-// use Modules\Reward\Database\Factories\RewardFactory;
 
 class Reward extends Model
 {
     use HasFactory;
 
     /**
-     * The attributes that are mass assignable.
+     * Los atributos que son asignables de forma masiva.
      */
-    protected $fillable = [];
+    protected $fillable = [
+        'user_id',         // ID del usuario al que se le asignan los puntos
+        'points',          // Puntos acumulados
+        'redeemed_points', // Puntos canjeados
+    ];
 
-    // protected static function newFactory(): RewardFactory
-    // {
-    //     // return RewardFactory::new();
-    // }
+    /**
+     * Relación con el modelo User.
+     * Un usuario puede tener una recompensa.
+     */
+    public function user()
+    {
+        return $this->belongsTo(\App\Models\User::class); // Relación con el modelo User
+    }
 }
