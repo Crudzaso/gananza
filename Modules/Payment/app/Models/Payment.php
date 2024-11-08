@@ -4,19 +4,21 @@ namespace Modules\Payment\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-// use Modules\Payment\Database\Factories\PaymentFactory;
+use Modules\Raffle\Models\Raffle;
 
 class Payment extends Model
 {
     use HasFactory;
 
-    /**
-     * The attributes that are mass assignable.
-     */
-    protected $fillable = [];
+    protected $fillable = ['user_id', 'raffle_id', 'amount', 'payment_method', 'payment_date'];
 
-    // protected static function newFactory(): PaymentFactory
-    // {
-    //     // return PaymentFactory::new();
-    // }
+    public function user()
+    {
+        return $this->belongsTo(\App\Models\User::class);
+    }
+
+    public function raffle()
+    {
+        return $this->belongsTo(Raffle::class);
+    }
 }

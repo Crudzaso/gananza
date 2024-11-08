@@ -6,6 +6,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
+        "filament/filament": "^3.2",
         "inertiajs/inertia-laravel": "^1.0",
         "laravel-notification-channels/webhook": "2.6",
         "laravel/framework": "^11.9",
@@ -42,7 +43,8 @@
     "scripts": {
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
-            "@php artisan package:discover --ansi"
+            "@php artisan package:discover --ansi",
+            "@php artisan filament:upgrade"
         ],
         "post-update-cmd": [
             "@php artisan vendor:publish --tag=laravel-assets --ansi --force"
@@ -56,21 +58,19 @@
             "@php artisan migrate --graceful --ansi"
         ],
         "dev": [
-            "Composer\\Config::disableProcessTimeout",
-            "npx concurrently -c \"#93c5fd,#c4b5fd,#fb7185,#fdba74\" \"php artisan serve\" \"php artisan queue:listen --tries=1\" \"php artisan pail --timeout=0\" \"npm run dev\" --names=server,queue,logs,vite"
-        ]
+            "Composer\\Config::disableProcessTimeout","npx concurrently -c \"#93c5fd,#c4b5fd,#fb7185,#fdba74\" \"php artisan serve\" \"php artisan queue:listen --tries=1\" \"php artisan pail --timeout=0\" \"npm run dev\" --names=server,queue,logs,vite"
+]
     },
-   "extra": {
-    "laravel": {
-        "dont-discover": []
+    "extra": {
+        "laravel": {
+            "dont-discover": []
+        },
+        "merge-plugin": {
+            "include": [
+                "Modules/*/composer.json"]
+        }
     },
-    "merge-plugin": {
-        "include": [
-            "Modules/*/composer.json"
-        ]
-    }
-},
-
+    
     "config": {
         "optimize-autoloader": true,
         "preferred-install": "dist",
@@ -80,6 +80,7 @@
             "php-http/discovery": true,
             "wikimedia/composer-merge-plugin": true
 
+        
         }
     },
     "minimum-stability": "stable",

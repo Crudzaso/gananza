@@ -4,19 +4,30 @@ namespace Modules\Lotery\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-// use Modules\Lotery\Database\Factories\LoteryFactory;
 
 class Lotery extends Model
 {
     use HasFactory;
 
     /**
-     * The attributes that are mass assignable.
+     * El nombre de la tabla asociada al modelo.
+     *
+     * @var string
      */
-    protected $fillable = [];
+    protected $table = 'lotteries';  // Especificamos la tabla correctamente
 
-    // protected static function newFactory(): LoteryFactory
-    // {
-    //     // return LoteryFactory::new();
-    // }
+    /**
+     * Los atributos que se pueden asignar masivamente.
+     *
+     * @var array
+     */
+    protected $fillable = ['name', 'description', 'image_url'];  // Agregar 'description' e 'image_url' para la asignación masiva
+
+    /**
+     * Las relaciones de los sorteos con esta lotería (relación inversa).
+     */
+    public function draws()
+    {
+        return $this->hasMany(\Modules\Draws\Models\Draws::class, 'lottery_id');
+    }
 }
