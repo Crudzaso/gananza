@@ -20,6 +20,10 @@ class LoteryResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-currency-dollar';
 
+    protected static ?string $navigationGroup = 'Models';
+
+    protected static ?int $navigationSort = 2;
+
     public static function form(Form $form): Form
     {
         return $form

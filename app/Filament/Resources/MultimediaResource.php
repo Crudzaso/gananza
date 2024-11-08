@@ -20,6 +20,10 @@ class MultimediaResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-film';
 
+    protected static ?string $navigationGroup = 'Models';
+
+    protected static ?int $navigationSort = 3;
+
     public static function form(Forms\Form $form): Forms\Form
     {
         return $form

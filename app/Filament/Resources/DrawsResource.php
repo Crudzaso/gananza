@@ -23,6 +23,10 @@ class DrawsResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    protected static ?string $navigationGroup = 'Models';
+
+    protected static ?int $navigationSort = 1;
+
     // Configuración del formulario
     public static function form(Form $form): Form
     {

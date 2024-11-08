@@ -19,6 +19,10 @@ class RewardsResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-gift';
 
+    protected static ?string $navigationGroup = 'Models';
+
+    protected static ?int $navigationSort = 6;
+
     /**
      * Definir el formulario para crear o editar recompensas.
      */

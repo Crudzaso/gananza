@@ -24,6 +24,10 @@ class TicketsResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-ticket';
 
+    protected static ?string $navigationGroup = 'Models';
+
+    protected static ?int $navigationSort = 7;
+
     // Configuración del formulario
     public static function form(Form $form): Form
     {

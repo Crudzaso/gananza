@@ -17,6 +17,9 @@ class PermissionResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    protected static ?string $navigationGroup = 'User Administration';
+    protected static ?int $navigationSort = 3;
+
     // Define the form schema
     public static function form(Form $form): Form
     {
@@ -78,4 +81,10 @@ class PermissionResource extends Resource
             'edit' => Pages\EditPermission::route('/{record}/edit'),
         ];
     }
+
+    public static function getLabel(): string
+    {
+        return 'Permissions';
+    }
+
 }
