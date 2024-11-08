@@ -30,13 +30,4 @@ class UserPermissionAssignment extends Model
         return $this->belongsTo(Permission::class, 'permission_id');
     }
 
-    public static function getLabel(): string
-    {
-        return 'Permission assignment';
-    }
-
-    public static function getPluralLabel(): string
-    {
-        return 'Permission assignments';
-    }
 }

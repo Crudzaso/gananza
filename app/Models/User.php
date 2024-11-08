@@ -8,8 +8,6 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Jetstream\HasProfilePhoto;
 use Laravel\Sanctum\HasApiTokens;
-use Spatie\Permission\Models\Permission;
-use Spatie\Permission\Models\Role;
 use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
@@ -51,31 +49,5 @@ class User extends Authenticatable
     public function routeNotificationForWebhook()
     {
         return env('DISCORD_WEBHOOK_URL');
-    }
-
-
-    public function roles()
-    {
-        return $this->belongsToMany(
-            Role::class,                 // El modelo relacionado
-            'model_has_roles',           // Nombre de la tabla intermedia
-            'model_id',                  // Columna que hace referencia al modelo "User"
-            'role_id'                    // Columna que hace referencia al modelo "Role"
-        )
-        ->wherePivot('model_type', 'App\Models\User'); // Filtra por el tipo de modelo
-    }
-
-    /**
-     * Relación con permisos
-     */
-    public function permissions()
-    {
-        return $this->belongsToMany(
-            Permission::class,           // El modelo relacionado
-            'model_has_permissions',     // Nombre de la tabla intermedia
-            'model_id',                  // Columna que hace referencia al modelo "User"
-            'permission_id'              // Columna que hace referencia al modelo "Permission"
-        )
-        ->wherePivot('model_type', 'App\Models\User'); // Filtra por el tipo de modelo
     }
 }
