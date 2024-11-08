@@ -4,19 +4,29 @@ namespace Modules\Multimedia\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-// use Modules\Multimedia\Database\Factories\MultimediaFactory;
 
 class Multimedia extends Model
 {
     use HasFactory;
 
     /**
-     * The attributes that are mass assignable.
+     * Los atributos que son asignables masivamente.
+     *
+     * @var array
      */
-    protected $fillable = [];
+    protected $fillable = [
+        'file_name',
+        'file_path',
+        'file_type',
+        'mime_type',
+        'size',
+        'model_id',
+        'model_type',
+    ];
 
+    // Si tienes un Factory, puedes activarlo aquí
     // protected static function newFactory(): MultimediaFactory
     // {
-    //     // return MultimediaFactory::new();
+    //     return MultimediaFactory::new();
     // }
 }
