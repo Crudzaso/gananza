@@ -25,7 +25,6 @@ class AdminAuthController extends Controller
         if (Hash::check($request->password, auth()->user()->password)) {
             session(['admin_password_verified' => true]);
     
-            // Redirigir a la URL que el usuario intentaba acceder, o a /dashboard/admin por defecto
             $redirectUrl = session()->pull('url.intended', '/dashboard/admin');
             return response()->json([
                 'success' => true,
