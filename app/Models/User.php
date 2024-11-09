@@ -38,16 +38,18 @@ class User extends Authenticatable
         'profile_photo_url',
     ];
 
-    protected function casts(): array
-    {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
-    }
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'password' => 'hashed',
+    ];
 
     public function routeNotificationForWebhook()
     {
         return env('DISCORD_WEBHOOK_URL');
+    }
+
+    // Example of a one-to-many relationship
+    public function posts() {
+        return $this->hasMany(Post::class);
     }
 }
