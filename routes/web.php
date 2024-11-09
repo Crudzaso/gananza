@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\AboutController;
 use App\Http\Controllers\AdminAuthController;
 use App\Http\Controllers\AuthController;
@@ -68,4 +69,14 @@ Route::middleware(['auth'])->group(function () {
         ->name('admin.verify-password');
     Route::post('/admin/verify-password', [AdminAuthController::class, 'verifyPassword'])
         ->name('admin.verify-password.check');
+});
+
+
+Route::middleware(['auth', 'role:admin'])->group(function () {
+    Route::get('/users', [UserController::class, 'index'])->name('users.index');
+    Route::get('/users/create', [UserController::class, 'create'])->name('users.create');
+    Route::post('/users', [UserController::class, 'store'])->name('users.store');
+    Route::get('/users/{user}/edit', [UserController::class, 'edit'])->name('users.edit');
+    Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
+    Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
 });
