@@ -1,8 +1,13 @@
 <?php
 
 use App\Http\Controllers\AboutController;
+use App\Http\Controllers\AdminAuthController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\PasswordVerificationController;
 use Illuminate\Foundation\Application;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -56,3 +61,11 @@ Route::middleware(['role:client'])->group(function () {
 Route::get('/about', function () {
     return Inertia::render('About');
 })->name('about');
+
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/admin/verify-password', [AdminAuthController::class, 'showVerification'])
+        ->name('admin.verify-password');
+    Route::post('/admin/verify-password', [AdminAuthController::class, 'verifyPassword'])
+        ->name('admin.verify-password.check');
+});
