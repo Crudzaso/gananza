@@ -14,6 +14,11 @@ use Modules\Raffle\Http\Controllers\RaffleController;
 |
 */
 
-Route::group([], function () {
-    Route::resource('raffle', RaffleController::class)->names('raffle');
+Route::prefix('raffles')->middleware(['auth', 'role:admin'])->name('raffles.')->group(function () {
+    Route::get('/', [RaffleController::class, 'index'])->name('index');
+    Route::get('/create', [RaffleController::class, 'create'])->name('create');
+    Route::post('/store', [RaffleController::class, 'store'])->name('store');
+    Route::get('/{id}/edit', [RaffleController::class, 'edit'])->name('edit');
+    Route::put('/{id}', [RaffleController::class, 'update'])->name('update');
+    Route::delete('/{id}', [RaffleController::class, 'destroy'])->name('destroy');
 });

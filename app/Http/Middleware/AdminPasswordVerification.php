@@ -11,27 +11,42 @@ class AdminPasswordVerification
 {
     public function handle(Request $request, Closure $next)
     {
-        // Si no es admin, ni siquiera continuamos
+        // Verificar si el usuario está autenticado y tiene el rol de 'admin'
         if (!Auth::check() || !Auth::user()->hasRole('admin')) {
             return redirect()->route('login');
         }
 
         $currentPath = $request->path();
-        
-        // Si NO estamos en una ruta que comience con 'admin', limpiamos la sesión
-        if (!str_starts_with($currentPath, 'admin')) {
+
+        // Solicitar verificación de contraseña para /admin y sus subrutas
+        if ($currentPath === 'admin' || str_starts_with($currentPath, 'admin/')) {
+            if (!Session::has('admin_password_verified')) {
+                // Guardar la URL intentada para redireccionar después de la verificación
+                $request->session()->put('url.intended', $request->fullUrl());
+                return redirect()->route('admin.verify-password');
+            }
+
+            // Limpiar el estado de verificación después del acceso
             Session::forget('admin_password_verified');
             return $next($request);
         }
-        
-        // Si es específicamente la ruta 'admin' y no está verificado, pedimos verificación
-        if ($currentPath === 'admin' && !Session::has('admin_password_verified')) {
-            if ($request->expectsJson() || $request->ajax()) {
-                return response()->json(['require_password' => true], 403);
+
+        // Solicitar verificación de contraseña para /dashboard/admin
+        if ($currentPath === 'dashboard/admin') {
+            if (!Session::has('admin_password_verified')) {
+                // Guardar la URL intentada para redireccionar después de la verificación
+                $request->session()->put('url.intended', $request->fullUrl());
+                return redirect()->route('admin.verify-password');
             }
-            return redirect()->route('admin.verify-password');
+
+            // Limpiar el estado de verificación después del acceso
+            Session::forget('admin_password_verified');
+            return $next($request);
         }
 
         return $next($request);
     }
+    
+    
+    
 }

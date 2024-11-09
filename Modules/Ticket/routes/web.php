@@ -14,6 +14,11 @@ use Modules\Ticket\Http\Controllers\TicketController;
 |
 */
 
-Route::group([], function () {
-    Route::resource('ticket', TicketController::class)->names('ticket');
+Route::prefix('tickets')->middleware(['auth', 'role:admin'])->name('tickets.')->group(function () {
+    Route::get('/', [TicketController::class, 'index'])->name('index');
+    Route::get('/create', [TicketController::class, 'create'])->name('create');
+    Route::post('/store', [TicketController::class, 'store'])->name('store');
+    Route::get('/{id}/edit', [TicketController::class, 'edit'])->name('edit');
+    Route::put('/{id}', [TicketController::class, 'update'])->name('update');
+    Route::delete('/{id}', [TicketController::class, 'destroy'])->name('destroy');
 });

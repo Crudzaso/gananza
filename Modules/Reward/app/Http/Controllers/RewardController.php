@@ -4,62 +4,62 @@ namespace Modules\Reward\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Modules\Reward\Models\Reward;
+use App\Models\User;
 
 class RewardController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        return view('reward::index');
+        $rewards = Reward::with('user')->paginate(10);
+        return view('reward::index', compact('rewards'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        return view('reward::create');
+        $users = User::all();
+        return view('reward::create', compact('users'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'user_id' => 'required|exists:users,id',
+            'points' => 'required|integer|min:0',
+            'redeemed_points' => 'nullable|integer|min:0|max:' . $request->points,
+        ]);
+
+        Reward::create($request->all());
+
+        return redirect()->route('rewards.index')->with('success', 'Recompensa creada exitosamente.');
     }
 
-    /**
-     * Show the specified resource.
-     */
-    public function show($id)
-    {
-        return view('reward::show');
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit($id)
     {
-        return view('reward::edit');
+        $reward = Reward::findOrFail($id);
+        $users = User::all();
+        return view('reward::edit', compact('reward', 'users'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, $id)
     {
-        //
+        $request->validate([
+            'user_id' => 'required|exists:users,id',
+            'points' => 'required|integer|min:0',
+            'redeemed_points' => 'nullable|integer|min:0|max:' . $request->points,
+        ]);
+
+        $reward = Reward::findOrFail($id);
+        $reward->update($request->all());
+
+        return redirect()->route('rewards.index')->with('success', 'Recompensa actualizada exitosamente.');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy($id)
     {
-        //
+        $reward = Reward::findOrFail($id);
+        $reward->delete();
+
+        return redirect()->route('rewards.index')->with('success', 'Recompensa eliminada exitosamente.');
     }
 }

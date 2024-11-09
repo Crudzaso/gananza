@@ -4,62 +4,62 @@ namespace Modules\Draws\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Modules\Draws\Models\Draws;
+use Modules\Lotery\Models\Lotery;
 
 class DrawsController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        return view('draws::index');
+        $draws = Draws::with('lottery')->paginate(10);
+        return view('draws::index', compact('draws'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        return view('draws::create');
+        $lotteries = Lotery::all();
+        return view('draws::create', compact('lotteries'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'lottery_id' => 'required|exists:lotteries,id',
+            'draw_date' => 'required|date',
+            'winning_numbers' => 'nullable|string',
+        ]);
+
+        Draws::create($request->all());
+
+        return redirect()->route('draws.index')->with('success', 'Sorteo creado exitosamente.');
     }
 
-    /**
-     * Show the specified resource.
-     */
-    public function show($id)
-    {
-        return view('draws::show');
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit($id)
     {
-        return view('draws::edit');
+        $draw = Draws::findOrFail($id);
+        $lotteries = Lotery::all();
+        return view('draws::edit', compact('draw', 'lotteries'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, $id)
     {
-        //
+        $request->validate([
+            'lottery_id' => 'required|exists:lotteries,id',
+            'draw_date' => 'required|date',
+            'winning_numbers' => 'nullable|string',
+        ]);
+
+        $draw = Draws::findOrFail($id);
+        $draw->update($request->all());
+
+        return redirect()->route('draws.index')->with('success', 'Sorteo actualizado exitosamente.');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy($id)
     {
-        //
+        $draw = Draws::findOrFail($id);
+        $draw->delete();
+
+        return redirect()->route('draws.index')->with('success', 'Sorteo eliminado exitosamente.');
     }
 }

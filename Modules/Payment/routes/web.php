@@ -14,6 +14,11 @@ use Modules\Payment\Http\Controllers\PaymentController;
 |
 */
 
-Route::group([], function () {
-    Route::resource('payment', PaymentController::class)->names('payment');
+Route::prefix('payment')->middleware(['auth', 'role:admin'])->name('payment.')->group(function () {
+    Route::get('/', [PaymentController::class, 'index'])->name('index');
+    Route::get('/create', [PaymentController::class, 'create'])->name('create');
+    Route::post('/store', [PaymentController::class, 'store'])->name('store');
+    Route::get('/{id}/edit', [PaymentController::class, 'edit'])->name('edit');
+    Route::put('/{id}', [PaymentController::class, 'update'])->name('update');
+    Route::delete('/{id}', [PaymentController::class, 'destroy'])->name('destroy');
 });

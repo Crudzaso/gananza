@@ -2,62 +2,97 @@
 
 namespace App\Http\Controllers;
 
-
-use App\Http\Requests\UserRequest;
 use App\Models\User;
-use App\Services\UserService;
 use Illuminate\Http\Request;
-
+use Inertia\Inertia;
 
 class UserController extends Controller
 {
-    protected $userService;
-
-    public function __construct(UserService $userService)
+    /**
+     * Display a listing of the resource.
+     */
+    public function index()
     {
-        $this->userService = $userService;
-    }
+        $users = User::paginate(10);
 
-        public function index()
-    {
-        // Retrieve all users and return as JSON response
-        $users = User::all();
-        return response()->json($users);
+        return Inertia::render('Users/Index', [
+            'users' => $users,
+        ]);
     }
 
     /**
-     * Store a newly created user in storage.
+     * Show the form for creating a new resource.
      */
-    public function store(UserRequest $request)
+    public function create()
     {
-        // Create a new user
-        $user = $this->userService->createUser($request->validated());
-        return response()->json($user, 201);
+        return Inertia::render('Users/Create');
     }
 
     /**
-     * Update the specified user in storage.
+     * Store a newly created resource in storage.
      */
-    public function update(UserRequest $request, $id)
+    public function store(Request $request)
     {
-        // Find the user by ID
-        $user = User::findOrFail($id);
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'lastname' => 'nullable|string|max:255',
+            'document' => 'nullable|string|unique:users',
+            'document_type' => 'nullable|string',
+            'phone_number' => 'nullable|string',
+            'email' => 'required|email|unique:users',
+            'password' => 'required|min:6',
+        ]);
 
-        // Update the user
-        $user = $this->userService->updateUser($user, $request->validated());
-        return response()->json($user);
+        User::create([
+            'name' => $validated['name'],
+            'lastname' => $validated['lastname'],
+            'document' => $validated['document'],
+            'document_type' => $validated['document_type'],
+            'phone_number' => $validated['phone_number'],
+            'email' => $validated['email'],
+            'password' => bcrypt($validated['password']),
+        ]);
+
+        return redirect()->route('users.index')->with('success', 'Usuario creado exitosamente.');
     }
 
     /**
-     * Remove the specified user from storage.
+     * Show the form for editing the specified resource.
      */
-    public function destroy($id)
+    public function edit(User $user)
     {
-        // Find the user by ID
-        $user = User::findOrFail($id);
+        return Inertia::render('Users/Edit', [
+            'user' => $user,
+        ]);
+    }
 
-        // Delete the user
-        $this->userService->deleteUser($user);
-        return response()->json(null, 204);
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, User $user)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'lastname' => 'nullable|string|max:255',
+            'document' => 'nullable|string|unique:users,document,' . $user->id,
+            'document_type' => 'nullable|string',
+            'phone_number' => 'nullable|string',
+            'email' => 'required|email|unique:users,email,' . $user->id,
+        ]);
+
+        $user->update($validated);
+
+        return redirect()->route('users.index')->with('success', 'Usuario actualizado exitosamente.');
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(User $user)
+    {
+        $user->delete();
+
+        return redirect()->route('users.index')->with('success', 'Usuario eliminado exitosamente.');
+
     }
 }

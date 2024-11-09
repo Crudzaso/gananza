@@ -17,13 +17,14 @@
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
-    {{-- Vite CSS --}}
-    {{-- {{ module_vite('build-draws', 'resources/assets/sass/app.scss') }} --}}
+    <!-- Vite CSS (omitido el SCSS) -->
+    {{-- @vite('Modules/Draws/resources/assets/sass/app.scss', 'build-draws') --}}
 </head>
 
 <body>
     @yield('content')
 
-    {{-- Vite JS --}}
-    {{-- {{ module_vite('build-draws', 'resources/assets/js/app.js') }} --}}
+    <!-- Vite JS -->
+    @vite('Modules/Draws/resources/assets/js/app.js', 'build-draws')
 </body>
+</html>
