@@ -2,10 +2,16 @@
 
 @section('content')
 <div class="container mx-auto px-6 py-10">
-    <h1 class="text-3xl font-extrabold text-gray-800 mb-6">Gestión de Archivos Multimedia</h1>
-    <a href="{{ route('multimedia.create') }}" class="px-6 py-2 bg-green-600 text-white rounded-lg shadow hover:bg-green-700">Nuevo Archivo</a>
+    <div class="flex justify-between items-center mb-8">
+        <h1 class="text-3xl font-extrabold text-gray-800">Gestión de Archivos Multimedia</h1>
+        <button
+            onclick="window.location='{{ route('multimedia.create') }}'"
+            class="px-6 py-2 bg-green-600 text-white font-semibold rounded-lg shadow-md hover:bg-green-700">
+            Nuevo Archivo
+        </button>
+    </div>
 
-    <div class="bg-white shadow-lg rounded-lg mt-6">
+    <div class="bg-white shadow-lg rounded-lg overflow-hidden">
         <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-blue-50">
                 <tr>
@@ -15,16 +21,16 @@
                 </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
-                @foreach ($multimediaFiles as $file)
+                @foreach($multimediaFiles as $file)
                 <tr class="hover:bg-gray-100">
-                    <td class="px-6 py-4">{{ $file->file_name }}</td>
-                    <td class="px-6 py-4">{{ $file->file_type }}</td>
+                    <td class="px-6 py-4 text-sm text-gray-800">{{ $file->file_name }}</td>
+                    <td class="px-6 py-4 text-sm text-gray-800">{{ $file->file_type }}</td>
                     <td class="px-6 py-4 flex gap-2">
-                        <a href="{{ route('multimedia.edit', $file->id) }}" class="px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600">Editar</a>
+                        <a href="{{ route('multimedia.edit', $file->id) }}" class="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600">Editar</a>
                         <form action="{{ route('multimedia.destroy', $file->id) }}" method="POST">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">Eliminar</button>
+                            <button type="submit" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">Eliminar</button>
                         </form>
                     </td>
                 </tr>
@@ -32,6 +38,7 @@
             </tbody>
         </table>
     </div>
+
     <div class="mt-6">
         {{ $multimediaFiles->links() }}
     </div>
