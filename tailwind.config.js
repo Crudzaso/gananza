@@ -13,6 +13,9 @@ export default {
 
         './Modules/Draws/resources/views/**/*.blade.php',
         './Modules/Draws/resources/assets/js/**/*.js',
+        
+        './Modules/Lotery/resources/views/**/*.blade.php',
+        './Modules/Lotery/resources/assets/js/**/*.js',
     ],
 
     theme: {

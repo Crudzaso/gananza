@@ -14,6 +14,11 @@ use Modules\Lotery\Http\Controllers\LoteryController;
 |
 */
 
-Route::group([], function () {
-    Route::resource('lotery', LoteryController::class)->names('lotery');
+Route::prefix('lotery')->middleware(['auth', 'role:admin'])->name('lotery.')->group(function () {
+    Route::get('/', [LoteryController::class, 'index'])->name('index');
+    Route::get('/create', [LoteryController::class, 'create'])->name('create');
+    Route::post('/store', [LoteryController::class, 'store'])->name('store');
+    Route::get('/{id}/edit', [LoteryController::class, 'edit'])->name('edit');
+    Route::put('/{id}', [LoteryController::class, 'update'])->name('update');
+    Route::delete('/{id}', [LoteryController::class, 'destroy'])->name('destroy');
 });
