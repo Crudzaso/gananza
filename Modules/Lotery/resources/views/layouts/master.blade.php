@@ -25,5 +25,5 @@
     @yield('content')
 
     {{-- Vite JS --}}
-    {{-- {{ module_vite('build-lotery', 'resources/assets/js/app.js') }} --}}
+    @vite('Modules/Lotery/resources/assets/js/app.js', 'build-lotery')
 </body>

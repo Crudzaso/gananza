@@ -3,17 +3,11 @@
 use Illuminate\Support\Facades\Route;
 use Modules\Draws\Http\Controllers\DrawsController;
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| contains the "web" middleware group. Now create something great!
-|
-*/
-
-Route::group([], function () {
-    Route::resource('draws', DrawsController::class)->names('draws');
+Route::prefix('draws')->middleware(['auth', 'role:admin'])->name('draws.')->group(function () {
+    Route::get('/', [DrawsController::class, 'index'])->name('index');
+    Route::get('/create', [DrawsController::class, 'create'])->name('create');
+    Route::post('/store', [DrawsController::class, 'store'])->name('store');
+    Route::get('/{id}/edit', [DrawsController::class, 'edit'])->name('edit');
+    Route::put('/{id}', [DrawsController::class, 'update'])->name('update');
+    Route::delete('/{id}', [DrawsController::class, 'destroy'])->name('destroy');
 });

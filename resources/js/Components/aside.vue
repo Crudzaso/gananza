@@ -1,115 +1,148 @@
 <template>
-  <aside class="flex h-screen w-36 flex-col items-center border-r bg-white py-4">
-    <!-- Logo -->
-    <div class="mb-8">
-      <svg
-        viewBox="0 0 24 24"
-        class="h-8 w-8"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <path
-          d="M2.5 10.5L12 5L21.5 10.5M2.5 13.5L12 19L21.5 13.5"
-          stroke="#2563eb"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        />
-      </svg>
+  <aside class="sidebar">
+    <div class="logo">
+      <!-- Logo -->
+      <img src="/path/to/logo.png" alt="Logo" />
     </div>
-
-    <!-- Navigation -->
-    <nav class="flex flex-1 flex-col gap-4">
-      <button
-        v-for="item in menuItems"
-        :key="item.id"
-        class="h-10 w-10 rounded-full flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-        :class="{ 'bg-blue-500 text-white': active === item.id, 'text-gray-600 hover:bg-gray-100': active !== item.id }"
-        @click="setActive(item.id)"
-      >
-        <component :is="item.icon" class="h-5 w-5" />
-        <span class="sr-only">{{ item.label }}</span>
-      </button>
+    <nav class="nav">
+      <ul>
+        <li class="nav-item" v-for="(item, index) in navItems" :key="index">
+          <div class="icon-menu-container">
+            <!-- SVG Icon -->
+            <svg
+              width="40"
+              height="40"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              class="icon"
+            >
+              <!-- Puedes poner cualquier SVG aquí -->
+              <rect x="2" y="2" width="20" height="20" stroke="#888" stroke-width="2" />
+            </svg>
+            <div class="menu">
+              <h3>{{ item.title }}</h3>
+              <ul>
+                <li v-for="(subItem, subIndex) in item.subItems" :key="subIndex">
+                  {{ subItem }}
+                </li>
+              </ul>
+            </div>
+          </div>
+        </li>
+      </ul>
     </nav>
   </aside>
 </template>
 
-<script setup>
-import { ref, computed } from 'vue'
+<script>
+export default {
+  data() {
+    return {
+      navItems: [
+        { title: "User Profile", subItems: ["Edit Profile", "Settings"] },
+        { title: "Account", subItems: ["Billing", "Subscriptions"] },
+        { title: "Authentication", subItems: ["Login", "Register"] },
+        { title: "Corporate", subItems: ["About Us", "Careers"] },
+      ],
+    };
+  },
+};
+</script>
 
-const active = ref('home')
-
-const setActive = (id) => {
-  active.value = id
+<style scoped>
+.sidebar {
+  width: 200px;
+  height: 100%; /* Para que ocupe toda la altura de la pantalla */
+  background-color: #ffffff;
+  padding-top: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border-right: 1px solid #ffdd00;
+  position: fixed; /* Hace que la barra lateral sea fija */
+  top: 0; /* Asegura que esté pegada al borde superior */
+  left: 0;
+  z-index: 1000; /* Asegura que esté por encima de otros elementos */
 }
 
-const menuItems = [
-  {
-    id: 'home',
-    label: 'Home',
-    icon: {
-      template: `
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-        </svg>
-      `
-    }
-  },
-  {
-    id: 'menu',
-    label: 'Menu',
-    icon: {
-      template: `
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-        </svg>
-      `
-    }
-  },
-  {
-    id: 'settings',
-    label: 'Settings',
-    icon: {
-      template: `
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-        </svg>
-      `
-    }
-  },
-  {
-    id: 'box',
-    label: 'Storage',
-    icon: {
-      template: `
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-        </svg>
-      `
-    }
-  },
-  {
-    id: 'cloud',
-    label: 'Cloud',
-    icon: {
-      template: `
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" />
-        </svg>
-      `
-    }
-  },
-  {
-    id: 'power',
-    label: 'Connect',
-    icon: {
-      template: `
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-        </svg>
-      `
-    }
-  }
-]
-</script>
+.logo img {
+  width: 50px;
+  height: 50px;
+  margin-bottom: 20px;
+}
+
+.nav ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  margin-top: 20vh; 
+  width: 100%;
+}
+
+.nav-item {
+  position: relative;
+  width: 100%;
+  margin-top: 35px; 
+  height: 60px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+.icon-menu-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.icon {
+  transition: fill 0.3s;
+  fill: #888;
+  width: 40px;
+  height: 40px;
+}
+
+.nav-item:hover .icon,
+.icon-menu-container:hover .icon {
+  fill: #2c2e83;
+}
+
+.menu {
+  display: none;
+  position: absolute;
+  left: 40px;
+  top: 0;
+  background-color: white;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15);
+  border-radius: 8px;
+  padding: 20px;
+  width: 200px;
+  z-index: 10;
+}
+
+.icon-menu-container:hover .menu {
+  display: block;
+}
+
+.menu h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.menu ul {
+  list-style: none;
+  padding: 0;
+  margin: 10px 0 0 0;
+}
+
+.menu li {
+  font-size: 14px;
+  margin: 8px 0;
+  color: #555;
+}
+</style>

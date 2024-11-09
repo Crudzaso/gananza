@@ -21,25 +21,36 @@ class AdminAuthController extends Controller
         $request->validate([
             'password' => 'required|string',
         ]);
-
+    
         if (Hash::check($request->password, auth()->user()->password)) {
             session(['admin_password_verified' => true]);
+    
+            // Redirigir a la URL que el usuario intentaba acceder, o a /dashboard/admin por defecto
+            $redirectUrl = session()->pull('url.intended', '/dashboard/admin');
             return response()->json([
                 'success' => true,
-                'redirect' => '/admin'
+                'redirect' => $redirectUrl,
             ]);
         }
-
+    
         return response()->json([
             'success' => false,
-            'message' => 'La contraseña es incorrecta.'
+            'message' => 'La contraseña es incorrecta.',
         ], 422);
     }
+    
 
-    // Método opcional para cerrar la verificación manualmente
     public function clearVerification()
     {
         Session::forget('admin_password_verified');
         return redirect('/');
     }
+
+    public function showDashboard()
+{
+    return Inertia::render('Admin/AdminDashboard', [
+        'title' => 'Panel de Administración',
+        'description' => 'Bienvenido al panel de administración',
+    ]);
+}
 }
