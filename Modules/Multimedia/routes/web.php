@@ -14,6 +14,11 @@ use Modules\Multimedia\Http\Controllers\MultimediaController;
 |
 */
 
-Route::group([], function () {
-    Route::resource('multimedia', MultimediaController::class)->names('multimedia');
+Route::prefix('multimedia')->middleware(['auth', 'role:admin'])->name('multimedia.')->group(function () {
+    Route::get('/', [MultimediaController::class, 'index'])->name('index');
+    Route::get('/create', [MultimediaController::class, 'create'])->name('create');
+    Route::post('/store', [MultimediaController::class, 'store'])->name('store');
+    Route::get('/{id}/edit', [MultimediaController::class, 'edit'])->name('edit');
+    Route::put('/{id}', [MultimediaController::class, 'update'])->name('update');
+    Route::delete('/{id}', [MultimediaController::class, 'destroy'])->name('destroy');
 });
