@@ -4,62 +4,71 @@ namespace Modules\Ticket\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Modules\Ticket\Models\Ticket;
+use Modules\Raffle\Models\Raffle;
+use App\Models\User;
 
 class TicketController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        return view('ticket::index');
+        $tickets = Ticket::with('raffle', 'user')->paginate(10);
+        return view('ticket::index', compact('tickets'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        return view('ticket::create');
+        $raffles = Raffle::all();
+        $users = User::all();
+        return view('ticket::create', compact('raffles', 'users'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'raffle_id' => 'required|exists:raffles,id',
+            'user_id' => 'required|exists:users,id',
+            'ticket_number' => 'required|string|max:10',
+            'purchase_date' => 'nullable|date',
+            'end_date' => 'nullable|date|after_or_equal:purchase_date',
+            'verification_code' => 'required|string|max:50',
+        ]);
+
+        Ticket::create($request->all());
+
+        return redirect()->route('tickets.index')->with('success', 'Ticket creado exitosamente.');
     }
 
-    /**
-     * Show the specified resource.
-     */
-    public function show($id)
-    {
-        return view('ticket::show');
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit($id)
     {
-        return view('ticket::edit');
+        $ticket = Ticket::findOrFail($id);
+        $raffles = Raffle::all();
+        $users = User::all();
+        return view('ticket::edit', compact('ticket', 'raffles', 'users'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, $id)
     {
-        //
+        $request->validate([
+            'raffle_id' => 'required|exists:raffles,id',
+            'user_id' => 'required|exists:users,id',
+            'ticket_number' => 'required|string|max:10',
+            'purchase_date' => 'nullable|date',
+            'end_date' => 'nullable|date|after_or_equal:purchase_date',
+            'verification_code' => 'required|string|max:50',
+        ]);
+
+        $ticket = Ticket::findOrFail($id);
+        $ticket->update($request->all());
+
+        return redirect()->route('tickets.index')->with('success', 'Ticket actualizado exitosamente.');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy($id)
     {
-        //
+        $ticket = Ticket::findOrFail($id);
+        $ticket->delete();
+
+        return redirect()->route('tickets.index')->with('success', 'Ticket eliminado exitosamente.');
     }
 }
