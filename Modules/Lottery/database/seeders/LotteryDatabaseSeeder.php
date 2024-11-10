@@ -1,10 +1,10 @@
 <?php
 
-namespace Modules\Lotery\Database\Seeders;
+namespace Modules\Lottery\Database\Seeders;
 
 use Illuminate\Database\Seeder;
 
-class LoteryDatabaseSeeder extends Seeder
+class LotteryDatabaseSeeder extends Seeder
 {
     /**
      * Run the database seeds.

@@ -1,18 +1,18 @@
 <?php
 
-namespace Modules\Lotery\Providers;
+namespace Modules\Lottery\Providers;
 
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
 use Nwidart\Modules\Traits\PathNamespace;
 
-class LoteryServiceProvider extends ServiceProvider
+class LotteryServiceProvider extends ServiceProvider
 {
     use PathNamespace;
 
-    protected string $name = 'Lotery';
+    protected string $name = 'Lottery';
 
-    protected string $nameLower = 'lotery';
+    protected string $nameLower = 'lottery';
 
     /**
      * Boot the application events.

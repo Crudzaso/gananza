@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Modules\Lotery\Http\Controllers\LoteryController;
+use Modules\Lottery\Http\Controllers\LotteryController;
 
 /*
 |--------------------------------------------------------------------------
@@ -15,5 +15,5 @@ use Modules\Lotery\Http\Controllers\LoteryController;
 */
 
 Route::group([], function () {
-    Route::resource('lotery', LoteryController::class)->names('lotery');
+    Route::resource('lottery', LotteryController::class)->names('lottery');
 });

@@ -1,18 +1,18 @@
 <?php
 
-namespace Modules\Lotery\Http\Controllers;
+namespace Modules\Lottery\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-class LoteryController extends Controller
+class LotteryController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        return view('lotery::index');
+        return view('lottery::index');
     }
 
     /**
@@ -20,7 +20,7 @@ class LoteryController extends Controller
      */
     public function create()
     {
-        return view('lotery::create');
+        return view('lottery::create');
     }
 
     /**
@@ -36,7 +36,7 @@ class LoteryController extends Controller
      */
     public function show($id)
     {
-        return view('lotery::show');
+        return view('lottery::show');
     }
 
     /**
@@ -44,7 +44,7 @@ class LoteryController extends Controller
      */
     public function edit($id)
     {
-        return view('lotery::edit');
+        return view('lottery::edit');
     }
 
     /**

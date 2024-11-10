@@ -1,5 +1,5 @@
 {
-    "name": "nwidart/lotery",
+    "name": "nwidart/lottery",
     "description": "",
     "authors": [
         {
@@ -17,14 +17,14 @@
     },
     "autoload": {
         "psr-4": {
-            "Modules\\Lotery\\": "app/",
-            "Modules\\Lotery\\Database\\Factories\\": "database/factories/",
-            "Modules\\Lotery\\Database\\Seeders\\": "database/seeders/"
+            "Modules\\Lottery\\": "app/",
+            "Modules\\Lottery\\Database\\Factories\\": "database/factories/",
+            "Modules\\Lottery\\Database\\Seeders\\": "database/seeders/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Modules\\Lotery\\Tests\\": "tests/"
+            "Modules\\Lottery\\Tests\\": "tests/"
         }
     }
 }

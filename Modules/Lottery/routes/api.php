@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Modules\Lotery\Http\Controllers\LoteryController;
+use Modules\Lottery\Http\Controllers\LotteryController;
 
 /*
  *--------------------------------------------------------------------------
@@ -15,5 +15,5 @@ use Modules\Lotery\Http\Controllers\LoteryController;
 */
 
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
-    Route::apiResource('lotery', LoteryController::class)->names('lotery');
+    Route::apiResource('lottery', LotteryController::class)->names('lottery');
 });

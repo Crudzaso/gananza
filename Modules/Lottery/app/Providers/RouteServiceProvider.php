@@ -1,13 +1,13 @@
 <?php
 
-namespace Modules\Lotery\Providers;
+namespace Modules\Lottery\Providers;
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 
 class RouteServiceProvider extends ServiceProvider
 {
-    protected string $name = 'Lotery';
+    protected string $name = 'Lottery';
 
     /**
      * Called before routes are registered.

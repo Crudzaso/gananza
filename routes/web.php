@@ -6,6 +6,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
+
 Route::get('/', function () {
     return Inertia::render('Welcome', [
         'canLogin' => Route::has('login'),
@@ -60,3 +61,5 @@ Route::get('/about', function () {
 Route::get('/crear-rifa', function () {
     return Inertia::render('RaffleCreate');
 })->name('raffle-create');
+
+

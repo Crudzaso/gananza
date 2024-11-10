@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\Lotery\Providers;
+namespace Modules\Lottery\Providers;
 
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 

@@ -9,6 +9,10 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Jetstream\HasProfilePhoto;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
+use Modules\Payment\Models\Payment;
+use Modules\Raffle\Models\Raffle;
+use Modules\Reward\Models\Reward;
+use Modules\Ticket\Models\Ticket;
 
 class User extends Authenticatable
 {
@@ -50,4 +54,24 @@ class User extends Authenticatable
     {
         return env('DISCORD_WEBHOOK_URL');
     }
+
+    public function payments()
+{
+    return $this->hasMany(Payment::class, 'user_id');
+}
+
+public function organizedRaffles()
+{
+    return $this->hasMany(Raffle::class, 'organizer_id');
+}
+
+public function tickets()
+{
+    return $this->hasMany(Ticket::class, 'user_id');
+}
+
+public function rewards()
+{
+    return $this->hasMany(Reward::class, 'user_id');
+}
 }

@@ -136,7 +136,8 @@ export default {
   methods: {
     async fetchLotteries() {
       try {
-        const response = await axios.get("/api/lotteries");
+        const response = await axios.get("/api/loterias");
+         console.log("Datos recibidos:", response.data);
         this.lotteries = response.data;
       } catch (error) {
         console.error("Error fetching lotteries:", error);

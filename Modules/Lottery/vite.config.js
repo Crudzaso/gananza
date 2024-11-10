@@ -3,14 +3,14 @@ import laravel from 'laravel-vite-plugin';
 
 export default defineConfig({
     build: {
-        outDir: '../../public/build-lotery',
+        outDir: '../../public/build-lottery',
         emptyOutDir: true,
         manifest: true,
     },
     plugins: [
         laravel({
             publicDirectory: '../../public',
-            buildDirectory: 'build-lotery',
+            buildDirectory: 'build-lottery',
             input: [
                 __dirname + '/resources/assets/sass/app.scss',
                 __dirname + '/resources/assets/js/app.js'
@@ -21,6 +21,6 @@ export default defineConfig({
 });
 
 //export const paths = [
-//    'Modules/Lotery/resources/assets/sass/app.scss',
-//    'Modules/Lotery/resources/assets/js/app.js',
+//    'Modules/Lottery/resources/assets/sass/app.scss',
+//    'Modules/Lottery/resources/assets/js/app.js',
 //];
