@@ -6,6 +6,8 @@ import {
     Bell, History, Shield, ChevronRight,
     Star
 } from 'lucide-vue-next';
+import { useDarkMode } from '@/composables/useDarkMode';
+
 
 // Definición de props
 const props = defineProps({
@@ -36,7 +38,8 @@ let heroSlideInterval;
 
 
 // Estado del modo oscuro
-const isDarkMode = ref(false);
+const { isDarkMode, toggleDarkMode } = useDarkMode();
+
 const currentSlide = ref(0);
 
 // Computed para el tema
@@ -106,12 +109,6 @@ onMounted(() => {
     }, 5000);
 });
 
-// Cambiar el modo oscuro y guardarlo en localStorage
-const toggleDarkMode = () => {
-    isDarkMode.value = !isDarkMode.value;
-    localStorage.setItem('isDarkMode', isDarkMode.value); // Guardar como string
-};
-
 // Limpiar el intervalo al desmontar el componente
 onBeforeUnmount(() => {
     if (slideInterval) clearInterval(slideInterval);
@@ -174,10 +171,10 @@ onBeforeUnmount(() => {
                         {{ heroSlides[currentHeroSlide].description }}
                     </p>
                     <button :style="{ background: theme.primary }"
-                        class="px-8 py-3 rounded-lg text-white text-lg font-medium shadow-lg inline-flex items-center gap-2 transition-transform duration-200 hover:scale-105">
-                        <a :href="heroSlides[currentHeroSlide].route" class="flex items-center">
+                        class="px-4 py-2 rounded-lg text-white hover:bg-opacity-90 transition-transform duration-200 hover:scale-105">
+                        <a :href="heroSlides[currentHeroSlide].route" class="flex items-center text-white">
                             {{ heroSlides[currentHeroSlide].textButton }}
-                            <ArrowRight :size="20" class="ml-2" />
+                            <ArrowRight :size="20" class="ml-2 text-white" />
                         </a>
                     </button>
                 </div>
@@ -217,7 +214,7 @@ onBeforeUnmount(() => {
                 </div>
                 <button :style="{ background: theme.primary }"
                     class="px-8 py-3 rounded-lg text-white text-lg font-medium shadow-lg inline-flex items-center gap-2 transition-transform duration-200 hover:scale-105">
-                    <a href="lottery-results">¡Ver resultados!</a>
+                    <a href="lottery-results" class="text-white">¡Ver resultados!</a>
                     <ArrowRight :size="20" />
                 </button>
             </div>
@@ -295,7 +292,7 @@ onBeforeUnmount(() => {
                     </p>
                     <button :style="{ background: theme.primary }"
                         class="px-8 py-3 rounded-lg text-white text-lg font-medium shadow-lg inline-flex items-center gap-2 transition-transform duration-200 hover:scale-105">
-                        <a href="register">Crear cuenta gratis</a>
+                        <a href="register" class="text-white">Crear cuenta gratis</a>
                         <ChevronRight :size="20" />
                     </button>
                 </div>

@@ -12,18 +12,10 @@
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,400,500,600,700" />
     <link rel="shortcut icon" href="{{ asset('assets/media/logos/favicon.ico') }}" />
-    <link rel="canonical" href="http://preview.keenthemes.comauthentication/layouts/overlay/sign-in.html" />
 
     <!-- CSS Links -->
-    <link rel="preload" href="{{ asset('assets/plugins/global/plugins.bundle.css') }}" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript>
-        <link rel="stylesheet" href="{{ asset('assets/plugins/global/plugins.bundle.css') }}">
-    </noscript>
-
-    <link rel="preload" href="{{ asset('assets/css/style.bundle.css') }}" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript>
-        <link rel="stylesheet" href="{{ asset('assets/css/style.bundle.css') }}">
-    </noscript>
+    <link href="{{ asset('assets/plugins/global/plugins.bundle.css') }}" rel="stylesheet">
+    <link href="{{ asset('assets/css/style.bundle.css') }}" rel="stylesheet">
 
     <!-- Scripts -->
     @routes
@@ -34,17 +26,19 @@
 <body class="font-sans antialiased">
     @inertia
 
-    <!-- Custom Scripts -->
-    <script>
-        var hostUrl = "{{ asset('assets/') }}";
-    </script>
-    <!--begin::Global Javascript Bundle(mandatory for all pages)-->
+    <!-- Cargar scripts de Metronic después de que Vue.js esté listo -->
     <script src="{{ asset('assets/plugins/global/plugins.bundle.js') }}"></script>
     <script src="{{ asset('assets/js/scripts.bundle.js') }}"></script>
-    <!--end::Global Javascript Bundle-->
-    <!--begin::Custom Javascript(used for this page only)-->
-    <script src="{{ asset('assets/js/custom/authentication/sign-in/general.js') }}"></script>
-    <!--end::Custom Javascript-->
+
+    <!-- Scripts personalizados (si es necesario) -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            if (typeof KTUtil !== 'undefined') {
+                console.log('Inicializando KTUtil...');
+                KTUtil.init();
+            }
+        });
+    </script>
 </body>
 
 </html>
