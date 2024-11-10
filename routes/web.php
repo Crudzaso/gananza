@@ -33,21 +33,10 @@ Route::middleware(['role:client'])->group(function () {
     });
 });
 
-// Grupo de rutas para verificación de contraseña de administrador
-Route::middleware(['auth', 'role:admin'])->group(function () {
-    Route::get('/admin/verify-password', [AdminAuthController::class, 'showVerification'])
-        ->name('admin.verify-password');
-    Route::post('/admin/verify-password', [AdminAuthController::class, 'verifyPassword'])
-        ->name('admin.verify-password.check');
-    Route::get('/clear-verification', [AdminAuthController::class, 'clearVerification'])
-        ->name('admin.clear-verification');
-});
-
 // Grupo de rutas protegidas por el middleware de verificación de contraseña
-Route::middleware(['auth', 'role:admin', AdminPasswordVerification::class])->group(function () {
-    // Panel de administración personalizado
-    Route::get('/dashboard/admin', [AdminAuthController::class, 'showDashboard'])->name('admin.dashboard');
-});
+Route::middleware(['auth', 'role:admin'])->get('dashboard/admin', function () {
+    return Inertia::render('Admin/AdminDashboard');
+})->name('admin.dashboard');
 
 // Grupo de rutas para la gestión de usuarios
 Route::middleware(['auth', 'role:admin'])->group(function () {
