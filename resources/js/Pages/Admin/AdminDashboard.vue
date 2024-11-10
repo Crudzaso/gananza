@@ -1,96 +1,69 @@
 <template>
-    <div class="container mx-auto px-6 py-10">
+    <div :class="['admin-container', isDarkMode ? 'bg-gray-900' : 'bg-white']">
         <!-- Botón de regreso al Dashboard -->
-        <div class="mb-4">
+        <div class="mb-6">
             <Link
                 href="/dashboard"
-                class="inline-flex items-center px-4 py-2 bg-gray-200 text-gray-800 rounded-lg shadow-md hover:bg-gray-300 transition-colors duration-200"
+                class="inline-flex items-center px-5 py-3 rounded-lg shadow hover:shadow-lg transition-all duration-300"
+                :class="isDarkMode ? 'bg-gray-800 text-white hover:bg-gray-700' : 'bg-gray-200 text-gray-800 hover:bg-gray-300'"
             >
-                <i class="fas fa-arrow-left mr-2"></i> Volver al Dashboard
+                <i class="fas fa-arrow-left mr-3"></i> Volver al Dashboard
             </Link>
         </div>
 
         <!-- Título del panel -->
-        <h1 class="text-4xl font-bold text-gray-800 mb-10 text-center">Panel de Administración</h1>
+        <h1 :class="['text-4xl font-bold mb-10 text-center', isDarkMode ? 'text-white' : 'text-gray-800']">
+            Panel de Administración
+        </h1>
 
         <!-- Enlaces de administración -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <Link href="/draws" class="admin-card bg-gradient-to-r from-blue-500 to-blue-700">
-                <i class="fas fa-chart-line"></i>
-                <span>Gestión de Sorteos</span>
-            </Link>
-
-            <Link href="/lotery" class="admin-card bg-gradient-to-r from-green-500 to-green-700">
-                <i class="fas fa-ticket-alt"></i>
-                <span>Gestión de Loterías</span>
-            </Link>
-
-            <Link href="/multimedia" class="admin-card bg-gradient-to-r from-yellow-500 to-yellow-700">
-                <i class="fas fa-photo-video"></i>
-                <span>Gestión de Multimedia</span>
-            </Link>
-
-            <Link href="/payment" class="admin-card bg-gradient-to-r from-red-500 to-red-700">
-                <i class="fas fa-money-bill-wave"></i>
-                <span>Gestión de Pagos</span>
-            </Link>
-
-            <Link href="/raffles" class="admin-card bg-gradient-to-r from-purple-500 to-purple-700">
-                <i class="fas fa-gift"></i>
-                <span>Gestión de Rifas</span>
-            </Link>
-
-            <Link href="/rewards" class="admin-card bg-gradient-to-r from-indigo-500 to-indigo-700">
-                <i class="fas fa-award"></i>
-                <span>Gestión de Recompensas</span>
-            </Link>
-
-            <Link href="/tickets" class="admin-card bg-gradient-to-r from-teal-500 to-teal-700">
-                <i class="fas fa-tags"></i>
-                <span>Gestión de Tickets</span>
-            </Link>
+        <div class="admin-grid">
+            <AdminCard href="/draws" icon="fa-chart-line" title="Gestión de Sorteos" color="blue" />
+            <AdminCard href="/lotery" icon="fa-ticket-alt" title="Gestión de Loterías" color="green" />
+            <AdminCard href="/multimedia" icon="fa-photo-video" title="Gestión de Multimedia" color="yellow" />
+            <AdminCard href="/payment" icon="fa-money-bill-wave" title="Gestión de Pagos" color="red" />
+            <AdminCard href="/raffles" icon="fa-gift" title="Gestión de Rifas" color="purple" />
+            <AdminCard href="/rewards" icon="fa-award" title="Gestión de Recompensas" color="indigo" />
+            <AdminCard href="/tickets" icon="fa-tags" title="Gestión de Tickets" color="teal" />
         </div>
     </div>
 </template>
 
-<script>
+<script setup>
 import { Link } from '@inertiajs/vue3';
+import { computed } from 'vue';
+import AdminCard from '../../Components/Admin-panel/AdminCard.vue';
+import { useDarkMode } from '@/composables/useDarkMode';
 
-export default {
-    components: {
-        Link,
-    },
-};
+const { isDarkMode } = useDarkMode();
 </script>
 
 <style scoped>
-.container {
-    max-width: 1200px;
-}
-
-.admin-card {
+/* Hacer que el contenedor ocupe toda la pantalla */
+.admin-container {
+    width: 100vw;
+    height: 100vh;
+    padding: 20px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    padding: 2rem;
-    color: white;
-    border-radius: 1rem;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    font-size: 1.2rem;
-    font-weight: bold;
-    text-align: center;
+    justify-content: start;
+    overflow: auto;
 }
 
-.admin-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+/* Grid que ocupa todo el espacio disponible */
+.admin-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    width: 100%;
+    max-width: 1200px;
 }
 
-.admin-card i {
-    font-size: 2.5rem;
-    margin-bottom: 1rem;
-    opacity: 0.9;
+/* Botones clicables */
+.admin-card {
+    position: relative;
+    z-index: 1;
+    cursor: pointer;
 }
 </style>
