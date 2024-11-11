@@ -14,7 +14,6 @@ return new class extends Migration
         Schema::create('raffles', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->foreignId('multimedia_id')->constrained('multimedia');
             $table->foreignId('organizer_id')->constrained('users');
             $table->foreignId('lottery_id')->constrained('lotteries');
             $table->decimal('ticket_price', 10, 2);

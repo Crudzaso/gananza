@@ -25,10 +25,14 @@ public function draws()
     /**
      * The attributes that are mass assignable.
      */
-    protected $fillable = [];
+    protected $fillable = [
+        'name',
+        'description',
+        'url_imagen'
+    ];
 
-    // protected static function newFactory(): LotteryFactory
-    // {
-    //     // return LotteryFactory::new();
-    // }
+     protected static function newFactory()
+    {
+        return \Modules\Lottery\Database\Factories\LotteryFactory::new();
+    }
 }
