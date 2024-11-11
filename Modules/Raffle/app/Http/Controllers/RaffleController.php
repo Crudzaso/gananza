@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Modules\Raffle\Models\Raffle;
 use Modules\Lotery\Models\Lotery;
 use App\Models\User;
+use Inertia\Inertia;
 
 class RaffleController extends Controller
 {
@@ -74,5 +75,36 @@ class RaffleController extends Controller
         $raffle->delete();
 
         return redirect()->route('raffles.index')->with('success', 'Rifa eliminada exitosamente.');
+    }
+
+    public function getRaffles(Request $request)
+    {
+        $query = Raffle::with('organizer', 'lottery');
+    
+        if ($request->has('min_price')) {
+            $query->where('ticket_price', '>=', $request->input('min_price'));
+        }
+        if ($request->has('max_price')) {
+            $query->where('ticket_price', '<=', $request->input('max_price'));
+        }
+    
+        if ($request->has('end_date')) {
+            $query->where('end_date', '<=', $request->input('end_date'));
+        }
+    
+        $raffles = $query->paginate(6);
+        return response()->json($raffles);
+    }
+
+    public function getLastChanceRaffles()
+    {
+        $raffles = Raffle::where('end_date', '<', now()->addDays(10))
+            ->whereColumn('tickets_sold', '<', 'total_tickets')
+            ->with('organizer') // Incluir los datos del organizador
+            ->orderBy('end_date', 'asc')
+            ->limit(5)
+            ->get();
+    
+        return response()->json($raffles);
     }
 }

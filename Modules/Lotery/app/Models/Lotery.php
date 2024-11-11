@@ -21,7 +21,7 @@ class Lotery extends Model
      *
      * @var array
      */
-    protected $fillable = ['name', 'description', 'image_url'];  // Agregar 'description' e 'image_url' para la asignación masiva
+    protected $fillable = ['name', 'description', 'url_imagen'];  // Agregar 'description' e 'image_url' para la asignación masiva
 
     /**
      * Las relaciones de los sorteos con esta lotería (relación inversa).

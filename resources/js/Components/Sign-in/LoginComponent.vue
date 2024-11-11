@@ -18,13 +18,6 @@
             </div>
             <div :style="{ background: theme.cardBackground }"
                 class="d-flex flex-column-fluid justify-content-center p-12">
-                <button @click="toggleDarkMode"
-                    class="theme-toggle-btn p-2 rounded-full transition-transform duration-200 hover:scale-105"
-                    :style="{ background: theme.cardBackground }">
-                    <component :is="isDarkMode ? 'Sun' : 'Moon'" :size="24"
-                        :color="isDarkMode ? theme.emphasis : theme.primary" />
-                </button>
-
                 <div class="form-container d-flex flex-column align-items-center"
                     style="max-width: 500px; margin: 0 auto;">
                     <form class="form w-100" id="kt_sign_in_form" @submit.prevent="submit"
@@ -135,12 +128,6 @@ export default {
             isDarkMode.value = savedMode === 'true'; // Convertir a booleano
         });
 
-        // Cambiar el modo oscuro y guardarlo en localStorage
-        const toggleDarkMode = () => {
-            isDarkMode.value = !isDarkMode.value;
-            localStorage.setItem('isDarkMode', isDarkMode.value); // Guardar como string
-        };
-
         const theme = computed(() => ({
             primary: isDarkMode.value ? '#42A5F5' : '#1565C0',
             secondary: isDarkMode.value ? '#26C6DA' : '#00A9A5',
@@ -182,7 +169,6 @@ export default {
             submit,
             loginWithGoogle,
             loginWithGitHub,
-            toggleDarkMode, // Asegúrate de incluir toggleDarkMode en el return
             cancel
         };
     }
@@ -192,9 +178,15 @@ export default {
 <style scoped>
 /* Personalización de elementos del formulario */
 .form {
-    padding: 2.70rem;
+    padding: 9rem;
     border-radius: 8px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+@media (max-width: 768px) {
+    .form {
+        padding: 2rem;
+    }
 }
 
 .form-container {

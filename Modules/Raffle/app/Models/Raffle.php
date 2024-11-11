@@ -13,6 +13,7 @@ class Raffle extends Model
     use HasFactory;
 
     protected $fillable = [
+        'name',
         'organizer_id',
         'lottery_id',
         'ticket_price',

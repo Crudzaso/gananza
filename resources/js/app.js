@@ -2,6 +2,8 @@ import { createApp, h } from 'vue';
 import { createInertiaApp } from '@inertiajs/vue3';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { ZiggyVue } from '../../vendor/tightenco/ziggy';
+import '@splidejs/vue-splide/css';
+
 
 import './bootstrap';
 import '../css/app.css';
@@ -12,7 +14,6 @@ import '../../public/assets/css/style.bundle.css';
 
 // Importar componentes
 import Navbar from './Components/Dashboard/NavBar.vue';
-import Aside from './Components/Dashboard/Aside.vue';
 import Footer from './Components/Dashboard/Footer.vue';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
@@ -29,7 +30,6 @@ createInertiaApp({
 
         // Registrar componentes globalmente
         vueApp.component('Navbar', Navbar);
-        vueApp.component('Aside', Aside);
         vueApp.component('Footer', Footer);
 
         // Montar la aplicación

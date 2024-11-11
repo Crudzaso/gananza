@@ -33,6 +33,7 @@
                 @endforeach
             </tbody>
         </table>
+        <active-raffles></active-raffles>
     </div>
 </div>
 @endsection
