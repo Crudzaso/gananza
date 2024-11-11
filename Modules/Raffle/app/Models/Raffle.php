@@ -41,6 +41,8 @@ public function tickets()
      */
     protected $fillable = [
         'name',
+        'organizer_id',
+        'lottery_id',
         'ticket_price',
         'total_tickets',
         'tickets_sold',

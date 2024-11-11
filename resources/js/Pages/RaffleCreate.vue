@@ -10,11 +10,11 @@
     <form @submit.prevent="submitForm">
       <!-- Nombre de la rifa -->
       <div class="mb-4">
-        <label class="block text-sm font-medium text-gray-700" for="name_raffle">Nombre de la rifa</label>
+        <label class="block text-sm font-medium text-gray-700" for="name">Nombre de la rifa</label>
         <input
           type="text"
-          v-model="form.name_raffle"
-          id="name_raffle"
+          v-model="form.name"
+          id="name"
           class="w-full mt-1 p-2 border border-gray-300 rounded"
           required
         />
@@ -129,7 +129,8 @@ export default {
   data() {
     return {
       form: {
-        name_raffle: "",
+        name:"",
+        organizer_id: 1,
         lottery_id: "",
         ticket_price: 0,
         total_tickets: 0,
@@ -178,7 +179,20 @@ export default {
         };
 
         const response = await axios.post("/api/raffles", formData);
-        this.$router.push("/raffles");
+          if (response.data.raffle) {
+            // Redirigir o mostrar mensaje de éxito
+            this.form = {
+            name: "",
+            organizer_id: 1, // Puedes ajustar este ID de organizador si es necesario
+            lottery_id: "",
+            ticket_price: 0,
+            total_tickets: 0,
+            description: "",
+            start_date: "",
+            end_date: ""
+            };
+            alert("Rifa creada exitosamente");
+          }
       } catch (error) {
         console.error("Error creating raffle:", error);
         this.error = "Error al crear la rifa. Por favor, verifique los datos e intente nuevamente.";
