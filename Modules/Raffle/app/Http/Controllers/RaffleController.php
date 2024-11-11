@@ -5,7 +5,7 @@ namespace Modules\Raffle\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Modules\Raffle\Models\Raffle;
-use Modules\Lotery\Models\Lotery;
+use Modules\Lottery\Models\Lottery;
 use App\Models\User;
 use Inertia\Inertia;
 
@@ -20,7 +20,7 @@ class RaffleController extends Controller
     public function create()
     {
         $organizers = User::all();
-        $lotteries = Lotery::all();
+        $lotteries = Lottery::all();
         return view('raffle::create', compact('organizers', 'lotteries'));
     }
 
@@ -46,7 +46,7 @@ class RaffleController extends Controller
     {
         $raffle = Raffle::findOrFail($id);
         $organizers = User::all();
-        $lotteries = Lotery::all();
+        $lotteries = Lottery::all();
         return view('raffle::edit', compact('raffle', 'organizers', 'lotteries'));
     }
 

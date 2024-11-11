@@ -4,6 +4,7 @@ namespace Modules\Multimedia\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Modules\Raffle\Models\Raffle;
 
 class Multimedia extends Model
 {
@@ -29,4 +30,10 @@ class Multimedia extends Model
     // {
     //     return MultimediaFactory::new();
     // }
+
+    
+       public function raffle()
+    {
+        return $this->belongsTo(Raffle::class);
+    }
 }
