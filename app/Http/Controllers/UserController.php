@@ -93,6 +93,16 @@ class UserController extends Controller
         $user->delete();
 
         return redirect()->route('users.index')->with('success', 'Usuario eliminado exitosamente.');
+    }
 
+    public function showProfile(User $user)
+    {
+        if (auth()->id() !== $user->id) {
+            abort(403, 'No tienes permiso para ver este perfil.');
+        }
+    
+        return Inertia::render('Users/Profile', [
+            'user' => $user,
+        ]);
     }
 }

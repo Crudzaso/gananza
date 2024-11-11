@@ -49,6 +49,8 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
 });
 
+Route::middleware(['auth'])->get('/profile/{user}', [UserController::class, 'showProfile'])->name('users.profile');
+
 Route::get('/about', function () {
     return Inertia::render('About');
 })->name('about');
