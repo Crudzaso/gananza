@@ -1,21 +1,34 @@
 <template>
-  <footer
-    :style="{
-      background: theme.gradient,
-      color: theme.textPrimary,
-      marginLeft: isSidebarExpanded ? '250px' : '100px',
-    }"
-    class="footer-container"
-  >
-    <div class="footer-links">
-      <Link href="/terms" class="footer-link">Términos y Condiciones</Link>
-      <Link href="/privacy" class="footer-link">Política de Privacidad</Link>
-      <Link href="https://github.com/Crudzaso/gananza.git" target="_blank" class="footer-link">Repositorio en GitHub</Link>
-      <Link href="/contact" class="footer-link">Contáctanos</Link>
-      <Link href="/about" class="footer-link">Sobre Nosotros</Link>
-    </div>
-    <div class="footer-bottom">
-      <p class="footer-text">&copy; 2024 Gananza. Laravel v. Todos los derechos reservados.</p>
+  <footer :class="['footer-section py-8', theme.sectionBackground]">
+    <div class="container mx-auto text-center space-y-6">
+      <!-- Enlaces legales -->
+      <div class="flex flex-col md:flex-row justify-center gap-4">
+        <a href="/terms" :class="[theme.textLink]" class="hover:underline">
+          Términos y Condiciones
+        </a>
+        <a href="/privacy" :class="[theme.textLink]" class="hover:underline">
+          Política de Privacidad
+        </a>
+        <a href="/contact" :class="[theme.textLink]" class="hover:underline">
+          Contáctanos
+        </a>
+        <a href="/about" :class="[theme.textLink]" class="hover:underline">
+          Sobre Nosotros
+        </a>
+      </div>
+
+      <!-- Información del proyecto -->
+      <p :class="['text-sm', theme.textSecondary]">
+        Proyecto Open Source - Contribuye en nuestro
+        <a href="https://github.com/Crudzaso/gananza.git" target="_blank" :class="[theme.textLink]" class="hover:underline">
+          Repositorio en GitHub
+        </a>
+      </p>
+
+      <!-- Información adicional -->
+      <p :class="['text-sm', theme.textSecondary]">
+        © {{ new Date().getFullYear() }} Gananza - Laravel v{{ laravelVersion }} (PHP v{{ phpVersion }})
+      </p>
     </div>
   </footer>
 </template>
@@ -23,65 +36,33 @@
 <script setup>
 import { computed } from 'vue';
 import { useDarkMode } from '@/composables/useDarkMode';
-import { useSidebarState } from '@/composables/useSidebarState';
-import { Link } from '@inertiajs/vue3';
 
 const { isDarkMode } = useDarkMode();
-const { isSidebarExpanded } = useSidebarState();
 
 const theme = computed(() => ({
-  primary: isDarkMode.value ? '#42A5F5' : '#1565C0',
-  textPrimary: isDarkMode.value ? '#E0E0E0' : '#212121',
-  gradient: isDarkMode.value
-    ? 'linear-gradient(135deg, #1E1E1E 0%, #2A2A2A 100%)'
-    : 'linear-gradient(135deg, #FFFFFF 0%, #F5F5F5 100%)',
+  sectionBackground: isDarkMode.value ? 'bg-[#1a1a1c]' : 'bg-[#F5F5F7] shadow-sm',
+  textLink: isDarkMode.value ? 'text-blue-400' : 'text-blue-600',
+  textSecondary: isDarkMode.value ? 'text-gray-400' : 'text-gray-700',
 }));
+
+// Props para obtener las versiones de Laravel y PHP
+const props = defineProps({
+  laravelVersion: String,
+  phpVersion: String,
+});
 </script>
 
-
 <style scoped>
-/* Estilos del Sticky Footer */
-.footer-container {
-  padding: 20px 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  transition: background-color 0.3s, margin-left 0.3s;
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  width: calc(100% - 100px); /* Se ajustará dinámicamente */
-  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+.footer-section {
+  transition: background-color 0.3s ease-in-out;
+  border-radius: 12px;
 }
 
-.footer-links {
-  display: flex;
-  gap: 30px;
-  justify-content: center;
-  flex-wrap: wrap;
+a {
+  transition: color 0.2s;
 }
 
-.footer-link {
-  color: inherit;
-  text-decoration: none;
-  font-size: 0.95em;
-  transition: color 0.3s;
+a:hover {
+  color: #42a5f5;
 }
-
-.footer-link:hover {
-  color: #ffffff;
-}
-
-.footer-bottom {
-  margin-top: 10px;
-  text-align: center;
-  border-top: 1px solid;
-  padding-top: 10px;
-  font-size: 0.85em;
-}
-
-.footer-text {
-  color: inherit;
-}
-
 </style>

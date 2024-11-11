@@ -54,7 +54,6 @@ class AdminPanelProvider extends PanelProvider
                 DispatchServingFilamentEvent::class,
             ])
             ->authMiddleware([
-                'role:admin',            
             ]);
     }
 }

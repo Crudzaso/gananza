@@ -1,13 +1,19 @@
 <template>
   <div class="d-flex flex-column flex-root">
     <div class="page d-flex flex-row flex-column-fluid">
-      <Aside />
       <div class="wrapper d-flex flex-column flex-row-fluid">
         <Navbar />
-        <div class="content p-5" :style="{ marginLeft: isSidebarExpanded ? '250px' : '100px' }">
-          <h2>Hola bebe</h2>
+        <div
+          class="content p-5"
+          :style="[contentStyle]"
+        >
+          <HeroBanner />
+          <ActiveRaffles />
+          <LastChanceRaffles />
+          <UserTestimonials />
+          <OrganizerRegisterSection />
+          <Footer :laravelVersion="laravelVersion" :phpVersion="phpVersion" />
         </div>
-        <Footer />
       </div>
     </div>
   </div>
@@ -15,11 +21,22 @@
 
 <script setup>
 import Navbar from '../Components/Dashboard/NavBar.vue';
-import Aside from '../Components/Dashboard/Aside.vue';
-import Footer from '../Components/Dashboard/Footer.vue';
-import { useSidebarState } from '@/composables/useSidebarState';
+import HeroBanner from '../Components/Dashboard/HeroBanner.vue';
+import ActiveRaffles from '../Components/Dashboard/ActiveRaffles.vue';
+import LastChanceRaffles from '../Components/Dashboard/LastChanceRaffles.vue';
+import { useDarkMode } from '@/composables/useDarkMode';
+import { computed } from 'vue';
+import UserTestimonials from '@/Components/Dashboard/UserTestimonials.vue';
+import OrganizerRegisterSection from '@/Components/Dashboard/OrganizerRegisterSection.vue';
+import Footer from '@/Components/Dashboard/Footer.vue';
 
-const { isSidebarExpanded } = useSidebarState();
+const { isDarkMode } = useDarkMode();
+
+// Computed para el estilo dinámico de la sección .content
+const contentStyle = computed(() => ({
+  backgroundColor: isDarkMode.value ? '#000000' : '#f5f7fa',
+  color: isDarkMode.value ? '#ffffff' : '#212121', // Cambiar el color del texto también para mejor legibilidad
+}));
 </script>
 
 <style scoped>
@@ -28,9 +45,8 @@ const { isSidebarExpanded } = useSidebarState();
 }
 
 .content {
-  background-color: #ffffff;
   min-height: calc(100vh - 200px);
-  margin-top: 0px;
-  transition: margin-left 0.3s ease; /* Transición suave para el cambio de margen */
+  margin-top: 0;
+  transition: margin-left 0.3s ease, background-color 0.3s ease;
 }
 </style>

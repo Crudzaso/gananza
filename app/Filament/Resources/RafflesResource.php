@@ -31,6 +31,11 @@ class RafflesResource extends Resource
     {
         return $form
             ->schema([
+
+                TextInput::make('name')
+                    ->label('Rifa')
+                    ->required(),
+
                 Select::make('organizer_id')
                     ->label('Organizador')
                     ->options(User::all()->pluck('name', 'id'))
@@ -77,11 +82,10 @@ class RafflesResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\TextColumn::make('name')->label('Nombre')->sortable(),
                 Tables\Columns\TextColumn::make('organizer.name')->label('Organizador')->sortable(),
                 Tables\Columns\TextColumn::make('lottery.name')->label('Lotería')->sortable(),
                 Tables\Columns\TextColumn::make('ticket_price')->label('Precio del Boleto')->sortable(),
-                Tables\Columns\TextColumn::make('total_tickets')->label('Total de Boletos')->sortable(),
-                Tables\Columns\TextColumn::make('tickets_sold')->label('Boletos Vendidos')->sortable(),
                 Tables\Columns\TextColumn::make('start_date')->label('Fecha de Inicio')->sortable()->dateTime(),
                 Tables\Columns\TextColumn::make('end_date')->label('Fecha de Finalización')->sortable()->dateTime(),
                 Tables\Columns\TextColumn::make('created_at')->label('Creado en')->sortable()->dateTime(),
