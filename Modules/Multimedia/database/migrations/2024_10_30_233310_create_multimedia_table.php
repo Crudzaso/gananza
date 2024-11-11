@@ -18,8 +18,7 @@ return new class extends Migration
             $table->enum('file_type', ['VIDEO', 'PDF', 'IMAGEN'])->nullable();
             $table->string('mime_type', 50)->nullable();
             $table->integer('size')->nullable();
-            $table->unsignedBigInteger('model_id');
-            $table->enum('model_type', ['raffles', 'tickets'])->nullable();
+            $table->foreignId('raffle_id')->constrained('raffles')->onDelete('cascade');
             $table->timestamps();
         });
     }

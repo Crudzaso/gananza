@@ -5,8 +5,9 @@ namespace Modules\Raffle\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\User; // Importar User para la relación
-use Modules\Lotery\Models\Lotery;
 use Modules\Lottery\Models\Lottery; // Importar Lottery para la relación
+use Modules\Multimedia\Models\Multimedia;
+use Modules\Ticket\Models\Ticket;
 
 class Raffle extends Model
 {
@@ -31,6 +32,15 @@ class Raffle extends Model
 
     public function lottery()
     {
-        return $this->belongsTo(Lotery::class, 'lottery_id');
+        return $this->belongsTo(Lottery::class, 'lottery_id');
     }
+        public function multimedia()
+{
+    return $this->hasMany(Multimedia::class);
+}
+
+public function tickets()
+{
+    return $this->hasMany(Ticket::class, 'raffle_id');
+}
 }

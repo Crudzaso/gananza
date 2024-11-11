@@ -2,6 +2,7 @@
 
 namespace Modules\Reward\Models;
 
+use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -22,8 +23,8 @@ class Reward extends Model
      * Relación con el modelo User.
      * Un usuario puede tener una recompensa.
      */
-    public function user()
-    {
-        return $this->belongsTo(\App\Models\User::class); // Relación con el modelo User
-    }
+       public function user()
+{
+    return $this->belongsTo(User::class, 'user_id');
+}
 }
