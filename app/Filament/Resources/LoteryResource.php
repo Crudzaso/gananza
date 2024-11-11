@@ -9,14 +9,14 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Modules\Lotery\Models\Lotery;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\TextArea;
 use Filament\Tables\Columns\TextColumn;
+use Modules\Lottery\Models\Lottery;
 
 class LoteryResource extends Resource
 {
-    protected static ?string $model = Lotery::class;
+    protected static ?string $model = Lottery::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-currency-dollar';
 
