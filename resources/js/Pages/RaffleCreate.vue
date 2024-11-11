@@ -1,6 +1,12 @@
 <template>
   <div class="max-w-4xl mx-auto p-6 bg-white shadow-md rounded-lg">
     <h2 class="text-2xl font-semibold text-gray-800 mb-4">Crear nueva rifa</h2>
+    
+    <!-- Alert para errores -->
+    <div v-if="error" class="mb-4 p-4 bg-red-100 text-red-700 rounded">
+      {{ error }}
+    </div>
+
     <form @submit.prevent="submitForm">
       <!-- Nombre de la rifa -->
       <div class="mb-4">
@@ -17,7 +23,13 @@
       <!-- Lotería -->
       <div class="mb-4">
         <label class="block text-sm font-medium text-gray-700" for="lottery_id">Lotería</label>
-        <select v-model="form.lottery_id" id="lottery_id" class="w-full mt-1 p-2 border border-gray-300 rounded">
+        <select 
+          v-model="form.lottery_id" 
+          id="lottery_id" 
+          class="w-full mt-1 p-2 border border-gray-300 rounded"
+          required
+        >
+          <option value="">Seleccione una lotería</option>
           <option v-for="lottery in lotteries" :key="lottery.id" :value="lottery.id">
             {{ lottery.name }}
           </option>
@@ -29,7 +41,7 @@
         <label class="block text-sm font-medium text-gray-700" for="ticket_price">Precio del boleto</label>
         <input
           type="number"
-          v-model="form.ticket_price"
+          v-model.number="form.ticket_price"
           id="ticket_price"
           class="w-full mt-1 p-2 border border-gray-300 rounded"
           step="0.01"
@@ -43,7 +55,7 @@
         <label class="block text-sm font-medium text-gray-700" for="total_tickets">Total de boletos</label>
         <input
           type="number"
-          v-model="form.total_tickets"
+          v-model.number="form.total_tickets"
           id="total_tickets"
           class="w-full mt-1 p-2 border border-gray-300 rounded"
           min="1"
@@ -102,14 +114,17 @@
       <button
         type="submit"
         class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
+        :disabled="isLoading"
       >
-        Crear rifa
+        {{ isLoading ? 'Creando...' : 'Crear rifa' }}
       </button>
     </form>
   </div>
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
   data() {
     return {
@@ -123,40 +138,54 @@ export default {
         end_date: "",
       },
       lotteries: [],
+      error: null,
+      isLoading: false
     };
   },
   computed: {
     totalRevenue() {
-      return (this.form.ticket_price * this.form.total_tickets).toFixed(2);
+      const total = this.form.ticket_price * this.form.total_tickets;
+      return total.toLocaleString('es-CO', {
+        style: 'currency',
+        currency: 'COP',
+        maximumFractionDigits: 0
+      });
     },
   },
-  mounted() {
-    this.fetchLotteries();
+  async created() {
+    await this.fetchLotteries();
   },
   methods: {
     async fetchLotteries() {
       try {
         const response = await axios.get("/api/loterias");
-         console.log("Datos recibidos:", response.data);
         this.lotteries = response.data;
+        this.error = null;
       } catch (error) {
         console.error("Error fetching lotteries:", error);
+        this.error = "Error al cargar las loterías. Por favor, intente nuevamente.";
       }
     },
     async submitForm() {
+      this.isLoading = true;
+      this.error = null;
+      
       try {
-        const response = await axios.post("/api/raffles", this.form);
-        alert("Rifa creada exitosamente!");
+        const formData = {
+          ...this.form,
+          ticket_price: parseFloat(this.form.ticket_price),
+          total_tickets: parseInt(this.form.total_tickets)
+        };
+
+        const response = await axios.post("/api/raffles", formData);
         this.$router.push("/raffles");
       } catch (error) {
         console.error("Error creating raffle:", error);
-        alert("Hubo un error al crear la rifa.");
+        this.error = "Error al crear la rifa. Por favor, verifique los datos e intente nuevamente.";
+      } finally {
+        this.isLoading = false;
       }
     },
   },
 };
 </script>
-
-<style scoped>
-/* Estilos adicionales opcionales */
-</style>

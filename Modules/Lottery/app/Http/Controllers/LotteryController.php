@@ -4,15 +4,16 @@ namespace Modules\Lottery\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Modules\Lottery\Models\Lottery;
 
 class LotteryController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+      public function index()
     {
-        return view('lottery::index');
+         return response()->json(Lottery::all());
     }
 
     /**
