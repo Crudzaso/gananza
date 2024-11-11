@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Modules\Raffle\Models\Raffle; // Importar el modelo de Raffle
 use App\Models\User; // Importar el modelo de User
+use Modules\Multimedia\Models\Multimedia;
 
 class Ticket extends Model
 {
@@ -40,4 +41,9 @@ class Ticket extends Model
     {
         return $this->belongsTo(User::class, 'user_id');
     }
+
+    public function multimedia()
+{
+    return $this->morphMany(Multimedia::class, 'model');
+}
 }
