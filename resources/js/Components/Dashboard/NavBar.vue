@@ -50,7 +50,9 @@
         </button>
 
         <button class="btn-icon glow-effect">
-          <img :src="isDarkMode ? '/assets/media/gananza/user-light.svg' : '/assets/media/gananza/user-dark.svg'" alt="Perfil" class="icon-img" />
+          <a :href="`/profile/${authUser.id}`">
+            <img :src="isDarkMode ? '/assets/media/gananza/user-light.svg' : '/assets/media/gananza/user-dark.svg'" alt="Perfil" class="icon-img" />
+          </a>
         </button>
       </div>
     </div>
@@ -61,6 +63,10 @@
 import { Sun, Moon } from 'lucide-vue-next';
 import { ref, computed } from 'vue';
 import { useDarkMode } from '@/composables/useDarkMode';
+import { usePage } from '@inertiajs/vue3';
+
+
+const authUser = computed(() => usePage().props.auth.user);
 
 const { isDarkMode, toggleDarkMode } = useDarkMode();
 const isMenuOpen = ref(false);
