@@ -38,7 +38,7 @@ class LoteryResource extends Resource
                     ->nullable()
                     ->maxLength(500),
 
-                TextInput::make('image_url') // Usamos TextInput para la URL
+                TextInput::make('url_imagen') // Usamos TextInput para la URL
                     ->label('Image URL')
                     ->nullable()
                     ->url() // Esto asegura que solo se ingrese una URL válida

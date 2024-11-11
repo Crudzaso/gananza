@@ -8,6 +8,7 @@ use Illuminate\Auth\Middleware\Authorize;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use Modules\Raffle\Http\Controllers\RaffleController;
 
 // Ruta pública
 Route::get('/', function () {
@@ -51,3 +52,15 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 Route::get('/about', function () {
     return Inertia::render('About');
 })->name('about');
+
+Route::get('/raffles-actives', [RaffleController::class, 'getRaffles'])->name('raffles.actives');
+
+Route::get('/raffles-last-chance', [RaffleController::class, 'getLastChanceRaffles'])->name('raffles.last-chance');
+
+Route::get('/auth/redirect/github', [AuthController::class, 'redirectToGitHub'])->name('github.login');
+Route::get('/auth/callback/github', [AuthController::class, 'handleGitHubCallback'])->name('github.callback');
+
+Route::get('/auth/redirect/google', [AuthController::class, 'redirectToGoogle'])->name('google.login');
+Route::get('/auth/google/callback', [AuthController::class, 'handleGoogleCallback'])->name('google.callback');
+
+    
