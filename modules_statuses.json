@@ -6,5 +6,6 @@
     "Draws": true,
     "Audit": true,
     "Reward": true,
-    "Lottery": true
+    "Lottery": true,
+    "OrganizerPanel": true
 }
