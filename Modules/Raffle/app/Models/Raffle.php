@@ -20,6 +20,7 @@ class Raffle extends Model
         'ticket_price',
         'total_tickets',
         'tickets_sold',
+        'total_sales',
         'description',
         'start_date',
         'end_date',

@@ -1,0 +1,11 @@
+{
+    "name": "OrganizerPanel",
+    "alias": "organizerpanel",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\OrganizerPanel\\Providers\\OrganizerPanelServiceProvider"
+    ],
+    "files": []
+}
