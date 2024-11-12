@@ -37,7 +37,19 @@ class RaffleController extends Controller
             'end_date' => 'required|date|after:start_date',
         ]);
 
-        Raffle::create($request->all());
+        Raffle::create([
+        'name' => $request->name,
+        'organizer_id' => $request->organizer_id,
+        'lottery_id' => $request->lottery_id,
+       
+        'total_tickets' => $request->total_tickets,
+        'ticket_price' => $request->ticket_price,
+        'tickets_sold' => $request->tickets_sold ?? 0,
+        'description' => $request->description,
+        'start_date' => $request->start_date,
+        'end_date' => $request->end_date,
+        'total_sales' => 0, // valor predeterminado de total_sales
+    ]);
 
         return redirect()->route('raffles.index')->with('success', 'Rifa creada exitosamente.');
     }
