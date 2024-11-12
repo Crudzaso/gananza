@@ -4,39 +4,44 @@
       <!-- Logo -->
       <div class="flex items-center gap-4">
         <img :src="isDarkMode ? '/assets/media/auth/Logo-Gananza1.svg' : '/assets/media/auth/Logo-Gananza2.svg'"
-             alt="Logo Gananza" class="h-8 logo" />
+          alt="Logo Gananza" class="h-8 logo" />
       </div>
 
       <!-- Menú Hamburguesa para móvil -->
       <button class="menu-toggle md:hidden btn-icon glow-effect" @click="toggleMenu">
-        <img :src="isDarkMode ? '/assets/media/gananza/bars-light.svg' : '/assets/media/gananza/bars-dark.svg'" alt="Menú" class="icon-img" />
+        <img :src="isDarkMode ? '/assets/media/gananza/bars-light.svg' : '/assets/media/gananza/bars-dark.svg'"
+          alt="Menú" class="icon-img" />
       </button>
 
       <!-- Búsqueda -->
       <div class="header-search hidden md:flex">
         <form class="search-form">
-          <input
-            type="text"
-            class="search-input"
-            placeholder="Buscar..."
-            :style="{ background: theme.cardBackground, color: theme.textPrimary, borderColor: theme.border }"
-          />
+          <input type="text" class="search-input" placeholder="Buscar..."
+            :style="{ background: theme.cardBackground, color: theme.textPrimary, borderColor: theme.border }" />
           <button type="submit" class="search-button">
-            <img :src="isDarkMode ? '/assets/media/gananza/search-light.svg' : '/assets/media/gananza/search-dark.svg'" alt="Buscar" class="icon-img" />
+            <img :src="isDarkMode ? '/assets/media/gananza/search-light.svg' : '/assets/media/gananza/search-dark.svg'"
+              alt="Buscar" class="icon-img" />
           </button>
         </form>
       </div>
 
       <!-- Links de Navegación -->
-      <nav :class="['nav-links', { 'open': isMenuOpen }]" :style="{ background: theme.navBackground, boxShadow: theme.navShadow }">
+      <nav :class="['nav-links', { 'open': isMenuOpen }]"
+        :style="{ background: theme.navBackground, boxShadow: theme.navShadow }">
         <!-- Botón para cerrar el menú -->
         <button class="close-btn" @click="toggleMenu" :style="{ color: theme.textPrimary }">✖</button>
         <h3 class="menu-title" :style="{ color: theme.textPrimary }">Navegación</h3>
         <a href="/profile" class="nav-link" :style="{ color: theme.textPrimary, borderColor: theme.border }">Profile</a>
-        <a href="/admin" class="nav-link" :style="{ color: theme.textPrimary, borderColor: theme.border }">Panel de Administrador</a>
-        <a href="/settings" class="nav-link" :style="{ color: theme.textPrimary, borderColor: theme.border }">Settings</a>
+        <a href="/admin" class="nav-link" :style="{ color: theme.textPrimary, borderColor: theme.border }">Panel de
+          Administrador</a>
+        <a href="/settings" class="nav-link"
+          :style="{ color: theme.textPrimary, borderColor: theme.border }">Settings</a>
         <a href="/raffles" class="nav-link" :style="{ color: theme.textPrimary, borderColor: theme.border }">Rifas</a>
         <a href="/points" class="nav-link" :style="{ color: theme.textPrimary, borderColor: theme.border }">Puntos</a>
+        <a @click.prevent="logout" class="nav-link logout-link"
+          :style="{ color: theme.textPrimary, borderColor: theme.border, cursor: 'pointer', zIndex: 1000 }">
+          Logout
+        </a>
       </nav>
       <!-- Iconos y Botones -->
       <div class="flex items-center gap-3">
@@ -46,12 +51,15 @@
         </button>
 
         <button class="btn-icon glow-effect">
-          <img :src="isDarkMode ? '/assets/media/gananza/notification-light.svg' : '/assets/media/gananza/notification-dark.svg'" alt="Notificaciones" class="icon-img" />
+          <img
+            :src="isDarkMode ? '/assets/media/gananza/notification-light.svg' : '/assets/media/gananza/notification-dark.svg'"
+            alt="Notificaciones" class="icon-img" />
         </button>
 
         <button class="btn-icon glow-effect">
           <a :href="`/profile/${authUser.id}`">
-            <img :src="isDarkMode ? '/assets/media/gananza/user-light.svg' : '/assets/media/gananza/user-dark.svg'" alt="Perfil" class="icon-img" />
+            <img :src="isDarkMode ? '/assets/media/gananza/user-light.svg' : '/assets/media/gananza/user-dark.svg'"
+              alt="Perfil" class="icon-img" />
           </a>
         </button>
       </div>
@@ -62,6 +70,7 @@
 <script setup>
 import { Sun, Moon } from 'lucide-vue-next';
 import { ref, computed } from 'vue';
+import { router } from '@inertiajs/vue3';
 import { useDarkMode } from '@/composables/useDarkMode';
 import { usePage } from '@inertiajs/vue3';
 
@@ -86,6 +95,15 @@ const theme = computed(() => ({
   gradient: isDarkMode.value ? 'linear-gradient(135deg, #1E1E1E 0%, #2A2A2A 100%)' : 'linear-gradient(135deg, #FFFFFF 0%, #F5F5F5 100%)',
   emphasis: isDarkMode.value ? '#FFCA28' : '#FFC107',
 }));
+
+const logout = () => {
+  console.log("Logout clickeado"); // Verificar si el clic está funcionando
+  router.post(route('logout'), {}, {
+    onFinish: () => {
+      window.location.href = '/login';
+    },
+  });
+};
 </script>
 
 <style scoped>
@@ -99,6 +117,7 @@ const theme = computed(() => ({
 .logo {
   transition: transform 0.2s;
 }
+
 .logo:hover {
   transform: scale(1.05);
 }
@@ -107,6 +126,7 @@ const theme = computed(() => ({
 .search-form {
   position: relative;
 }
+
 .search-input {
   width: 250px;
   padding: 8px 12px;
@@ -114,10 +134,12 @@ const theme = computed(() => ({
   border: 1px solid;
   transition: all 0.3s;
 }
+
 .search-input:focus {
   outline: none;
   box-shadow: 0 0 10px rgba(0, 191, 255, 0.3);
 }
+
 .search-button {
   position: absolute;
   right: 10px;
@@ -158,6 +180,7 @@ const theme = computed(() => ({
   margin-bottom: 15px;
   transition: transform 0.2s;
 }
+
 .close-btn:hover {
   transform: scale(1.1) rotate(90deg);
 }
@@ -181,6 +204,7 @@ const theme = computed(() => ({
   text-align: center;
   transition: color 0.2s, background-color 0.3s, transform 0.2s;
 }
+
 .nav-link:hover {
   color: var(--emphasis);
   background-color: rgba(0, 191, 255, 0.1);
@@ -220,6 +244,7 @@ const theme = computed(() => ({
     opacity: 0;
     transform: translateY(-20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -237,6 +262,7 @@ const theme = computed(() => ({
   height: 24px;
   transition: transform 0.3s;
 }
+
 .icon-img:hover {
   transform: rotate(10deg) scale(1.1);
 }
@@ -247,8 +273,18 @@ const theme = computed(() => ({
   border-radius: 50%;
   transition: transform 0.2s, box-shadow 0.2s;
 }
+
 .btn-icon:hover {
   transform: scale(1.1);
   box-shadow: 0 4px 12px rgba(0, 191, 255, 0.4);
+}
+
+.logout-link {
+  display: block;
+  position: relative;
+  z-index: 1000;
+  cursor: pointer;
+  padding: 10px;
+  text-decoration: none;
 }
 </style>
