@@ -154,4 +154,55 @@ public function activeRaffles()
         'raffles' => $activeRaffles,
     ]);
 }
+
+public function registerOrganizer(){
+    return Inertia::render('Users/RegisterOrganizer');
+}
+
+
+public function storeOrganizer(Request $request)
+{
+    // Validar los datos del formulario
+    $validated = $request->validate([
+        'document' => 'nullable|string',
+        'document_type' => 'nullable|string',
+        'document_image' => 'required|image|max:2048',
+    ]);
+
+    // Obtener el usuario autenticado
+    $user = auth()->user();
+
+    // Manejar la subida de la imagen del documento
+    if ($request->hasFile('document_image')) {
+        // Eliminar la imagen anterior si existe
+        if ($user->document_image_path) {
+            Storage::disk('public')->delete($user->document_image_path);
+        }
+
+        // Guardar la nueva imagen
+        $documentImagePath = $request->file('document_image')->store('documents', 'public');
+
+        // Actualizar los campos del usuario autenticado
+        $user->update([
+            'document' => $validated['document'] ?? $user->document,
+            'document_type' => $validated['document_type'] ?? $user->document_type,
+            'document_image_path' => $documentImagePath,
+        ]);
+
+        if (!$user->hasRole('organizador')) {
+            $user->assignRole('organizador');
+        }
+
+        return response()->json([
+            'message' => 'Información del organizador actualizada exitosamente.',
+            'document_image_url' => Storage::url($documentImagePath),
+        ], 200);
+    }
+
+    return response()->json([
+        'error' => 'No se recibió la imagen del documento.',
+    ], 400);
+}
+
+
 }
