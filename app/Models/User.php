@@ -25,6 +25,7 @@ class User extends Authenticatable
         'password',
         'google_id',
         'github_id',
+        'profile_photo_path',
     ];
 
     protected $hidden = [
@@ -48,8 +49,5 @@ class User extends Authenticatable
         return env('DISCORD_WEBHOOK_URL');
     }
 
-    // Example of a one-to-many relationship
-    public function posts() {
-        return $this->hasMany(Post::class);
-    }
+
 }
