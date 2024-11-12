@@ -1,9 +1,9 @@
 <template>
     <div :style="{ background: theme.background }" class="d-flex flex-column flex-root transition-colors duration-500">
-        <div class="d-flex flex-column flex-lg-row flex-column-fluid">
+        <div class="d-flex flex-column flex-lg-row flex-column-fluid min-h-100vh">
             <!-- Formulario de Registro -->
             <div :style="{ background: theme.cardBackground }"
-                class="d-flex flex-column-fluid justify-content-center p-12 w-100 w-lg-50">
+                class="d-flex flex-column-fluid justify-content-center p-12 w-100 w-lg-50 min-h-100vh">
                 <div class="form-container d-flex flex-column align-items-center"
                     style="max-width: 600px; margin: 0 auto;">
                     <form class="form w-100" @submit.prevent="submit"
@@ -276,5 +276,9 @@ export default {
 .register-title {
     font-size: 2rem;
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.min-h-100vh {
+    min-height: 100vh;
 }
 </style>

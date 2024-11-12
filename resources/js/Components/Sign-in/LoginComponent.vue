@@ -1,8 +1,8 @@
 <template>
-    <div :style="{ background: theme.background }" class="d-flex flex-column flex-root transition-colors duration-500">
+    <div :style="{ background: theme.background }" class="d-flex flex-column flex-root transition-colors duration-500 min-h-100vh">
         <div class="d-flex flex-column flex-lg-row flex-column-fluid">
             <div class="d-flex flex-lg-row-fluid">
-                <div class="d-flex flex-column flex-center pb-0 pb-lg-10 p-10 w-100">
+                <div class="d-flex flex-column flex-center pb-0 pb-lg-10 p-10 w-100 min-h-100vh">
                     <img v-if="!isDarkMode" class="mx-auto mw-100 mb-10 mb-lg-20" src="assets/media/auth/Login-Page.svg"
                         alt="" style="width: 500px; max-width: 800px;" />
                     <img v-else class="mx-auto mw-100 mb-10 mb-lg-20" src="assets/media/auth/Login-Page.svg" alt=""
@@ -216,5 +216,9 @@ export default {
     bottom: 20px;
     right: 20px;
     z-index: 10;
+}
+
+.min-h-100vh {
+    min-height: 100vh;
 }
 </style>

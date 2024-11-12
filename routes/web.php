@@ -74,6 +74,9 @@ Route::get('/raffles-filtered', [RaffleController::class, 'getFilteredRaffles'])
 Route::middleware(['auth'])->group(function () {
     Route::get('/api/user-tickets/{userId}', [TicketController::class, 'getUserTickets'])->name('user.tickets');
     Route::get('/api/active-raffles', [RaffleController::class, 'getActiveRaffles'])->name('raffles.active');
+    Route::get('/registro-organizador', [UserController::class, 'registerOrganizer'])->name('register.organizer');
+    Route::post('/register-organizer', [UserController::class, 'storeOrganizer'])->name('organizer.register');
+
 });
 
 
