@@ -14,10 +14,10 @@ use Modules\Raffle\Http\Controllers\RaffleController;
 |
 */
 
-Route::prefix('raffles')->middleware(['auth', 'role:admin'])->name('raffles.')->group(function () {
+Route::prefix('raffles')->name('raffles.')->group(function () {
     Route::get('/', [RaffleController::class, 'index'])->name('index');
-    Route::get('/create', [RaffleController::class, 'create'])->name('create');
-    Route::post('/store', [RaffleController::class, 'store'])->name('store');
+    Route::get('/admin/crear-rifa', [RaffleController::class, 'create'])->name('create');
+    Route::post('/admin/actualizar-rifa', [RaffleController::class, 'store'])->name('store');
     Route::get('/{id}/edit', [RaffleController::class, 'edit'])->name('edit');
     Route::put('/{id}', [RaffleController::class, 'update'])->name('update');
     Route::delete('/{id}', [RaffleController::class, 'destroy'])->name('destroy');

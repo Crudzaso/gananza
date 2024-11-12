@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use Modules\OrganizerPanel\Http\Controllers\OrganizerPanelController;
+use Modules\Raffle\Http\Controllers\RaffleController;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,5 +17,7 @@ use Modules\OrganizerPanel\Http\Controllers\OrganizerPanelController;
 
 Route::group([], function () {
     Route::resource('organizerpanel', OrganizerPanelController::class)->names('organizerpanel');
-    Route::get('/panel', [OrganizerPanelController::class, 'index'])->name('organizer.dashboard');
+    Route::get('admin/panel', [OrganizerPanelController::class, 'index'])->name('organizer.dashboard');
+    Route::get('/admin/crear-rifa', [RaffleController::class, 'create'])->name('create');
+    Route::post('/admin/actualizar-rifa', [RaffleController::class, 'store'])->name('store');
 });

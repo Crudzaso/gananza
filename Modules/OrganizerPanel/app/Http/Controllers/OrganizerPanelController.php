@@ -4,6 +4,7 @@ namespace Modules\OrganizerPanel\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Modules\Raffle\Models\Raffle;
 
 class OrganizerPanelController extends Controller
 {
@@ -28,7 +29,20 @@ class OrganizerPanelController extends Controller
      */
     public function store(Request $request)
     {
-        //
+           $request->validate([
+            'organizer_id' => 'required|exists:users,id',
+            'lottery_id' => 'required|exists:lotteries,id',
+            'ticket_price' => 'required|numeric|min:0',
+            'total_tickets' => 'required|integer|min:1',
+            'tickets_sold' => 'nullable|integer|min:0',
+            'description' => 'nullable|string',
+            'start_date' => 'required|date',
+            'end_date' => 'required|date|after:start_date',
+        ]);
+
+        Raffle::create($request->all());
+
+        return redirect()->route('raffles.index')->with('success', 'Rifa creada exitosamente.');
     }
 
     /**
