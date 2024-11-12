@@ -107,4 +107,12 @@ class RaffleController extends Controller
     
         return response()->json($raffles);
     }
+
+
+    public function getActiveRaffles()
+    {
+        $activeRaffles = Raffle::where('end_date', '>', now())->get();
+        return response()->json(['active_raffles' => $activeRaffles]);
+    }
+    
 }
