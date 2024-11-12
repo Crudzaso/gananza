@@ -80,18 +80,18 @@ class RaffleController extends Controller
     public function getRaffles(Request $request)
     {
         $query = Raffle::with('organizer', 'lottery');
-    
+
         if ($request->has('min_price')) {
             $query->where('ticket_price', '>=', $request->input('min_price'));
         }
         if ($request->has('max_price')) {
             $query->where('ticket_price', '<=', $request->input('max_price'));
         }
-    
+
         if ($request->has('end_date')) {
             $query->where('end_date', '<=', $request->input('end_date'));
         }
-    
+
         $raffles = $query->paginate(6);
         return response()->json($raffles);
     }
@@ -104,7 +104,7 @@ class RaffleController extends Controller
             ->orderBy('end_date', 'asc')
             ->limit(5)
             ->get();
-    
+
         return response()->json($raffles);
     }
 
@@ -113,6 +113,37 @@ class RaffleController extends Controller
     {
         $activeRaffles = Raffle::where('end_date', '>', now())->get();
         return response()->json(['active_raffles' => $activeRaffles]);
+    }
+
+    public function getFilteredRaffles(Request $request)
+    {
+        $filter = $request->input('filter');
+        $date = $request->input('date');
+        $query = Raffle::with('organizer', 'lottery');
+    
+        // Aplicar filtro adicional por fecha
+        if ($date) {
+            $query->whereDate('end_date', '>', $date);
+        }
+    
+        switch ($filter) {
+            case 'popular':
+                $query->where('tickets_sold', '>=', 50)
+                      ->where('end_date', '>', now()->addDays(10));
+                break;
+            case 'last_chance':
+                $query->where('end_date', '<', now()->addDays(3));
+                break;
+            case 'flash':
+                $query->where('total_tickets', '<=', 50);
+                break;
+            default:
+                $query->where('end_date', '>', now());
+                break;
+        }
+    
+        $raffles = $query->paginate(6);
+        return response()->json($raffles);
     }
     
 }

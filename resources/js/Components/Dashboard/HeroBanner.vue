@@ -30,7 +30,7 @@ import { useDarkMode } from '@/composables/useDarkMode';
 const { isDarkMode } = useDarkMode();
 
 const handleExploreRaffles = () => {
-  window.location.href = '/rifas-activas';
+  window.location.href = '/raffles/active';
 };
 
 const handleBecomeOrganizer = () => {

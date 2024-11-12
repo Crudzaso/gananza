@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
+use Modules\Raffle\Models\Raffle;
 
 class UserController extends Controller
 {
@@ -142,6 +143,15 @@ class UserController extends Controller
     return response()->json([
         'message' => 'Foto de perfil actualizada exitosamente.',
         'profile_photo_url' => $user->profile_photo_url,
+    ]);
+}
+
+public function activeRaffles()
+{
+    $activeRaffles = Raffle::where('end_date', '>', now())->get();
+
+    return Inertia::render('ActiveRaffles', [
+        'raffles' => $activeRaffles,
     ]);
 }
 }

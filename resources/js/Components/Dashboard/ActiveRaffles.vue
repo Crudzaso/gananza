@@ -49,7 +49,7 @@ const theme = computed(() => ({
 }));
 
 const redirectToRaffles = () => {
-  window.location.href = '/rifas-activas';
+  window.location.href = '/raffles/active';
 };
 
 const fetchRaffles = async () => {

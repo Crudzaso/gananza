@@ -5,7 +5,7 @@ namespace Modules\Draws\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Modules\Draws\Models\Draws;
-use Modules\Lotery\Models\Lotery;
+use Modules\Lottery\Models\Lottery;
 
 class DrawsController extends Controller
 {
@@ -17,7 +17,7 @@ class DrawsController extends Controller
 
     public function create()
     {
-        $lotteries = Lotery::all();
+        $lotteries = Lottery::all();
         return view('draws::create', compact('lotteries'));
     }
 
@@ -37,7 +37,7 @@ class DrawsController extends Controller
     public function edit($id)
     {
         $draw = Draws::findOrFail($id);
-        $lotteries = Lotery::all();
+        $lotteries = Lottery::all();
         return view('draws::edit', compact('draw', 'lotteries'));
     }
 
