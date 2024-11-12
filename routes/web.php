@@ -9,6 +9,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Modules\Raffle\Http\Controllers\RaffleController;
+use Modules\Ticket\Http\Controllers\TicketController;
 
 // Ruta pública
 Route::get('/', function () {
@@ -65,4 +66,12 @@ Route::get('/auth/callback/github', [AuthController::class, 'handleGitHubCallbac
 Route::get('/auth/redirect/google', [AuthController::class, 'redirectToGoogle'])->name('google.login');
 Route::get('/auth/google/callback', [AuthController::class, 'handleGoogleCallback'])->name('google.callback');
 
-    
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/api/user-tickets/{userId}', [TicketController::class, 'getUserTickets'])->name('user.tickets');
+    Route::get('/api/active-raffles', [RaffleController::class, 'getActiveRaffles'])->name('raffles.active');
+});
+
+
+Route::post('/users/{user}/update-photo', [UserController::class, 'updateProfilePhoto'])->name('user.update-photo');
+

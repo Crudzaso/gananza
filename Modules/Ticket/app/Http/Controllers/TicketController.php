@@ -71,4 +71,11 @@ class TicketController extends Controller
 
         return redirect()->route('tickets.index')->with('success', 'Ticket eliminado exitosamente.');
     }
+
+    public function getUserTickets($userId)
+    {
+        $ticketsCount = Ticket::where('user_id', $userId)->count();
+        return response()->json(['tickets_count' => $ticketsCount]);
+    }
+
 }
