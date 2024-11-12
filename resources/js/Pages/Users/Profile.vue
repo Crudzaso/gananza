@@ -1,94 +1,147 @@
 <template>
-  <div class="profile-page" :class="[isDarkMode ? 'dark' : '']">
+  <div class="profile-page" :style="{ background: isDarkMode ? '#121212' : '#F9FAFB' }">
     <!-- Sección Izquierda: Foto y Detalles del Usuario -->
-    <div class="left-section">
-      <div class="profile-card">
+    <div class="left-section"
+      :style="{ background: isDarkMode ? '#1E1E1E' : '#FFFFFF', color: isDarkMode ? '#E0E0E0' : '#212121' }">
+      <div class="profile-card" :style="{ background: isDarkMode ? '#1E1E1E' : '#FFFFFF' }">
         <div class="photo-container">
-          <img :src="`${authUser.profile_photo_url}?t=${new Date().getTime()}`" alt="Foto de perfil" class="profile-photo">
-          <button class="btn-change-photo" @click="triggerFileInput">
+          <img :src="`${authUser.profile_photo_url}?t=${new Date().getTime()}`" alt="Foto de perfil"
+            class="profile-photo">
+          <button class="btn-change-photo" :style="{ background: isDarkMode ? '#42A5F5' : '#1565C0' }"
+            @click="triggerFileInput">
             <i class="fas fa-camera"></i>
           </button>
-          <!-- Input de archivo oculto -->
           <input type="file" ref="fileInput" class="hidden-file-input" @change="handleProfilePhotoChange"
-            accept="image/*" v-show="true" />
+            accept="image/*" />
         </div>
 
-        <h2 class="user-name">{{ form.name }} {{ form.lastname }}</h2>
-        <p class="user-email">{{ form.email }}</p>
-        <div class="user-role">Cliente</div>
-        <p class="member-since">Miembro desde hace 55 días</p>
-        <button @click="showModal = true" class="btn-edit update">
-          <span>Actualizar Perfil</span>
-        </button>
-        <button class="btn-dashboard">
-          <span>
-            <a href="/dashboard" style="color: white;">
-              Ir al Dashboard
-            </a>
-          </span>
+        <h2 class="user-name" :style="{ color: isDarkMode ? '#E0E0E0' : '#212121' }">{{ form.name }} {{ form.lastname }}
+        </h2>
+        <p class="user-email" :style="{ color: isDarkMode ? '#B0BEC5' : '#757575' }">{{ form.email }}</p>
+        <div class="user-role"
+          :style="{ background: isDarkMode ? '#333333' : '#E0F7FA', color: isDarkMode ? '#82C7C7' : '#00796B' }">Cliente
+        </div>
+        <button @click="showModal = true" :style="{ background: isDarkMode ? '#42A5F5' : '#1565C0', color: '#FFFFFF' }"
+          class="btn-edit update">Actualizar Perfil</button>
+        <button class="btn-dashboard" :style="{ background: isDarkMode ? '#26C6DA' : '#95ECEC', color: '#FFFFFF' }">
+          <a href="/dashboard" style="color: white;">Ir al Dashboard</a>
         </button>
       </div>
     </div>
 
     <!-- Sección Central: Rifas Activas -->
-    <div class="center-section">
-      <h3 class="section-title">Rifas Activas</h3>
+    <div class="center-section"
+      :style="{ background: isDarkMode ? '#1E1E1E' : '#FFFFFF', color: isDarkMode ? '#E0E0E0' : '#212121' }">
+      <h3 class="section-title" :style="{ color: isDarkMode ? '#E0E0E0' : '#212121' }">Rifas Activas</h3>
       <div class="raffles-container">
-        <div v-for="raffle in activeRaffles" :key="raffle.id" class="raffle-card">
-          <div class="raffle-name">{{ raffle.name }}</div>
-          <div class="raffle-date">Finaliza: {{ raffle.end_date }}</div>
+        <div v-for="raffle in activeRaffles" :key="raffle.id" class="raffle-card"
+          :style="{ background: isDarkMode ? '#2A2A2A' : '#F0F8FF' }">
+          <div class="raffle-name" :style="{ color: isDarkMode ? '#E0E0E0' : '#212121' }">{{ raffle.name }}</div>
+          <div class="raffle-date" :style="{ color: isDarkMode ? '#B0BEC5' : '#757575' }">Finaliza: {{ raffle.end_date
+            }}</div>
         </div>
       </div>
     </div>
 
     <!-- Sección Derecha: Tickets Comprados -->
-    <div class="right-section">
-      <h3 class="section-title">Tickets Comprados</h3>
+    <div class="right-section"
+      :style="{ background: isDarkMode ? '#1E1E1E' : '#FFFFFF', color: isDarkMode ? '#E0E0E0' : '#212121' }">
+      <h3 class="section-title" :style="{ color: isDarkMode ? '#E0E0E0' : '#212121' }">Tickets Comprados</h3>
       <div class="tickets-display">
-        <span class="tickets-count">{{ ticketsCount }}</span>
-        <span class="tickets-label">Tickets</span>
+        <span class="tickets-count" :style="{ color: isDarkMode ? '#42A5F5' : '#5BB2FF' }">{{ ticketsCount }}</span>
+        <span class="tickets-label" :style="{ color: isDarkMode ? '#B0BEC5' : '#757575' }">Tickets</span>
       </div>
     </div>
 
     <!-- Barra de Progreso -->
-    <div class="progress-section">
-      <h3 class="section-title">Progreso de Tickets</h3>
+    <div class="progress-section" :style="{ background: isDarkMode ? '#1E1E1E' : '#FFFFFF' }">
+      <h3 class="section-title" :style="{ color: isDarkMode ? '#E0E0E0' : '#212121' }">Progreso de Tickets</h3>
       <div class="progress-container">
         <div class="progress-bar">
-          <div class="progress-fill" :style="{ width: `${(ticketsCount / 5) * 100}%` }"></div>
+          <div class="progress-fill"
+            :style="{ width: `${(ticketsCount / 5) * 100}%`, background: isDarkMode ? '#42A5F5' : '#5BB2FF' }"></div>
         </div>
-        <p class="progress-text">({{ ticketsCount }}/5) - ¡Completa 5 compras para recibir tu premio misterioso!</p>
+        <p class="progress-text" :style="{ color: isDarkMode ? '#B0BEC5' : '#757575' }">({{ ticketsCount }}/5) -
+          ¡Completa 5 compras para recibir tu premio misterioso!</p>
       </div>
     </div>
 
-    <!-- Modal Mejorado de Edición de Perfil -->
+    <!-- Modal de Edición de Perfil -->
     <transition name="fade">
-      <div v-if="showModal" class="modal-overlay" @click.self="showModal = false">
-        <div class="modal-content">
-          <div class="modal-header">
+      <div v-if="showModal" class="modal-overlay" @click.self="closeModal">
+        <div class="modal-container" :style="{
+          background: isDarkMode ? '#1E1E1E' : '#FFFFFF',
+          color: isDarkMode ? '#E0E0E0' : '#212121',
+          boxShadow: isDarkMode ? '0 10px 25px rgba(0, 0, 0, 0.5)' : '0 10px 25px rgba(0, 0, 0, 0.1)',
+          borderRadius: '12px',
+          padding: '24px',
+          width: '100%',
+          maxWidth: '500px',
+        }">
+          <!-- Header del Modal -->
+          <div class="modal-header" :style="{ borderBottom: isDarkMode ? '1px solid #333' : '1px solid #E0EAF1' }">
             <h2>Editar Perfil</h2>
-            <button class="close-button" @click="showModal = false">&times;</button>
+            <button class="close-button" @click="closeModal" :style="{ color: isDarkMode ? '#B0BEC5' : '#757575' }">
+              &times;
+            </button>
           </div>
-          <form @submit.prevent="submit" class="edit-form">
+
+          <!-- Formulario -->
+          <form @submit.prevent="submit" class="form-container">
+            <!-- Campo Nombre -->
             <div class="form-group">
               <label for="name">Nombre</label>
-              <input id="name" v-model="form.name" type="text" class="input-field" placeholder="Tu nombre">
+              <input id="name" v-model="form.name" type="text" :style="inputStyle" placeholder="Ingresa tu nombre" />
             </div>
+
+            <!-- Campo Apellido -->
             <div class="form-group">
               <label for="lastname">Apellido</label>
-              <input id="lastname" v-model="form.lastname" type="text" class="input-field" placeholder="Tu apellido">
+              <input id="lastname" v-model="form.lastname" type="text" :style="inputStyle"
+                placeholder="Ingresa tu apellido" />
             </div>
+
+            <!-- Campo Documento -->
+            <div class="form-group">
+              <label for="document">Documento</label>
+              <input id="document" v-model="form.document" type="text" :style="inputStyle"
+                placeholder="Ingresa tu documento" />
+            </div>
+
+            <!-- Campo Tipo de Documento -->
+            <div class="form-group">
+              <label for="document_type">Tipo de Documento</label>
+              <select id="document_type" v-model="form.document_type" :style="inputStyle">
+                <option value="DNI">DNI</option>
+                <option value="Pasaporte">Pasaporte</option>
+                <option value="Licencia">Licencia</option>
+              </select>
+            </div>
+
+            <!-- Campo Teléfono -->
+            <div class="form-group">
+              <label for="phone_number">Teléfono</label>
+              <input id="phone_number" v-model="form.phone_number" type="tel" :style="inputStyle"
+                placeholder="Ingresa tu teléfono" />
+            </div>
+
+            <!-- Campo Email -->
             <div class="form-group">
               <label for="email">Email</label>
-              <input id="email" v-model="form.email" type="email" class="input-field" placeholder="Tu email">
+              <input id="email" v-model="form.email" type="email" :style="inputStyle" placeholder="Ingresa tu email" />
             </div>
+
+            <!-- Campo Foto de Perfil -->
+            <div class="form-group">
+              <label for="profile_photo">Foto de Perfil</label>
+              <input id="profile_photo" ref="fileInput" type="file" @change="handleProfilePhotoChange"
+                :style="inputStyle" />
+            </div>
+
+            <!-- Botones del Formulario -->
             <div class="modal-buttons">
-              <button type="button" @click="showModal = false" class="btn-cancel">
-                Cancelar
-              </button>
-              <button type="submit" class="btn-save">
-                Guardar Cambios
-              </button>
+              <button type="button" @click="closeModal" :style="buttonCancelStyle">Cancelar</button>
+              <button type="submit" :style="buttonSaveStyle">Guardar Cambios</button>
             </div>
           </form>
         </div>
@@ -97,10 +150,12 @@
   </div>
 </template>
 
+
 <script>
 import { ref, computed, onMounted, nextTick } from 'vue';
 import { usePage, router } from '@inertiajs/vue3';
 import axios from 'axios';
+import { useDarkMode } from '@/composables/useDarkMode';
 
 export default {
   setup() {
@@ -108,16 +163,45 @@ export default {
     const ticketsCount = ref(0);
     const activeRaffles = ref([]);
     const showModal = ref(false);
-    const isDarkMode = ref(false);
     const fileInput = ref(null);
-
+    const { isDarkMode } = useDarkMode();
 
     const form = ref({
-      name: authUser.value.name,
-      lastname: authUser.value.lastname,
-      email: authUser.value.email,
+      name: authUser.value?.name || '',
+      lastname: authUser.value?.lastname || '',
+      email: authUser.value?.email || '',
+      document: authUser.value?.document || '',
+      document_type: authUser.value?.document_type || '',
+      phone_number: authUser.value?.phone_number || '',
       profile_photo: null,
     });
+    const inputStyle = computed(() => ({
+      width: '100%',
+      background: isDarkMode.value ? '#333333' : '#FFFFFF',
+      color: isDarkMode.value ? '#E0E0E0' : '#212121',
+      border: isDarkMode.value ? '1px solid #555' : '1px solid #D6E9FF',
+      borderRadius: '8px',
+      padding: '10px',
+      marginBottom: '16px',
+    }));
+
+    const buttonCancelStyle = computed(() => ({
+      background: isDarkMode.value ? '#333333' : '#E0EAF1',
+      color: isDarkMode.value ? '#B0BEC5' : '#757575',
+      border: isDarkMode.value ? '1px solid #555' : '1px solid #D6E9FF',
+      borderRadius: '8px',
+      padding: '10px 20px',
+      marginRight: '8px',
+      cursor: 'pointer',
+    }));
+
+    const buttonSaveStyle = computed(() => ({
+      background: isDarkMode.value ? '#42A5F5' : '#1565C0',
+      color: '#FFFFFF',
+      borderRadius: '8px',
+      padding: '10px 20px',
+      cursor: 'pointer',
+    }));
 
     const fetchUserTickets = async () => {
       const response = await axios.get(`/api/user-tickets/${authUser.value.id}`);
@@ -176,21 +260,25 @@ export default {
         alert('Hubo un error al actualizar la foto de perfil.');
       }
     };
-    const submit = async () => {
-      const formData = new FormData();
-      formData.append('name', form.value.name);
-      formData.append('lastname', form.value.lastname);
-      formData.append('email', form.value.email);
 
-      // Adjuntar la foto de perfil al FormData
-      if (form.value.profile_photo) {
-        formData.append('profile_photo', form.value.profile_photo);
-      }
+    const closeModal = () => {
+      showModal.value = false;
+    };
+    const submit = async () => {
+      const payload = {
+        name: form.value.name,
+        lastname: form.value.lastname,
+        document: form.value.document,
+        document_type: form.value.document_type,
+        phone_number: form.value.phone_number,
+        email: form.value.email,
+      };
 
       try {
-        const response = await axios.post(`/users/${authUser.value.id}`, formData, {
+        // Hacemos una solicitud PUT en lugar de POST
+        const response = await axios.put(`/users/${authUser.value.id}`, payload, {
           headers: {
-            'Content-Type': 'multipart/form-data',
+            'Content-Type': 'application/json',
           },
         });
 
@@ -207,7 +295,6 @@ export default {
     onMounted(() => {
       fetchUserTickets();
       fetchActiveRaffles();
-      isDarkMode.value = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
     });
 
     return {
@@ -215,6 +302,7 @@ export default {
       ticketsCount,
       activeRaffles,
       showModal,
+      closeModal,
       form,
       isDarkMode,
       fetchUserTickets,
@@ -223,6 +311,9 @@ export default {
       handleProfilePhotoChange,
       triggerFileInput,
       submit,
+      inputStyle,
+      buttonCancelStyle,
+      buttonSaveStyle,
     };
   },
 };
@@ -236,7 +327,6 @@ export default {
   gap: 24px;
   padding: 24px;
   min-height: 100vh;
-  background-color: #f7f9fc;
 }
 
 .left-section,
@@ -469,7 +559,7 @@ export default {
 }
 
 .input-field {
-  width: 100%;
+  width: 50%;
   padding: 8px 12px;
   border: 1px solid #d6e9ff;
   border-radius: 8px;
