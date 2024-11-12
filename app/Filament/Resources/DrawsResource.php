@@ -15,7 +15,7 @@ use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\TextArea;
 use Filament\Forms\Components\Select;
 use Filament\Tables\Columns\TextColumn;
-use Modules\Lotery\Models\Lotery;
+use Modules\Lottery\Models\Lottery;
 
 class DrawsResource extends Resource
 {
@@ -35,7 +35,7 @@ class DrawsResource extends Resource
                 Select::make('lottery_id')
                     ->label('Lottery')
                     ->options(function () {
-                        return Lotery::all()->pluck('name', 'id');
+                        return Lottery::all()->pluck('name', 'id');
                     })
                     ->required()
                     ->placeholder('Select Lottery'),

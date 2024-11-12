@@ -48,6 +48,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/users/{user}/edit', [UserController::class, 'edit'])->name('users.edit');
     Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
     Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
+    Route::get('/raffles/active', [UserController::class, 'activeRaffles'])->name('raffles.active');
 });
 
 Route::middleware(['auth'])->get('/profile/{user}', [UserController::class, 'showProfile'])->name('users.profile');
@@ -66,6 +67,9 @@ Route::get('/auth/callback/github', [AuthController::class, 'handleGitHubCallbac
 Route::get('/auth/redirect/google', [AuthController::class, 'redirectToGoogle'])->name('google.login');
 Route::get('/auth/google/callback', [AuthController::class, 'handleGoogleCallback'])->name('google.callback');
 
+Route::get('/raffles-filtered', [RaffleController::class, 'getFilteredRaffles'])->name('raffles.filtered');
+
+
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/api/user-tickets/{userId}', [TicketController::class, 'getUserTickets'])->name('user.tickets');
@@ -74,4 +78,5 @@ Route::middleware(['auth'])->group(function () {
 
 
 Route::post('/users/{user}/update-photo', [UserController::class, 'updateProfilePhoto'])->name('user.update-photo');
+
 

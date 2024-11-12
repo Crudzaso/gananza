@@ -14,8 +14,7 @@ use Filament\Forms\Components\TextArea;
 use Filament\Forms\Components\DateTimePicker;
 use Modules\Raffle\Models\Raffle;
 use App\Models\User; // Asegúrate de importar el modelo User
-use Modules\Lotery\Models\Lotery;
-use Modules\Lottery\Models\Lottery; // Asegúrate de importar el modelo Lottery
+use Modules\Lottery\Models\Lottery;
 
 class RafflesResource extends Resource
 {
@@ -43,7 +42,7 @@ class RafflesResource extends Resource
 
                 Select::make('lottery_id')
                     ->label('Lotería')
-                    ->options(Lotery::all()->pluck('name', 'id'))
+                    ->options(Lottery::all()->pluck('name', 'id'))
                     ->required(),
 
                 TextInput::make('ticket_price')
