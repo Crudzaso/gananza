@@ -192,6 +192,12 @@ public function storeOrganizer(Request $request)
         
         $user->assignRole('organizador');
 
+// Redirigir al panel de administración
+return response()->json([
+    'success' => true,
+    'message' => 'Usuario registrado y rol asignado como organizador.',
+]);
+
     }
 
     return response()->json([
