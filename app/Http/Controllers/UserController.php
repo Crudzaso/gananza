@@ -189,6 +189,9 @@ public function storeOrganizer(Request $request)
             'document_type' => $validated['document_type'] ?? $user->document_type,
             'document_image_path' => $documentImagePath,
         ]);
+        
+        $user->assignRole('organizador');
+
     }
 
     return response()->json([
