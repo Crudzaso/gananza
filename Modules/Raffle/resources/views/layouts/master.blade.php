@@ -17,13 +17,19 @@
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
+
     {{-- Vite CSS --}}
-    {{-- {{ module_vite('build-raffle', 'resources/assets/sass/app.scss') }} --}}
 </head>
 
-<body>
-    @yield('content')
+<body class="bg-gray-100 text-gray-800">
+    <div id="app">
+        @yield('content')
+    </div>
+
+    {{-- Alpine.js --}}
+    <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 
     {{-- Vite JS --}}
-    @vite('Modules/Lottery/resources/assets/js/app.js', 'build-raffle')
+    @vite('Modules/Raffle/resources/assets/js/app.js', 'build-raffle')
 </body>
+</html>

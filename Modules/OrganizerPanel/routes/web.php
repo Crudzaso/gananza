@@ -20,4 +20,5 @@ Route::group([], function () {
     Route::get('admin/panel', [OrganizerPanelController::class, 'index'])->name('organizer.dashboard');
     Route::get('/admin/crear-rifa', [RaffleController::class, 'create'])->name('create');
     Route::post('/admin/actualizar-rifa', [RaffleController::class, 'store'])->name('store');
+    Route::get('/admin/rifas', [RaffleController::class, 'index'])->name('index');
 });

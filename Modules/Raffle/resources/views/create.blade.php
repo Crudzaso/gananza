@@ -3,7 +3,7 @@
 @section('title', 'Registrar Nueva Rifa')
 
 @section('content_header')
-    <h1>Registrar Nueva Rifa</h1>
+    <h1>Crear rifa</h1>
 @stop
 
 @section('content')
