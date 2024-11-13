@@ -162,6 +162,7 @@ public function registerOrganizer(){
 
 public function storeOrganizer(Request $request)
 {
+    
     // Validar los datos del formulario
     $validated = $request->validate([
         'document' => 'nullable|string',
@@ -188,15 +189,6 @@ public function storeOrganizer(Request $request)
             'document_type' => $validated['document_type'] ?? $user->document_type,
             'document_image_path' => $documentImagePath,
         ]);
-
-        if (!$user->hasRole('organizador')) {
-            $user->assignRole('organizador');
-        }
-
-        return response()->json([
-            'message' => 'Información del organizador actualizada exitosamente.',
-            'document_image_url' => Storage::url($documentImagePath),
-        ], 200);
     }
 
     return response()->json([

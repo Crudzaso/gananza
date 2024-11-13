@@ -121,7 +121,7 @@ export default {
                         'Content-Type': 'multipart/form-data',
                     },
                 });
-                alert(response.data.message);
+                window.location.href = '/admin/panel';
             } catch (error) {
                 errors.value = error.response?.data?.errors || {};
             } finally {
