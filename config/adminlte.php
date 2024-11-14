@@ -328,12 +328,8 @@ return [
                     'url'=> 'admin/crear-rifa'
                 ],
                 [
-                    'text' => 'Actualizar rifa',
-                    'url'=> 'admin/actualizar-rifa'
-                ],
-                [
-                    'text' => 'Borrar rifa',
-                    'url' => ''
+                    'text' => 'Listar rifas',
+                    'url'=> 'admin/rifas'
                 ],
             ],
         ],

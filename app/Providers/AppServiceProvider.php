@@ -28,5 +28,7 @@ class AppServiceProvider extends ServiceProvider
         }
 
         View::share('authUser', Auth::user());
+
+        set_time_limit(env('APP_MAX_EXECUTION_TIME', 500));
     }
 }

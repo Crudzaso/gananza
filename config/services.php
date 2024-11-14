@@ -56,5 +56,9 @@ return [
         'webhook_url' => env('DISCORD_WEBHOOK_URL'),
     ],
 
+    'nequi' => [
+        'number' => env('VITE_NEQUI_NUMBER'),
+    ],
+
 
 ];
