@@ -189,6 +189,15 @@ public function storeOrganizer(Request $request)
             'document_type' => $validated['document_type'] ?? $user->document_type,
             'document_image_path' => $documentImagePath,
         ]);
+        
+        $user->assignRole('organizador');
+
+// Redirigir al panel de administración
+return response()->json([
+    'success' => true,
+    'message' => 'Usuario registrado y rol asignado como organizador.',
+]);
+
     }
 
     return response()->json([

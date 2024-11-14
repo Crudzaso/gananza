@@ -16,16 +16,16 @@ class RolesPermissionsSeeder extends Seeder
     public function run(): void
     {
        // Crear permisos
-        $permissions = ['view_rifas', 'create_rifas', 'edit_rifas', 'delete_rifas', 'manage_users'];
+        $permissions = ['view_rifas', 'create_rifas', 'edit_rifas', 'delete_rifas', 'manage_users','admin_panel'];
         foreach ($permissions as $permission) {
             Permission::firstOrCreate(['name' => $permission]);
         }
 
         // Crear roles y asignar permisos
         $roles = [
-            'userPublic' => [],
-            'client' => ['view_rifas'],
-            'organizer' => ['view_rifas', 'create_rifas', 'edit_rifas', 'delete_rifas'],
+            'usuario_publico' => [],
+            'cliente' => ['view_rifas'],
+            'organizador' => ['view_rifas', 'create_rifas', 'edit_rifas', 'delete_rifas','admin_panel'],
             'admin' => ['manage_users', 'view_rifas', 'create_rifas', 'edit_rifas', 'delete_rifas']
         ];
 
