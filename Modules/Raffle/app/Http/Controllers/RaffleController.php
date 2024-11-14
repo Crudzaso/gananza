@@ -66,6 +66,7 @@ class RaffleController extends Controller
     {
         $request->validate([
             'organizer_id' => 'required|exists:users,id',
+            'image' => 'nullable|string',
             'lottery_id' => 'required|exists:lotteries,id',
             'ticket_price' => 'required|numeric|min:0',
             'total_tickets' => 'required|integer|min:1',
