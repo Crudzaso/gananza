@@ -12,7 +12,7 @@
           <LastChanceRaffles />
           <UserTestimonials />
           <OrganizerRegisterSection />
-          <Footer :laravelVersion="laravelVersion" :phpVersion="phpVersion" />
+          <Footer  />
         </div>
       </div>
     </div>
