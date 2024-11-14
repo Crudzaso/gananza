@@ -3,6 +3,8 @@
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AdminAuthController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\PaymentVerificationController;
 use App\Http\Middleware\AdminPasswordVerification;
 use Illuminate\Auth\Middleware\Authorize;
 use Illuminate\Foundation\Application;
@@ -81,5 +83,10 @@ Route::middleware(['auth'])->group(function () {
 
 
 Route::post('/users/{user}/update-photo', [UserController::class, 'updateProfilePhoto'])->name('user.update-photo');
+
+Route::post('/payment/create', [PaymentController::class, 'create']);
+Route::post('/payment/store', [PaymentController::class, 'store']);
+
+Route::post('/verify-payment', [PaymentVerificationController::class, 'verifyPayment']);
 
 

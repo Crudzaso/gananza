@@ -27,7 +27,7 @@
 
       <!-- Información adicional -->
       <p :class="['text-sm', theme.textSecondary]">
-        © {{ new Date().getFullYear() }} Gananza - Laravel v{{ laravelVersion }} (PHP v{{ phpVersion }})
+        © {{ new Date().getFullYear() }} Gananza - Laravel v (PHP v)
       </p>
     </div>
   </footer>

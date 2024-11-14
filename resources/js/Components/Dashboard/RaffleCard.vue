@@ -1,78 +1,136 @@
 <template>
   <div :class="['raffle-card shadow-lg rounded-lg p-4 flex flex-col items-center gap-4 mx-auto', theme.cardBackground]">
-    <img
-      src="../../../../public/assets/media/auth/Letra-Gananza.svg"
-      alt="Premio"
-      class="h-32 w-32 object-cover rounded-lg mb-3"
-    />
+    <img src="../../../../public/assets/media/auth/Letra-Gananza.svg" alt="Premio" class="h-32 w-32 object-cover rounded-lg mb-3" />
     <h3 :class="['text-lg font-semibold', theme.textPrimary]">{{ raffle.name }}</h3>
     <p :class="theme.textSecondary">Organizador: {{ raffle.organizer.name }}</p>
-    <p :class="theme.textSecondary">
-      Precio/Ticket: <span :class="theme.textHighlight">${{ raffle.ticket_price }}</span>
-    </p>
-    <p :class="theme.textSecondary">Fecha de Finalización: {{ raffle.end_date }}</p>
-    <p :class="theme.timeRemaining">
-      Tiempo Restante: {{ calculateTimeLeft(raffle.end_date) }}
-    </p>
-    <button
-      @click="handleBuyTicket"
-      :class="theme.buttonPrimary"
-      class="py-2 px-4 rounded-lg hover:scale-105 transition"
-    >
+    <p :class="theme.textSecondary">Precio/Ticket: <span :class="theme.textHighlight">${{ raffle.ticket_price }}</span></p>
+    <button @click.prevent="openPaymentModal" :class="theme.buttonPrimary" class="py-2 px-4 rounded-lg hover:scale-105 transition">
       Comprar
     </button>
+
+    <!-- Primer Modal: QR Code -->
+    <TransitionRoot appear :show="showModal" as="template">
+      <Dialog as="div" @close="closeModal" class="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm">
+        <TransitionChild as="template" enter="ease-out duration-300" leave="ease-in duration-200">
+          <DialogPanel :class="[theme.modalBackground, 'w-full max-w-lg p-8 rounded-2xl shadow-2xl']">
+            <h2 :class="['text-xl font-semibold text-center mb-4', theme.textPrimary]">Pagar con Nequi</h2>
+            <div class="flex justify-center mb-4">
+              <img src="/assets/media/gananza/qr-gananza.png" alt="QR de Nequi" class="w-48 h-48 qr">
+            </div>
+            <div class="flex justify-center mb-4">
+              <button @click="openVerificationModal" :class="[theme.buttonPrimary, 'btn-nequi']">Siguiente</button>
+            </div>
+            <button @click="closeModal" :class="[theme.buttonDanger, 'px-4 py-2 rounded-lg']">Cerrar</button>
+          </DialogPanel>
+        </TransitionChild>
+      </Dialog>
+    </TransitionRoot>
+
+    <!-- Segundo Modal: Ingreso del Comprobante -->
+    <TransitionRoot appear :show="showVerificationModal" as="template">
+      <Dialog as="div" @close="closeVerificationModal" class="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm">
+        <TransitionChild as="template" enter="ease-out duration-300" leave="ease-in duration-200">
+          <DialogPanel :class="[theme.modalBackground, 'w-full max-w-lg p-8 rounded-2xl shadow-2xl']">
+            <h2 :class="['text-xl font-semibold text-center mb-4', theme.textPrimary]">Validar Comprobante</h2>
+            <form @submit.prevent="validatePayment">
+              <div class="mb-4">
+                <label :class="theme.textSecondary">Número de Comprobante</label>
+                <input v-model="referenceNumber" type="text" class="w-full p-2 border rounded-lg" placeholder="Ingresa el número de comprobante" required />
+              </div>
+              <button type="submit" :class="[theme.buttonPrimary, 'px-4 py-2 rounded-lg']">Enviar</button>
+            </form>
+            <button @click="closeVerificationModal" :class="[theme.buttonDanger, 'px-4 py-2 rounded-lg mt-4']">Cerrar</button>
+          </DialogPanel>
+        </TransitionChild>
+      </Dialog>
+    </TransitionRoot>
   </div>
 </template>
 
 <script setup>
-import { computed } from 'vue';
+import { computed, ref, toRefs, nextTick } from 'vue';
+import axios from 'axios';
 import { useDarkMode } from '@/composables/useDarkMode';
+import { TransitionRoot, TransitionChild, Dialog, DialogPanel } from '@headlessui/vue';
 
-defineProps({
-  raffle: Object,
-});
-
+const props = defineProps({ raffle: Object });
+const { raffle } = toRefs(props);
 const { isDarkMode } = useDarkMode();
+const showModal = ref(false);
+const showVerificationModal = ref(false);
+const referenceNumber = ref('');
 
 const theme = computed(() => ({
-  cardBackground: isDarkMode.value
-    ? 'bg-[#1c1c1e] shadow-lg' // Fondo oscuro con sombra para Dark Mode
-    : 'bg-[#f9f9f9] ', // Fondo blanco suave con sombra para Light Mode
+  cardBackground: isDarkMode.value ? 'bg-[#1c1c1e] shadow-lg' : 'bg-[#f9f9f9]',
+  modalBackground: isDarkMode.value ? 'bg-[#2c2c2e]' : 'bg-white',
   textPrimary: isDarkMode.value ? 'text-white' : 'text-gray-900',
   textSecondary: isDarkMode.value ? 'text-gray-400' : 'text-gray-700',
-  textHighlight: isDarkMode.value ? 'text-yellow-300' : 'text-yellow-500',
-  timeRemaining: isDarkMode.value ? 'text-red-300 font-semibold' : 'text-red-500 font-semibold',
-  buttonPrimary: isDarkMode.value
-    ? 'bg-blue-700 text-white hover:bg-blue-800'
-    : 'bg-blue-600 text-white hover:bg-blue-700',
+  buttonPrimary: isDarkMode.value ? 'bg-blue-700 text-white' : 'bg-blue-600 text-white',
+  buttonDanger: isDarkMode.value ? 'bg-red-700 text-white' : 'bg-red-500 text-white',
 }));
 
-const handleBuyTicket = () => {
-  alert('Redirigiendo a la compra de ticket...');
+const openPaymentModal = () => {
+  showModal.value = true;
 };
 
-const calculateTimeLeft = (endDate) => {
-  const end = new Date(endDate);
-  const now = new Date();
-  const timeLeft = end - now;
-
-  const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
-  const hours = Math.floor((timeLeft / (1000 * 60 * 60)) % 24);
-  const minutes = Math.floor((timeLeft / 1000 / 60) % 60);
-
-  return `${days}d ${hours}h ${minutes}m`;
+const closeModal = () => {
+  showModal.value = false;
 };
+
+const openVerificationModal = () => {
+  showModal.value = false;
+  showVerificationModal.value = true;
+};
+
+const closeVerificationModal = () => {
+  showVerificationModal.value = false;
+};
+
+const validatePayment = async () => {
+    try {
+        alert("Validando el pago, por favor espera...");
+        console.log("Número de comprobante ingresado:", referenceNumber.value);
+        console.log("Monto ingresado:", raffle.value.ticket_price);
+
+        const response = await axios.post('/verify-payment', {
+            referenceNumber: referenceNumber.value,
+            monto: raffle.value.ticket_price,
+        });
+
+        console.log("Respuesta del servidor:", response.data);
+        alert(response.data.message);
+
+        if (response.data.status === 'success') {
+            closeVerificationModal();
+        }
+    } catch (error) {
+        console.error("Error al validar el pago:", error.response?.data || error.message);
+        alert(error.response?.data?.message || 'Error al validar el pago.');
+    }
+};
+
+
 </script>
 
 <style scoped>
-.raffle-card {
-  width: 100%;
-  max-width: 320px;
-  margin: 0.5rem; /* Añadir margen para evitar sombras cortadas */
-  transition: transform 0.2s;
+.modal {
+  z-index: 9999;
 }
 
-.raffle-card:hover {
-  transform: translateY(-5px);
+.btn-nequi {
+  display: flex;
+  align-items: center;
+  padding: 12px 24px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.btn-nequi:hover {
+  background-color: #5a00cc;
+}
+.qr{
+  width: 300px;
+  height: 300px;
 }
 </style>
