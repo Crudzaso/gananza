@@ -59,7 +59,7 @@ Route::get('/about', function () {
     return Inertia::render('About');
 })->name('about');
 
-Route::get('/raffles-actives', [RaffleController::class, 'getRaffles'])->name('raffles.actives');
+Route::get('/raffles-actives', [RaffleController::class, 'getRaffles'])->middleware(['auth'])->name('raffles.actives');
 
 Route::get('/raffles-last-chance', [RaffleController::class, 'getLastChanceRaffles'])->name('raffles.last-chance');
 

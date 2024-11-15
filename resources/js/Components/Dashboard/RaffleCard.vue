@@ -1,6 +1,7 @@
 <template>
   <div :class="['raffle-card shadow-lg rounded-lg p-4 flex flex-col items-center gap-4 mx-auto', theme.cardBackground]">
-    <img src="../../../../public/assets/media/auth/Letra-Gananza.svg" alt="Premio" class="h-32 w-32 object-cover rounded-lg mb-3" />
+    <!-- Mostrar la imagen de la rifa -->
+    <img :src="raffleImage" alt="Imagen de la Rifa" class="h-32 w-32 object-cover rounded-lg mb-3" />
     <h3 :class="['text-lg font-semibold', theme.textPrimary]">{{ raffle.name }}</h3>
     <p :class="theme.textSecondary">Organizador: {{ raffle.organizer.name }}</p>
     <p :class="theme.textSecondary">Precio/Ticket: <span :class="theme.textHighlight">${{ raffle.ticket_price }}</span></p>
@@ -48,7 +49,7 @@
 </template>
 
 <script setup>
-import { computed, ref, toRefs, nextTick } from 'vue';
+import { computed, ref, toRefs } from 'vue';
 import axios from 'axios';
 import { useDarkMode } from '@/composables/useDarkMode';
 import { TransitionRoot, TransitionChild, Dialog, DialogPanel } from '@headlessui/vue';
@@ -60,6 +61,14 @@ const showModal = ref(false);
 const showVerificationModal = ref(false);
 const referenceNumber = ref('');
 
+/** Computed property para obtener la URL de la imagen de la rifa */
+const raffleImage = computed(() => {
+  // Verificar si hay una imagen guardada; si no, usar una imagen predeterminada
+  return raffle.value.image ? `/storage/${raffle.value.image}` : '/assets/media/auth/Letra-Gananza.svg';
+});
+
+
+/** Computed property para los estilos basados en el modo oscuro */
 const theme = computed(() => ({
   cardBackground: isDarkMode.value ? 'bg-[#1c1c1e] shadow-lg' : 'bg-[#f9f9f9]',
   modalBackground: isDarkMode.value ? 'bg-[#2c2c2e]' : 'bg-white',
@@ -86,30 +95,29 @@ const closeVerificationModal = () => {
   showVerificationModal.value = false;
 };
 
+/** Función para validar el pago */
 const validatePayment = async () => {
-    try {
-        alert("Validando el pago, por favor espera...");
-        console.log("Número de comprobante ingresado:", referenceNumber.value);
-        console.log("Monto ingresado:", raffle.value.ticket_price);
+  try {
+    alert("Validando el pago, por favor espera...");
+    console.log("Número de comprobante ingresado:", referenceNumber.value);
+    console.log("Monto ingresado:", raffle.value.ticket_price);
 
-        const response = await axios.post('/verify-payment', {
-            referenceNumber: referenceNumber.value,
-            monto: raffle.value.ticket_price,
-        });
+    const response = await axios.post('/verify-payment', {
+      referenceNumber: referenceNumber.value,
+      monto: raffle.value.ticket_price,
+    });
 
-        console.log("Respuesta del servidor:", response.data);
-        alert(response.data.message);
+    console.log("Respuesta del servidor:", response.data);
+    alert(response.data.message);
 
-        if (response.data.status === 'success') {
-            closeVerificationModal();
-        }
-    } catch (error) {
-        console.error("Error al validar el pago:", error.response?.data || error.message);
-        alert(error.response?.data?.message || 'Error al validar el pago.');
+    if (response.data.status === 'success') {
+      closeVerificationModal();
     }
+  } catch (error) {
+    console.error("Error al validar el pago:", error.response?.data || error.message);
+    alert(error.response?.data?.message || 'Error al validar el pago.');
+  }
 };
-
-
 </script>
 
 <style scoped>
@@ -129,7 +137,8 @@ const validatePayment = async () => {
 .btn-nequi:hover {
   background-color: #5a00cc;
 }
-.qr{
+
+.qr {
   width: 300px;
   height: 300px;
 }

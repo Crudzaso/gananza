@@ -37,11 +37,16 @@ class RaffleController extends Controller
             'end_date' => 'required|date|after:start_date',
         ]);
 
+        $imagePath = null;
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('raffles', 'public');
+        }
+
         Raffle::create([
         'name' => $request->name,
         'organizer_id' => $request->organizer_id,
         'lottery_id' => $request->lottery_id,
-       
+        'image' => $imagePath,   
         'total_tickets' => $request->total_tickets,
         'ticket_price' => $request->ticket_price,
         'tickets_sold' => $request->tickets_sold ?? 0,
