@@ -41,7 +41,7 @@
         <!-- Imagen de la Rifa -->
         <div class="mb-4">
             <label class="block text-sm font-medium text-gray-700">Imagen de la Rifa</label>
-            <input type="file" name="raffle_image" class="form-control" accept="image/*">
+            <input type="file" name="image" class="form-control" accept="image/*">
         </div>
 
         <!-- Total a Recaudar -->
