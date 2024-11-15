@@ -49,6 +49,11 @@
                     <input type="number" name="ticket_price" value="{{ $raffle->ticket_price }}" class="form-control" required>
                 </div>
 
+                <div class="form-group">
+                    <label>Imagen de la rifa</label>
+                    <input type="number" name="image" value="{{ $raffle->image }}" class="form-control" required>
+                </div>
+
                 <!-- Total de Tickets -->
                 <div class="form-group">
                     <label>Total de Tickets</label>
