@@ -12,7 +12,7 @@ use Filament\Tables\Table;
 use Modules\Draws\Models\Draws as ModelsDraws;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\DateTimePicker;
-use Filament\Forms\Components\TextArea;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Select;
 use Filament\Tables\Columns\TextColumn;
 use Modules\Lottery\Models\Lottery;
