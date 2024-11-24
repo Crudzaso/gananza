@@ -6,12 +6,16 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PaymentVerificationController;
 use App\Http\Middleware\AdminPasswordVerification;
+use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Auth\Middleware\Authorize;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Modules\Raffle\Http\Controllers\RaffleController;
 use Modules\Ticket\Http\Controllers\TicketController;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 // Ruta pública
 Route::get('/', function () {
@@ -21,6 +25,45 @@ Route::get('/', function () {
         'laravelVersion' => Application::VERSION,
         'phpVersion' => PHP_VERSION,
     ]);
+});
+
+// Grupo de rutas para testing con prefijo /test-error
+Route::prefix('test-error')->group(function () {
+    // Error 403 - Forbidden
+    Route::get('/403', function () {
+        throw new AccessDeniedHttpException('USER DOES NOT HAVE THE RIGHT ROLES.');
+    })->name('test.403');
+
+    // Error 401 - Unauthorized
+    Route::get('/401', function () {
+        throw new AuthenticationException('Usuario no autenticado');
+    })->name('test.401');
+
+    // Error 404 - Not Found
+    Route::get('/404', function () {
+        throw new NotFoundHttpException('Recurso no encontrado');
+    })->name('test.404');
+
+    // Error 500 - Server Error
+    Route::get('/500', function () {
+        throw new \Exception('Error interno del servidor');
+    })->name('test.500');
+
+    // Error de Autorización (también 403)
+    Route::get('/forbidden', function () {
+        throw new AuthorizationException('No tienes permiso para realizar esta acción');
+    })->name('test.forbidden');
+
+    // Error personalizado
+    Route::get('/custom', function () {
+        $errorMessage = [
+            'error' => 'Error personalizado',
+            'details' => 'Detalles adicionales del error',
+            'timestamp' => now()->toIso8601String(),
+        ];
+        
+        throw new \Exception(json_encode($errorMessage));
+    })->name('test.custom');
 });
 
 // Grupo de rutas autenticadas

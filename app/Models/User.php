@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Helpers\DiscordNotifier;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -51,5 +52,32 @@ class User extends Authenticatable
         return env('DISCORD_WEBHOOK_URL');
     }
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        // Evento cuando el modelo es creado
+        static::created(function ($model) {
+            DiscordNotifier::notifyEvent('User Created', [
+                'id' => $model->id,
+                'attributes' => $model->getAttributes(),
+            ]);
+        });
+
+        // Evento cuando el modelo es actualizado
+        static::updated(function ($model) {
+            DiscordNotifier::notifyEvent('User Updated', [
+                'id' => $model->id,
+                'changes' => $model->getChanges(),
+            ]);
+        });
+
+        // Evento cuando el modelo es eliminado
+        static::deleted(function ($model) {
+            DiscordNotifier::notifyEvent('User Deleted', [
+                'id' => $model->id,
+            ]);
+        });
+    }
 
 }
