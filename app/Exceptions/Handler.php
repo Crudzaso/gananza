@@ -2,8 +2,8 @@
 
 namespace App\Exceptions;
 
-use App\Helpers\DiscordNotifier;
 use Throwable;
+use App\Helpers\DiscordNotifier;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 
 class Handler extends ExceptionHandler
@@ -29,20 +29,9 @@ class Handler extends ExceptionHandler
     {
         parent::report($exception);
 
-        if ($this->shouldReportToDiscord($exception)) {
+        // Reporta la excepción a Discord si debe reportarse
+        if ($this->shouldReport($exception)) {
             DiscordNotifier::notifyException($exception);
         }
-    }
-
-    /**
-     * Determina si la excepción debe reportarse a Discord.
-     *
-     * @param  \Throwable  $exception
-     * @return bool
-     */
-    protected function shouldReportToDiscord(Throwable $exception): bool
-    {
-        // Filtrar excepciones no reportables
-        return !$this->shouldntReport($exception);
     }
 }

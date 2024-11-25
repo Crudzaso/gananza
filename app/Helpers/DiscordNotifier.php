@@ -6,12 +6,12 @@ use Illuminate\Support\Facades\Http;
 
 class DiscordNotifier
 {
-    protected static $webhookUrl = 'https://discord.com/api/webhooks/1310023183461646406/m4tupDKnQ05qMoUs8eARIYzg0v2rLjTB1Degz98JQrOzWy2Z5mALup4RQOQlH3kC_o__';
-
     public static function send($message)
     {
-        if (self::$webhookUrl) {
-            Http::post(self::$webhookUrl, [
+        $webhookUrl = env('DISCORD_WEBHOOK_URL');
+
+        if ($webhookUrl) {
+            Http::post($webhookUrl, [
                 'content' => $message,
             ]);
         }
@@ -19,20 +19,47 @@ class DiscordNotifier
 
     public static function notifyException(\Throwable $exception)
     {
+        $trace = substr($exception->getTraceAsString(), 0, 1800); // Límite ajustado para Discord
         $message = "**Exception Alert**\n"
             . "**Message:** {$exception->getMessage()}\n"
             . "**File:** {$exception->getFile()}:{$exception->getLine()}\n"
-            . "**Trace:** ```{$exception->getTraceAsString()}```";
-        
+            . "**Trace:** ```{$trace}```";
+
         self::send($message);
     }
 
-    public static function notifyEvent($eventType, $details = [])
-    {
-        $message = "**Event Notification**\n"
-            . "**Type:** {$eventType}\n"
-            . "**Details:** " . json_encode($details, JSON_PRETTY_PRINT);
-        
-        self::send($message);
+   public static function notifyEvent($eventType, $details = [])
+{
+    $webhookUrl = env('DISCORD_WEBHOOK_URL');
+
+    if ($webhookUrl) {
+        $logoUrl = 'https://755e-186-113-97-221.ngrok-free.app/gananza-logov1.png';
+        $embed = [
+            'title' => '🔔 Gananza Alerts',
+            'description' => "Se ha detectado un evento: **{$eventType}**.",
+            'color' => 7506394, // Color (ejemplo: azul)
+            'fields' => [],
+            'footer' => [
+                'text' => 'Notificaciones del Sistema',
+                'icon_url' => $logoUrl, // Cambiar al logo de tu sitio
+            ],
+            'timestamp' => now()->toIso8601String(),
+        ];
+
+        // Añadir los detalles al mensaje si están disponibles
+        foreach ($details as $key => $value) {
+            $embed['fields'][] = [
+                'name' => ucfirst($key),
+                'value' => $value,
+                'inline' => true,
+            ];
+        }
+
+        Http::post($webhookUrl, [
+            'embeds' => [$embed],
+            'username' => 'Sistema de Notificaciones', // Nombre personalizado
+            'avatar_url' => $logoUrl, // Cambiar al logo de tu sitio
+        ]);
     }
+}
 }

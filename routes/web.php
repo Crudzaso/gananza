@@ -6,16 +6,15 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PaymentVerificationController;
 use App\Http\Middleware\AdminPasswordVerification;
-use Illuminate\Auth\Access\AuthorizationException;
-use Illuminate\Auth\AuthenticationException;
+use App\Models\User;
 use Illuminate\Auth\Middleware\Authorize;
 use Illuminate\Foundation\Application;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use Laravel\Telescope\Telescope;
 use Modules\Raffle\Http\Controllers\RaffleController;
 use Modules\Ticket\Http\Controllers\TicketController;
-use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 // Ruta pública
 Route::get('/', function () {
@@ -26,44 +25,23 @@ Route::get('/', function () {
         'phpVersion' => PHP_VERSION,
     ]);
 });
+Route::get('/test-exception', function () {
+    throw new Exception("Esto es una prueba de excepción para Discord.");
+});
 
-// Grupo de rutas para testing con prefijo /test-error
-Route::prefix('test-error')->group(function () {
-    // Error 403 - Forbidden
-    Route::get('/403', function () {
-        throw new AccessDeniedHttpException('USER DOES NOT HAVE THE RIGHT ROLES.');
-    })->name('test.403');
+Route::get('/test-discord', function () {
+    \App\Helpers\DiscordNotifier::send("Prueba directa de notificación a Discord.");
+    return "Mensaje enviado.";
+});
 
-    // Error 401 - Unauthorized
-    Route::get('/401', function () {
-        throw new AuthenticationException('Usuario no autenticado');
-    })->name('test.401');
+Route::get('/test-missing-user', function () {
+    // Lanzará ModelNotFoundException
+    return User::findOrFail(99999);
+});
 
-    // Error 404 - Not Found
-    Route::get('/404', function () {
-        throw new NotFoundHttpException('Recurso no encontrado');
-    })->name('test.404');
-
-    // Error 500 - Server Error
-    Route::get('/500', function () {
-        throw new \Exception('Error interno del servidor');
-    })->name('test.500');
-
-    // Error de Autorización (también 403)
-    Route::get('/forbidden', function () {
-        throw new AuthorizationException('No tienes permiso para realizar esta acción');
-    })->name('test.forbidden');
-
-    // Error personalizado
-    Route::get('/custom', function () {
-        $errorMessage = [
-            'error' => 'Error personalizado',
-            'details' => 'Detalles adicionales del error',
-            'timestamp' => now()->toIso8601String(),
-        ];
-        
-        throw new \Exception(json_encode($errorMessage));
-    })->name('test.custom');
+Route::get('/test-sql-error', function () {
+    // Lanzará QueryException
+    return DB::table('non_existent_table')->get();
 });
 
 // Grupo de rutas autenticadas
