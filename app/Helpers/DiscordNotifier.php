@@ -6,60 +6,62 @@ use Illuminate\Support\Facades\Http;
 
 class DiscordNotifier
 {
-    public static function send($message)
+    public static function send($message, $embed = [])
     {
         $webhookUrl = env('DISCORD_WEBHOOK_URL');
 
         if ($webhookUrl) {
-            Http::post($webhookUrl, [
+            $payload = [
                 'content' => $message,
-            ]);
+            ];
+
+            if (!empty($embed)) {
+                $payload['embeds'] = [$embed];
+            }
+
+            Http::post($webhookUrl, $payload);
         }
     }
 
     public static function notifyException(\Throwable $exception)
     {
-        $trace = substr($exception->getTraceAsString(), 0, 1800); // Límite ajustado para Discord
-        $message = "**Exception Alert**\n"
-            . "**Message:** {$exception->getMessage()}\n"
-            . "**File:** {$exception->getFile()}:{$exception->getLine()}\n"
+        $trace = substr($exception->getTraceAsString(), 0, 1800); // Discord tiene límites.
+        $message = "**🚨 Exception Alert**\n"
+            . "**Mensaje:** {$exception->getMessage()}\n"
+            . "**Archivo:** {$exception->getFile()}:{$exception->getLine()}\n"
             . "**Trace:** ```{$trace}```";
 
         self::send($message);
     }
 
-   public static function notifyEvent($eventType, $details = [])
-{
-    $webhookUrl = env('DISCORD_WEBHOOK_URL');
+    public static function notifyEvent($eventType, $details = [], $imageUrl = null)
+    {
+        $webhookUrl = env('DISCORD_WEBHOOK_URL');
 
-    if ($webhookUrl) {
-        $logoUrl = 'https://755e-186-113-97-221.ngrok-free.app/gananza-logov1.png';
-        $embed = [
-            'title' => '🔔 Gananza Alerts',
-            'description' => "Se ha detectado un evento: **{$eventType}**.",
-            'color' => 7506394, // Color (ejemplo: azul)
-            'fields' => [],
-            'footer' => [
-                'text' => 'Notificaciones del Sistema',
-                'icon_url' => $logoUrl, // Cambiar al logo de tu sitio
-            ],
-            'timestamp' => now()->toIso8601String(),
-        ];
-
-        // Añadir los detalles al mensaje si están disponibles
-        foreach ($details as $key => $value) {
-            $embed['fields'][] = [
-                'name' => ucfirst($key),
-                'value' => $value,
-                'inline' => true,
+        if ($webhookUrl) {
+            $logoUrl = $imageUrl ?? asset('logo.png'); // Imagen por defecto
+            $embed = [
+                'title' => '🔔 Notificación del Sistema',
+                'description' => "Se ha detectado un evento: **{$eventType}**.",
+                'color' => 7506394, // Color (hex: #72A0C1)
+                'fields' => [],
+                'footer' => [
+                    'text' => 'Notificaciones del Sistema',
+                    'icon_url' => $logoUrl,
+                ],
+                'timestamp' => now()->toIso8601String(),
             ];
-        }
 
-        Http::post($webhookUrl, [
-            'embeds' => [$embed],
-            'username' => 'Sistema de Notificaciones', // Nombre personalizado
-            'avatar_url' => $logoUrl, // Cambiar al logo de tu sitio
-        ]);
+            // Agregar detalles al mensaje.
+            foreach ($details as $key => $value) {
+                $embed['fields'][] = [
+                    'name' => ucfirst($key),
+                    'value' => $value,
+                    'inline' => true,
+                ];
+            }
+
+            self::send('', $embed);
+        }
     }
-}
 }

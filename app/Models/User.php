@@ -58,26 +58,44 @@ class User extends Authenticatable
 
         // Evento cuando el modelo es creado
         static::created(function ($model) {
-            DiscordNotifier::notifyEvent('User Created', [
-                'id' => $model->id,
-                'attributes' => $model->getAttributes(),
-            ]);
+            $createdBy = auth()->user();
+            DiscordNotifier::notifyEvent('Usuario Creado', [
+                'ID Usuario Creado' => $model->id,
+                'Nombre Usuario Creado' => $model->name,
+                'ID Quien Creó' => $createdBy->id ?? 'Desconocido',
+                'Nombre Quien Creó' => $createdBy->name ?? 'Desconocido',
+            ],
+                asset('images/logo.png')
+            );
         });
 
         // Evento cuando el modelo es actualizado
         static::updated(function ($model) {
-            DiscordNotifier::notifyEvent('User Updated', [
-                'id' => $model->id,
-                'changes' => $model->getChanges(),
-            ]);
+            DiscordNotifier::notifyEvent('Usuario actualizado', [
+                'ID Usuario Actualizado' => $model->id,
+                'Nombre Usuario Actualizado' => $model->name,
+                'Cambios Realizados' => json_encode($model->getChanges()), // Cambios realizados en formato JSON
+                'ID Quien Actualizó' => $updatedBy->id ?? 'Desconocido',
+                'Nombre Quien Actualizó' => $updatedBy->name ?? 'Desconocido',
+            ],
+                asset('images/logo.png') 
+            );
         });
 
         // Evento cuando el modelo es eliminado
         static::deleted(function ($model) {
-            DiscordNotifier::notifyEvent('User Deleted', [
-                'id' => $model->id,
-            ]);
-        });
+        $deletedBy = auth()->user(); // Usuario autenticado
+        DiscordNotifier::notifyEvent(
+            'Usuario Borrado',
+            [
+                'ID Usuario Eliminado' => $model->id,
+                'Nombre Usuario Eliminado' => $model->name,
+                'ID Quien Eliminó' => $deletedBy->id ?? 'Desconocido',
+                'Nombre Quien Eliminó' => $deletedBy->name ?? 'Desconocido',
+            ],
+            asset('images/logo.png') // Ruta de imagen pública
+        );
+    });
     }
 
 }
