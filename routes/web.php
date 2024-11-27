@@ -76,6 +76,7 @@ Route::get('/raffles-filtered', [RaffleController::class, 'getFilteredRaffles'])
 Route::middleware(['auth'])->group(function () {
     Route::get('/api/user-tickets/{userId}', [TicketController::class, 'getUserTickets'])->name('user.tickets');
     Route::get('/api/active-raffles', [RaffleController::class, 'getActiveRaffles'])->name('raffles.active');
+    Route::post('/ticket/create', [TicketController::class, 'store']);
     Route::get('/registro-organizador', [UserController::class, 'registerOrganizer'])->name('register.organizer');
     Route::post('/register-organizer', [UserController::class, 'storeOrganizer'])->name('organizer.register');
 
@@ -85,6 +86,7 @@ Route::middleware(['auth'])->group(function () {
 Route::post('/users/{user}/update-photo', [UserController::class, 'updateProfilePhoto'])->name('user.update-photo');
 
 Route::post('/payment/create', [PaymentController::class, 'create']);
+Route::post('/payment/createPayment', [PaymentController::class, 'createPayment']);
 Route::post('/payment/store', [PaymentController::class, 'store']);
 
 Route::post('/verify-payment', [PaymentVerificationController::class, 'verifyPayment']);

@@ -3,6 +3,8 @@ import { createInertiaApp } from '@inertiajs/vue3';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { ZiggyVue } from '../../vendor/tightenco/ziggy';
 import '@splidejs/vue-splide/css';
+import axios from 'axios';
+
 
 
 import './bootstrap';
@@ -17,6 +19,9 @@ import Navbar from './Components/Dashboard/NavBar.vue';
 import Footer from './Components/Dashboard/Footer.vue';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
+
+axios.defaults.withCredentials = true;
+
 
 createInertiaApp({
     title: (title) => `${title} - ${appName}`,

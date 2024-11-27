@@ -28,15 +28,15 @@ class TicketController extends Controller
         $request->validate([
             'raffle_id' => 'required|exists:raffles,id',
             'user_id' => 'required|exists:users,id',
-            'ticket_number' => 'required|string|max:10',
-            'purchase_date' => 'nullable|date',
-            'end_date' => 'nullable|date|after_or_equal:purchase_date',
+            'ticket_number' => 'required|integer',
+            'purchase_date' => 'required|date',
+            'end_date' => 'required|date|after_or_equal:purchase_date',
             'verification_code' => 'required|string|max:50',
         ]);
 
-        Ticket::create($request->all());
+        $ticket = Ticket::create($request->all());
 
-        return redirect()->route('tickets.index')->with('success', 'Ticket creado exitosamente.');
+        return response()->json(['status' => 'success', 'ticket' => $ticket]);
     }
 
     public function edit($id)

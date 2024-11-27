@@ -69,4 +69,19 @@ class PaymentController extends Controller
 
         return redirect()->route('payment.index')->with('success', 'Pago eliminado exitosamente.');
     }
+
+    public function createPayment(Request $request)
+    {
+        $user = auth()->user();
+
+        $payment = Payment::create([
+            'user_id' => $request->user_id,
+            'raffle_id' => $request->raffle_id,
+            'amount' => $request->amount,
+            'payment_method' => $request->payment_method,
+            'payment_date' => $request->payment_date,
+        ]);
+
+        return response()->json(['status' => 'success', 'payment' => $payment]);
+    }
 }
