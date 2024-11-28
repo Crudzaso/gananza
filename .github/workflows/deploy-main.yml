@@ -5,10 +5,10 @@ on:
     branches: [ main ]
 
 jobs:
-  test-connection:
+  build-and-deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Test SSH Connection
+      - name: Executing remote SSH commands using password
         uses: appleboy/ssh-action@v0.1.6
         with:
           host: ${{ secrets.HOST_SERVER }}
@@ -16,4 +16,12 @@ jobs:
           password: ${{ secrets.PASSWORD_SERVER }}
           port: ${{ secrets.PORT_SERVER }}
           script: |
-            echo "Connection successful to ${{ secrets.SERVER_HOST }}"
+            cd "${{ secrets.PATH }}"
+            git pull origin main
+            git fetch
+            echo '${{ secrets.ENV_FILE }}' > .env
+            composer install
+            composer dump-autoload
+            php artisan migrate:fresh --seed
+            php artisan optimize:clear
+
