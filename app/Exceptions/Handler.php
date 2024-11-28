@@ -8,30 +8,42 @@ use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 
 class Handler extends ExceptionHandler
 {
-    /**
-     * Lista de excepciones que no serán reportadas.
-     *
-     * @var array<int, class-string<Throwable>>
-     */
     protected $dontReport = [
         \Illuminate\Validation\ValidationException::class,
         \Illuminate\Session\TokenMismatchException::class,
     ];
 
-    /**
-     * Reporta las excepciones.
-     *
-     * @param  \Throwable  $exception
-     * @return void
-     * @throws \Throwable
-     */
     public function report(Throwable $exception)
     {
-        parent::report($exception);
-
-        // Reporta la excepción a Discord si debe reportarse
+        // Notifica a Discord si no está en la lista de exclusión
         if ($this->shouldReport($exception)) {
-            DiscordNotifier::notifyException($exception);
+            try {
+                $this->notifyDiscord($exception);
+            } catch (Throwable $e) {
+                // Evitar que fallos en la notificación rompan el flujo
+                logger()->error("Error al enviar notificación a Discord: " . $e->getMessage());
+            }
         }
+
+        parent::report($exception);
     }
+
+    protected function notifyDiscord(Throwable $exception)
+{
+    $details = [
+        'message' => $exception->getMessage(),
+        'file' => "{$exception->getFile()}:{$exception->getLine()}",
+        'trace' => substr($exception->getTraceAsString(), 0, 1800), 
+    ];
+
+    // Logea el error antes de enviarlo a Discord
+    logger()->error('Excepción capturada', $details);
+
+    // Envía la notificación a Discord
+    DiscordNotifier::notifyEvent(
+        'Excepción en el sistema 🚨',
+        $details,
+        asset('images/logo.png') 
+    );
+}
 }

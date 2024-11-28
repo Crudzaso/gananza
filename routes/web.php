@@ -25,25 +25,10 @@ Route::get('/', function () {
         'phpVersion' => PHP_VERSION,
     ]);
 });
-Route::get('/test-exception', function () {
-    throw new Exception("Esto es una prueba de excepción para Discord.");
-});
-
 Route::get('/test-discord', function () {
     \App\Helpers\DiscordNotifier::send("Prueba directa de notificación a Discord.");
     return "Mensaje enviado.";
 });
-
-Route::get('/test-missing-user', function () {
-    // Lanzará ModelNotFoundException
-    return User::findOrFail(99999);
-});
-
-Route::get('/test-sql-error', function () {
-    // Lanzará QueryException
-    return DB::table('non_existent_table')->get();
-});
-
 // Grupo de rutas autenticadas
 Route::middleware(['auth:sanctum', config('jetstream.auth_session')])->group(function () {
     Route::get('/dashboard', function () {
