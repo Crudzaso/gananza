@@ -8,4 +8,6 @@ return [
     App\Providers\JetstreamServiceProvider::class,
     App\Providers\TelescopeServiceProvider::class,
     Spatie\Permission\PermissionServiceProvider::class,
+    
+
 ];
