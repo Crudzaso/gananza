@@ -120,7 +120,7 @@ return [
     ],
 
     'ignore_commands' => [
-        //
+          'http:post https://discord.com/api/webhooks/*',
     ],
 
     /*
@@ -204,4 +204,11 @@ return [
         Watchers\ScheduleWatcher::class => env('TELESCOPE_SCHEDULE_WATCHER', true),
         Watchers\ViewWatcher::class => env('TELESCOPE_VIEW_WATCHER', true),
     ],
+
+    'filter' => [
+    'type' => [
+        Illuminate\Http\Client\RequestException::class,
+        Symfony\Component\HttpKernel\Exception\HttpException::class,
+    ],
+],
 ];

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Pages;
+namespace App\Filament\Resources\Pages;
 
 use Filament\Pages\Dashboard;
 use Filament\Actions\Action;

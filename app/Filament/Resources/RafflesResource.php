@@ -10,7 +10,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\TextArea;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\DateTimePicker;
 use Modules\Raffle\Models\Raffle;
 use App\Models\User; // Asegúrate de importar el modelo User

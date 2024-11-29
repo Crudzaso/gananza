@@ -6,10 +6,13 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PaymentVerificationController;
 use App\Http\Middleware\AdminPasswordVerification;
+use App\Models\User;
 use Illuminate\Auth\Middleware\Authorize;
 use Illuminate\Foundation\Application;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use Laravel\Telescope\Telescope;
 use Modules\Raffle\Http\Controllers\RaffleController;
 use Modules\Ticket\Http\Controllers\TicketController;
 
@@ -22,7 +25,10 @@ Route::get('/', function () {
         'phpVersion' => PHP_VERSION,
     ]);
 });
-
+Route::get('/test-discord', function () {
+    \App\Helpers\DiscordNotifier::send("Prueba directa de notificación a Discord.");
+    return "Mensaje enviado.";
+});
 // Grupo de rutas autenticadas
 Route::middleware(['auth:sanctum', config('jetstream.auth_session')])->group(function () {
     Route::get('/dashboard', function () {

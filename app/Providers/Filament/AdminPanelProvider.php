@@ -2,7 +2,7 @@
 
 namespace App\Providers\Filament;
 
-use App\Filament\Pages\CustomDashboard;
+use App\Filament\Resources\Pages\CustomDashboard;
 use App\Http\Middleware\AdminPasswordVerification;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
