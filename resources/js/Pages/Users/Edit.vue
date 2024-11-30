@@ -1,7 +1,5 @@
 <template>
     <div class="container mx-auto px-6 py-10">
-      <!-- Modal de Confirmación -->
-      <modal v-if="modalData.show" :title="modalData.title" :message="modalData.message" @close="goBack" />
   
       <!-- Encabezado -->
       <div class="flex justify-between items-center mb-8">
@@ -110,10 +108,8 @@
   <script>
   import { ref } from 'vue';
   import { router } from '@inertiajs/vue3';
-  import Modal from '../../Components/Cruds/Notification.vue';
   
   export default {
-    components: { Modal },
     props: {
       user: Object,
     },
@@ -127,34 +123,11 @@
         email: props.user.email,
       });
   
-      const modalData = ref({
-        show: false,
-        title: '',
-        message: '',
-      });
-  
-      const submit = async () => {
-        try {
-          await router.put(`/users/${props.user.id}`, form.value);
-          modalData.value = {
-            show: true,
-            title: 'Usuario Actualizado',
-            message: 'El usuario ha sido actualizado exitosamente.',
-          };
-        } catch (error) {
-          modalData.value = {
-            show: true,
-            title: 'Error',
-            message: 'No se pudo actualizar el usuario. Inténtalo de nuevo.',
-          };
-        }
-      };
-  
       const goBack = () => {
         router.visit('/users');
       };
   
-      return { form, modalData, submit, goBack };
+      return { form, submit, goBack };
     },
   };
   </script>
