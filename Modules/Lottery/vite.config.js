@@ -20,7 +20,3 @@ export default defineConfig({
     ],
 });
 
-//export const paths = [
-//    'Modules/Lottery/resources/assets/sass/app.scss',
-//    'Modules/Lottery/resources/assets/js/app.js',
-//];
