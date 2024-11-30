@@ -8,6 +8,10 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     steps:
+      - name: Fix git ownership
+        run: |
+          git config --global --add safe.directory "${{ secrets.PATH }}"
+
       - name: Executing remote SSH commands using password
         uses: appleboy/ssh-action@v0.1.6
         with:
@@ -20,8 +24,7 @@ jobs:
             git pull origin main
             git fetch
             echo '${{ secrets.ENV_FILE }}' > .env
-            composer install
+            composer install --no-dev --optimize-autoloader
             composer dump-autoload
-            php artisan migrate:fresh --seed
+            php artisan migrate:fresh --seed || echo "Database migration failed, skipping."
             php artisan optimize:clear
-
