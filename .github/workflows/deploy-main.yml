@@ -22,6 +22,7 @@ jobs:
       - name: Deploy Application
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.USERNAME_SERVER }}@${{ secrets.HOST_SERVER }} << 'EOF'
+          git config --global --add safe.directory /var/www/gananza
           cd ${{ secrets.PATH }}
           git pull origin main
           echo '${{ secrets.ENV_FILE }}' > .env
