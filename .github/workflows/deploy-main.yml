@@ -1,27 +1,31 @@
 name: CI/CD - Crudzaso
+
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Fix git ownership
-        run: |
-          git config --global --add safe.directory "${{ secrets.PATH }}"
-      - name: Executing remote SSH commands using password
-        uses: appleboy/ssh-action@v0.1.6
+      - name: Checkout Repository
+        uses: actions/checkout@v4
         with:
-          host: ${{ secrets.HOST_SERVER }}
-          username: ${{ secrets.USERNAME_SERVER }}
-          password: ${{ secrets.PASSWORD_SERVER }}
-          port: ${{ secrets.PORT_SERVER }}
-          script: |
-            cd "${{ secrets.PATH }}"
-            git pull origin main
-            git fetch
-            echo '${{ secrets.ENV_FILE }}' > .env
-            composer install --no-dev --optimize-autoloader
-            composer dump-autoload
-            php artisan migrate:fresh --seed || (echo "Migrations failed, but continuing deployment" && true)
-            php artisan optimize:clear
+          fetch-depth: 0
+
+      - name: Set up SSH Agent
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_KEY_SERVER }}
+
+      - name: Deploy Application
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.USERNAME_SERVER }}@${{ secrets.HOST_SERVER }} << 'EOF'
+          cd ${{ secrets.PATH }}
+          git pull origin main
+          echo '${{ secrets.ENV_FILE }}' > .env
+          composer install --no-dev --optimize-autoloader
+          php artisan migrate --force
+          php artisan optimize:clear
+          EOF
