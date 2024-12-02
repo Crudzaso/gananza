@@ -1,14 +1,19 @@
 <template>
+  <!-- Main Container -->
   <div :class="['raffle-card shadow-lg rounded-lg p-4 flex flex-col items-center gap-4 mx-auto', theme.cardBackground]">
+    <!-- Raffle Image -->
     <img
       src="../../../../public/assets/media/auth/Letra-Gananza.svg"
-      alt="Premio"
+      alt="Prize"
       class="h-32 w-32 object-cover rounded-lg mb-3"
     />
+    <!-- Raffle Title and Organizer -->
     <h3 :class="['text-lg font-semibold', theme.textPrimary]">{{ raffle.name }}</h3>
     <p :class="theme.textSecondary">Organizador: {{ raffle.organizer.name }}</p>
-    <p :class="theme.textSecondary">Precio/Ticket: <span :class="theme.textHighlight">${{ raffle.ticket_price }}</span>
+    <p :class="theme.textSecondary">
+      Ticket de precios <span :class="theme.textHighlight">${{ raffle.ticket_price }}</span>
     </p>
+    <!-- Buy Button -->
     <button
       @click.prevent="openSelectionModal"
       :class="theme.buttonPrimary"
@@ -17,7 +22,7 @@
       Comprar
     </button>
 
-    <!-- Nuevo Modal: Selección de Número con Factura -->
+    <!-- Modal for Selecting Numbers -->
     <TransitionRoot
       appear
       :show="showSelectionModal"
@@ -34,30 +39,28 @@
           leave="ease-in duration-200"
         >
           <DialogPanel :class="[theme.modalBackground, 'w-full max-w-3xl p-8 rounded-2xl shadow-2xl flex gap-8']">
-            <!-- Sección izquierda: Números y Paginación -->
+            <!-- Number Selection -->
             <div class="w-2/3 flex flex-col items-center gap-4">
-              <!-- Números -->
               <div class="grid grid-cols-5 gap-4 mb-4">
                 <button
                   v-for="number in paginatedNumbers"
                   :key="number"
                   @click="handleNumberClick(number)"
-                  :class="['number-button py-2 px-4 rounded-lg transition', selectedNumber === number ? 'bg-blue-600 text-white' : 'bg-gray-200 hover:bg-blue-600 hover:text-white']"
+                  :class="['number-button py-2 px-4 rounded-lg transition', selectedNumber.includes(number) ? 'bg-blue-600 text-white' : 'bg-gray-200 hover:bg-blue-600 hover:text-white']"
                 >
                   {{ number }}
                 </button>
               </div>
-
-              <!-- Paginación centrada debajo -->
+              <!-- Pagination for Numbers -->
               <div class="flex justify-center items-center w-full">
                 <button
                   @click="goToPreviousPage"
                   :disabled="currentPage === 1"
                   class="px-4 py-2 bg-gray-300 rounded-lg mx-2"
                 >
-                  Anterior
+                  Atras
                 </button>
-                <span>Página {{ currentPage }} de {{ totalPages }}</span>
+                <span> Página {{ currentPage }} de {{ totalPages }}</span>
                 <button
                   @click="goToNextPage"
                   :disabled="currentPage === totalPages"
@@ -68,28 +71,31 @@
               </div>
             </div>
 
-            <!-- Sección derecha: Factura -->
+            <!-- Invoice Section -->
             <div class="w-1/3 flex flex-col items-center justify-center bg-white p-4 rounded-lg shadow-lg">
               <h3 class="text-lg font-semibold mb-4">Factura</h3>
               <div class="w-full mb-4">
                 <label class="text-gray-700">Usuario</label>
-                <div class="py-2 px-4 bg-gray-200 rounded-lg text-center">{{ userName || 'Ninguno' }}</div>
+                <div class="py-2 px-4 bg-gray-200 rounded-lg text-center">{{ userName || 'None' }}</div>
               </div>
               <div class="w-full mb-4">
-                <label class="text-gray-700">Número</label>
-                <div class="py-2 px-4 bg-gray-200 rounded-lg text-center">{{ selectedNumber || 'Ninguno' }}</div>
+                <label class="text-gray-700">Numeros Seleccionados</label>
+                <div class="py-2 px-4 bg-gray-200 rounded-lg text-center">{{ selectedNumber.join(', ') || 'Ninguno' }}
+                </div>
               </div>
               <button
                 @click="proceedToPaymentModal"
                 :class="[theme.buttonPrimary, 'px-4 py-2 rounded-lg']"
-              >Comprar</button>
+              >
+                Comprar
+              </button>
             </div>
           </DialogPanel>
         </TransitionChild>
       </Dialog>
     </TransitionRoot>
 
-    <!-- Primer Modal: QR Code -->
+    <!-- Modal for Invoice -->
     <TransitionRoot
       appear
       :show="showModal"
@@ -106,28 +112,51 @@
           leave="ease-in duration-200"
         >
           <DialogPanel :class="[theme.modalBackground, 'w-full max-w-lg p-8 rounded-2xl shadow-2xl']">
-            <h2 :class="['text-xl font-semibold text-center mb-4', theme.textPrimary]">Pagar con Nequi</h2>
-            <div class="flex justify-center mb-4">
-              <img
-                src="/assets/media/gananza/qr-gananza.png"
-                alt="QR de Nequi"
-                class="w-48 h-48 qr"
+            <div>
+              <!-- Invoice Table -->
+              <table
+                cellspacing="0"
+                cellpadding="10"
+                class="w-full text-left border-collapse"
               >
+                <thead>
+                  <tr>
+                    <th class="border-b-2 py-2">Nombre</th>
+                    <th class="border-b-2 py-2">Tus Numeros</th>
+                    <th class="border-b-2 py-2">Total a pagar</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="border-t py-2">{{ userName }}</td>
+                    <td class="border-t py-2">{{ selectedNumber.join(', ') || 'None' }}</td>
+                    <td class="border-t py-2">
+                      ${{ selectedNumber.length > 0 ? (raffle.ticket_price * selectedNumber.length).toFixed(2) : '0.00'
+                      }}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
+            <!-- Payment and Close Buttons -->
             <button
               @click="openVerificationModal"
               :class="[theme.buttonPrimary, 'px-4 py-2 rounded-lg mr-2']"
-            >Siguiente</button>
+            >
+              Ir a pagar
+            </button>
             <button
               @click="closeModal"
               :class="[theme.buttonDanger, 'px-4 py-2 rounded-lg']"
-            >Cerrar</button>
+            >
+              Cerrar
+            </button>
           </DialogPanel>
         </TransitionChild>
       </Dialog>
     </TransitionRoot>
 
-    <!-- Segundo Modal: Ingreso del Comprobante -->
+    <!-- Payment Verification Modal -->
     <TransitionRoot
       appear
       :show="showVerificationModal"
@@ -144,27 +173,14 @@
           leave="ease-in duration-200"
         >
           <DialogPanel :class="[theme.modalBackground, 'w-full max-w-lg p-8 rounded-2xl shadow-2xl']">
-            <h2 :class="['text-xl font-semibold text-center mb-4', theme.textPrimary]">Validar Comprobante</h2>
-            <form @submit.prevent="validatePayment">
-              <div class="mb-4">
-                <label class="text-gray-700">Número de Comprobante</label>
-                <input
-                  v-model="referenceNumber"
-                  type="text"
-                  class="w-full p-2 border rounded-lg"
-                  placeholder="Ingresa el número de comprobante"
-                  required
-                />
-              </div>
-              <button
-                type="submit"
-                :class="[theme.buttonPrimary, 'px-4 py-2 rounded-lg']"
-              >Enviar</button>
-            </form>
+            <h2>Aquí va la pasarela de pagos</h2>
+            <!-- Receipt Validation Form -->
             <button
               @click="closeVerificationModal"
               :class="[theme.buttonDanger, 'px-4 py-2 rounded-lg mt-4']"
-            >Cerrar</button>
+            >
+              Cerrar
+            </button>
           </DialogPanel>
         </TransitionChild>
       </Dialog>
@@ -173,11 +189,13 @@
 </template>
 
 <script setup>
+/* Imports and Setup */
 import { ref, computed } from 'vue';
 import { usePage } from '@inertiajs/vue3';
 import { useDarkMode } from '@/composables/useDarkMode';
 import { TransitionRoot, TransitionChild, Dialog, DialogPanel } from '@headlessui/vue';
 
+/* Props and Reactive Data */
 const raffleProps = defineProps({ raffle: Object });
 const showSelectionModal = ref(false);
 const showModal = ref(false);
@@ -185,17 +203,16 @@ const showVerificationModal = ref(false);
 const totalTickets = ref(raffleProps.raffle.total_tickets || 0);
 const referenceNumber = ref('');
 const numbers = ref([]);
-const selectedNumber = ref(null);
+const selectedNumber = ref([]);
+
+/* Pagination Variables */
 const currentPage = ref(1);
 const itemsPerPage = 15;
 const totalPages = computed(() => Math.ceil(totalTickets.value / itemsPerPage));
 
-
+/* User and Theme Settings */
 const user = usePage().props.auth?.user || null;
-const userName = ref(user ? user.name : 'Usuario no autenticado');
-
-
-// Tema
+const userName = ref(user ? user.name : 'Unauthenticated User');
 const { isDarkMode } = useDarkMode();
 const theme = computed(() => ({
   cardBackground: isDarkMode.value ? 'bg-[#1c1c1e]' : 'bg-[#f9f9f9]',
@@ -204,6 +221,7 @@ const theme = computed(() => ({
   buttonDanger: 'bg-red-500 text-white',
 }));
 
+/* Number Selection Logic */
 const initializeNumbers = () => {
   numbers.value = Array.from({ length: totalTickets.value }, (_, i) => i + 1);
 };
@@ -226,10 +244,18 @@ const goToPreviousPage = () => {
   }
 };
 
+const handleNumberClick = (number) => {
+  const index = selectedNumber.value.indexOf(number);
+  if (index === -1) {
+    selectedNumber.value.push(number);
+  } else {
+    selectedNumber.value.splice(index, 1);
+  }
+};
 
+/* Modal Logic */
 const openSelectionModal = () => {
   initializeNumbers();
-  console.log(raffleProps);
   showSelectionModal.value = true;
 };
 
@@ -237,150 +263,35 @@ const closeSelectionModal = () => {
   showSelectionModal.value = false;
 };
 
-const handleNumberClick = (number) => {
-  if (selectedNumber.value === null || selectedNumber.value === undefined) {
-    selectedNumber.value = '';
-  }
-  const selectedNumbersArray = selectedNumber.value.trim().split(' ').filter(Boolean);
-  const numberIndex = selectedNumbersArray.indexOf(number.toString());
-
-  if (numberIndex === -1) {
-
-    selectedNumbersArray.push(number);
-  } else {
-
-    selectedNumbersArray.splice(numberIndex, 1);
-  }
-
-  selectedNumber.value = selectedNumbersArray.join(' ');
-
-  console.log(`Números seleccionados: ${selectedNumber.value.trim()}`);
-};
-
 const proceedToPaymentModal = () => {
-  if (!selectedNumber.value) {
-    alert('Por favor selecciona un número antes de continuar.');
+  if (selectedNumber.value.length === 0) {
+    alert('Please select at least one number.');
     return;
   }
   closeSelectionModal();
   showModal.value = true;
 };
 
-// Función para abrir el modal QR
 const openModal = () => {
   showModal.value = true;
 };
 
-// Función para cerrar el modal QR
 const closeModal = () => {
   showModal.value = false;
 };
 
-// Función para abrir el modal de verificación después de hacer clic en "Siguiente"
 const openVerificationModal = () => {
-  closeModal(); // Cerrar el modal actual
-  showVerificationModal.value = true; // Abrir el modal de verificación
+  closeModal();
+  showVerificationModal.value = true;
 };
 
-// Función para cerrar el modal de verificación
 const closeVerificationModal = () => {
   showVerificationModal.value = false;
 };
-
-const createPayment = async () => {
-  try {
-    const userId = user?.id;
-    const raffleId = raffleProps.raffle.id;
-    const amount = raffleProps.raffle.ticket_price;
-    const paymentMethod = "NEQUI";
-    const paymentDate = new Date().toISOString();
-
-    const response = await axios.post('/payment/createPayment', {
-      user_id: userId,
-      raffle_id: raffleId,
-      amount: amount,
-      payment_method: paymentMethod,
-      payment_date: paymentDate,
-    });
-
-    console.log("Respuesta de creación de Payment:", response.data);
-  } catch (error) {
-    console.error("Error al crear el Payment:", error.response?.data || error.message);
-    alert('Error al crear el Payment.');
-  }
-};
-
-const createTicket = async () => {
-  try {
-    const userId = user?.id;
-    const raffleId = raffleProps.raffle.id;
-    const ticketNumber = selectedNumber.value;
-    const purchaseDate = new Date().toISOString();
-    const endDate = raffleProps.raffle.end_date;
-    const verificationCode = referenceNumber.value;
-
-    const response = await axios.post('/ticket/create', {
-      raffle_id: raffleId,
-      user_id: userId,
-      ticket_number: ticketNumber,
-      purchase_date: purchaseDate,
-      end_date: endDate,
-      verification_code: verificationCode,
-    });
-
-    console.log("Respuesta de creación de Ticket:", response.data);
-  } catch (error) {
-    console.error("Error al crear el Ticket:", error.response?.data || error.message);
-    alert('Error al crear el Ticket.');
-  }
-};
-
-
-
-const validatePayment = async () => {
-  try {
-    alert("Validando el pago, por favor espera...");
-    console.log("Número de comprobante ingresado:", referenceNumber.value);
-    console.log("Monto ingresado:", raffleProps.raffle.ticket_price);
-
-    // Validar el pago con la API
-    const response = await axios.post('/verify-payment', {
-      referenceNumber: referenceNumber.value,
-      monto: raffleProps.raffle.ticket_price,
-    });
-
-    console.log("Respuesta del servidor:", response.data);
-    alert(response.data.message);
-
-    if (response.data.status === 'success') {
-      // Crear el registro de Payment
-      await createPayment();
-
-      // Crear el registro de Ticket
-      await createTicket();
-
-      // Cerrar el modal de verificación si todo es exitoso
-      closeVerificationModal();
-      alert('Pago y Ticket creados exitosamente.');
-    }
-  } catch (error) {
-    console.error("Error al validar el pago:", error.response?.data || error.message);
-    alert(error.response?.data?.message || 'Error al validar el pago.');
-  }
-};
-
 </script>
 
 <style scoped>
-.modal {
-  z-index: 9999;
-}
-
-.qr {
-  width: 300px;
-  height: 300px;
-}
-
+/* Button Styles */
 .number-button {
   transition: transform 0.2s, box-shadow 0.2s;
 }
@@ -399,5 +310,13 @@ const validatePayment = async () => {
 .number-button.bg-blue-600 {
   background-color: #2563eb;
   color: #fff;
+}
+
+.number-button.bg-gray-200 {
+  background-color: #f9f9f9;
+}
+
+.number-button.selected {
+  background-color: #2563eb;
 }
 </style>
