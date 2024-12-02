@@ -96,4 +96,10 @@ Route::post('/payment/store', [PaymentController::class, 'store']);
 
 Route::post('/verify-payment', [PaymentVerificationController::class, 'verifyPayment']);
 
+//testing to the payment method
 
+Route::post('/payment/preference', [PaymentController::class, 'createPreference'])->name('payment.preference');
+
+Route::get('/payment/success', [PaymentController::class, 'handleSuccess'])->name('payment.success');
+Route::get('/payment/failure', [PaymentController::class, 'handleFailure'])->name('payment.failure');
+Route::get('/payment/pending', [PaymentController::class, 'handlePending'])->name('payment.pending');

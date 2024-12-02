@@ -29,6 +29,7 @@
     <!-- Cargar scripts de Metronic después de que Vue.js esté listo -->
     <script src="{{ asset('assets/plugins/global/plugins.bundle.js') }}"></script>
     <script src="{{ asset('assets/js/scripts.bundle.js') }}"></script>
+    <script src="https://sdk.mercadopago.com/js/v2"></script>
 
     <!-- Scripts personalizados (si es necesario) -->
     <script>
