@@ -60,7 +60,7 @@
                 >
                   Atras
                 </button>
-                <span> Página {{ currentPage }} de {{ totalPages }}</span>
+                <span :class="[theme.textPrimary]">Página {{ currentPage }} de {{ totalPages }}</span>
                 <button
                   @click="goToNextPage"
                   :disabled="currentPage === totalPages"
@@ -215,6 +215,7 @@ const user = usePage().props.auth?.user || null;
 const userName = ref(user ? user.name : 'Unauthenticated User');
 const { isDarkMode } = useDarkMode();
 const theme = computed(() => ({
+  textPrimary: isDarkMode.value ? 'text-white' : 'text-black',
   cardBackground: isDarkMode.value ? 'bg-[#1c1c1e]' : 'bg-[#f9f9f9]',
   modalBackground: isDarkMode.value ? 'bg-[#2c2c2e]' : 'bg-white',
   buttonPrimary: 'bg-blue-600 text-white',
