@@ -1,49 +1,80 @@
 <?php
-
 namespace App\Exceptions;
 
+use Exception;
+use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 use Throwable;
 use App\Helpers\DiscordNotifier;
-use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Support\Facades\Log;
 
 class Handler extends ExceptionHandler
 {
-    protected $dontReport = [
-        \Illuminate\Validation\ValidationException::class,
-        \Illuminate\Session\TokenMismatchException::class,
-    ];
-
+    /**
+     * Report the exception.
+     *
+     * @param  \Throwable  $exception
+     * @return void
+     */
     public function report(Throwable $exception)
     {
-        // Notifica a Discord si no está en la lista de exclusión
+        parent::report($exception);
+
+        // Log para depuración
+        Log::info('Se está reportando una excepción: ' . $exception->getMessage());
+
+        // Captura excepciones personalizadas y envíalas a Discord
         if ($this->shouldReport($exception)) {
-            try {
-                $this->notifyDiscord($exception);
-            } catch (Throwable $e) {
-                // Evitar que fallos en la notificación rompan el flujo
-                logger()->error("Error al enviar notificación a Discord: " . $e->getMessage());
-            }
+            DiscordNotifier::notifyException($exception); // Notificar a Discord
         }
 
-        parent::report($exception);
+        // Captura errores HTTP (como 404, 500, etc.) y envíalos a Discord
+        if ($exception instanceof HttpException) {
+            // Aquí puedes poner un log adicional o realizar otra acción si es necesario.
+            Log::info("Capturado error HTTP: " . $exception->getStatusCode());
+            DiscordNotifier::notifyEvent("HTTP Error: " . $exception->getStatusCode(), [
+                'Status Code' => $exception->getStatusCode(),
+                'Error Message' => $exception->getMessage(),
+                'URL' => request()->url(),
+                'Timestamp' => now()->toDateTimeString(),
+            ]);
+        }
     }
 
-    protected function notifyDiscord(Throwable $exception)
-{
-    $details = [
-        'message' => $exception->getMessage(),
-        'file' => "{$exception->getFile()}:{$exception->getLine()}",
-        'trace' => substr($exception->getTraceAsString(), 0, 1800), 
-    ];
+    /**
+     * Determine if the exception should be reported.
+     *
+     * @param  \Throwable  $exception
+     * @return bool
+     */
+    public function shouldReport(Throwable $exception)
+    {
+        // Reportar todos los errores HTTP, incluyendo 404 y 500
+        if ($exception instanceof HttpException) {
+            return true;  // Se reporta cualquier error HTTP (404, 500, etc.)
+        }
 
-    // Logea el error antes de enviarlo a Discord
-    logger()->error('Excepción capturada', $details);
+        // Puedes agregar más excepciones personalizadas aquí si es necesario
+        return parent::shouldReport($exception);
+    }
 
-    // Envía la notificación a Discord
-    DiscordNotifier::notifyEvent(
-        'Excepción en el sistema 🚨',
-        $details,
-        asset('images/logo.png') 
-    );
-}
+    /**
+     * Render the exception into an HTTP response.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \Throwable  $exception
+     * @return \Illuminate\Http\Response
+     */
+    public function render($request, Throwable $exception)
+    {
+        // Renderizar errores HTTP (como 404, 500) de forma personalizada
+        if ($exception instanceof HttpException) {
+            return response()->json([
+                'message' => 'Error HTTP detectado.',
+                'error' => $exception->getMessage(),
+            ], $exception->getStatusCode());
+        }
+
+        return parent::render($request, $exception);
+    }
 }

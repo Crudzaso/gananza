@@ -97,3 +97,10 @@ Route::post('/payment/store', [PaymentController::class, 'store']);
 Route::post('/verify-payment', [PaymentVerificationController::class, 'verifyPayment']);
 
 
+Route::get('/test-404', function () {
+    abort(404);
+});
+
+Route::get('/test-500', function () {
+    abort(500);
+});
