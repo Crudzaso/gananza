@@ -69,8 +69,12 @@ const toggleMenu = () => {
 };
 
 const handleExploreRaffles = () => {
-  window.location.href = '/raffles/admin/rifas';
-};
+  const userRoles = authUser.value.roles;
+  if (userRoles.includes('organizador') || userRoles.includes('admin')) {
+    window.location.href = '/raffles/admin/rifas';
+  } else {
+    window.location.href = '/registro-organizador';
+  }};
 
 const handleAdminPanel = () => {
   window.location.href = '/admin';

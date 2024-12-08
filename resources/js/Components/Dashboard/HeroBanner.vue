@@ -26,6 +26,9 @@
 <script setup>
 import { computed } from 'vue';
 import { useDarkMode } from '@/composables/useDarkMode';
+import { usePage } from '@inertiajs/vue3';
+
+const authUser = computed(() => usePage().props.auth.user);
 
 const { isDarkMode } = useDarkMode();
 
@@ -34,9 +37,14 @@ const handleExploreRaffles = () => {
 };
 
 const handleBecomeOrganizer = () => {
-  window.location.href = '/registro-organizador';
+  const userRoles = authUser.value.roles;
+  console.log(userRoles.value)
+  if (userRoles.includes('organizador') || userRoles.includes('admin')) {
+    window.location.href = '/raffles/admin/rifas';
+  } else {
+    window.location.href = '/registro-organizador';
+  }
 };
-
 const theme = computed(() => ({
   backgroundGradient: isDarkMode.value
     ? 'bg-[#1a1a1c] shadow-lg' // Fondo oscuro para Dark Mode
