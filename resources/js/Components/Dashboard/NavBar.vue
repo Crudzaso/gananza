@@ -5,7 +5,7 @@
         <img :src="isDarkMode ? '/assets/media/auth/Logo-Gananza1.svg' : '/assets/media/auth/Logo-Gananza2.svg'"
           alt="Logo Gananza" class="h-12 logo" />
       </div>
-      <div class="flex items-center gap-3">
+      <div class="flex items-center gap-2">
         <button @click="toggleDarkMode" class="btn-icon glow-effect" :style="{ background: theme.cardBackground }">
           <Sun v-if="isDarkMode" :size="20" :color="theme.emphasis" />
           <Moon v-else :size="20" :color="theme.primary" />
@@ -18,9 +18,18 @@
         </button>
         <button
           @click="handleExploreRaffles"
-          :class="['hidden md:block font-semibold py-2 px-6 rounded-lg transition', theme.primaryButton]"
+          :class="['hidden md:block font-semibold py-2 px-4 rounded-lg transition', theme.primaryButton]"
         >
           Organizar Rifas
+        </button>
+        <button v-if="isAdmin"
+          @click="handleAdminPanel"
+          :class="['hidden md:block font-semibold py-2 px-4 rounded-lg transition', theme.secondaryButton]"
+        >
+          Panel de Administrador
+        </button>
+        <button @click="logout" :class="['hidden md:block font-semibold py-2 px-4 rounded-lg transition', theme.secondaryButton]">
+          Logout
         </button>
         <button class="menu-toggle btn-icon glow-effect" @click="toggleMenu">
           <img :src="isDarkMode ? '/assets/media/gananza/bars-light.svg' : '/assets/media/gananza/bars-dark.svg'"
@@ -35,6 +44,12 @@
       <a @click.prevent="handleExploreRaffles" class="nav-link" :style="{ color: theme.textPrimary, borderColor: theme.border }">
         Organizar Rifas
       </a>
+      <a v-if="isAdmin" @click.prevent="handleAdminPanel" class="nav-link" :style="{ color: theme.textPrimary, borderColor: theme.border }">
+        Panel de Administrador
+      </a>
+      <a @click.prevent="logout" class="nav-link" :style="{ color: theme.textPrimary, borderColor: theme.border }">
+        Logout
+      </a>
     </nav>
   </header>
 </template>
@@ -47,6 +62,7 @@ import { useDarkMode } from '@/composables/useDarkMode';
 import { usePage } from '@inertiajs/vue3';
 
 const authUser = computed(() => usePage().props.auth.user);
+const isAdmin = computed(() => authUser.value.roles && authUser.value.roles.includes('admin'));
 
 const { isDarkMode, toggleDarkMode } = useDarkMode();
 const isMenuOpen = ref(false);
@@ -59,6 +75,18 @@ const handleExploreRaffles = () => {
   window.location.href = '/raffles/admin/rifas';
 };
 
+const handleAdminPanel = () => {
+  window.location.href = '/admin';
+};
+
+const logout = () => {
+  router.post(route('logout'), {}, {
+    onFinish: () => {
+      window.location.href = '/login';
+    },
+  });
+};
+
 const theme = computed(() => ({
   backgroundGradient: isDarkMode.value
     ? 'bg-[#1a1a1c] shadow-lg'
@@ -69,8 +97,8 @@ const theme = computed(() => ({
     ? 'bg-blue-700 text-white hover:bg-blue-800'
     : 'bg-blue-600 text-white hover:bg-blue-700',
   secondaryButton: isDarkMode.value
-    ? 'bg-gray-800 text-blue-400 hover:bg-gray-700'
-    : 'bg-gray-100 text-blue-600 hover:bg-gray-200',
+    ? 'bg-red-700 text-white hover:bg-red-800'
+    : 'bg-red-600 text-white hover:bg-red-700',
   cardBackground: isDarkMode.value ? '#242526' : '#FFFFFF',
   navBackground: isDarkMode.value ? '#1E1E1E' : '#FFFFFF',
   navShadow: isDarkMode.value ? '0 8px 20px rgba(0, 0, 0, 0.8)' : '0 8px 20px rgba(0, 191, 255, 0.2)',
@@ -78,14 +106,6 @@ const theme = computed(() => ({
   gradient: isDarkMode.value ? 'linear-gradient(135deg, #1E1E1E 0%, #2A2A2A 100%)' : 'linear-gradient(135deg, #FFFFFF 0%, #F5F5F5 100%)',
   emphasis: isDarkMode.value ? '#FFCA28' : '#FFC107',
 }));
-
-const logout = () => {
-  router.post(route('logout'), {}, {
-    onFinish: () => {
-      window.location.href = '/login';
-    },
-  });
-};
 </script>
 
 <style scoped>
