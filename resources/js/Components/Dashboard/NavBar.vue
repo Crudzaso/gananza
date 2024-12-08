@@ -6,15 +6,8 @@
           alt="Logo Gananza" class="h-12 logo" />
       </div>
       <div class="flex items-center gap-2">
-        <button @click="toggleDarkMode" class="btn-icon glow-effect" :style="{ background: theme.cardBackground }">
-          <Sun v-if="isDarkMode" :size="20" :color="theme.emphasis" />
-          <Moon v-else :size="20" :color="theme.primary" />
-        </button>
-        <button class="btn-icon glow-effect">
-          <a :href="`/profile/${authUser.id}`">
-            <img :src="isDarkMode ? '/assets/media/gananza/user-light.svg' : '/assets/media/gananza/user-dark.svg'"
-              alt="Perfil" class="icon-img" />
-          </a>
+        <button @click="goToProfile" :class="['hidden md:block font-semibold py-2 px-4 rounded-lg transition', theme.primaryButton]">
+          Perfil
         </button>
         <button
           @click="handleExploreRaffles"
@@ -35,12 +28,16 @@
           <img :src="isDarkMode ? '/assets/media/gananza/bars-light.svg' : '/assets/media/gananza/bars-dark.svg'"
             alt="Menú" class="icon-img" />
         </button>
+        <button @click="toggleDarkMode" class="btn-icon glow-effect" :style="{ background: theme.cardBackground }">
+          <Sun v-if="isDarkMode" :size="20" :color="theme.emphasis" />
+          <Moon v-else :size="20" :color="theme.primary" />
+        </button>
       </div>
     </div>
     <nav :class="['nav-links', { 'open': isMenuOpen }]">
       <button class="close-btn" @click="toggleMenu" :style="{ color: theme.textPrimary }">✖</button>
       <h3 class="menu-title" :style="{ color: theme.textPrimary }">Navegación</h3>
-      <a href="/profile" class="nav-link" :style="{ color: theme.textPrimary, borderColor: theme.border }">Perfil</a>
+      <a @click.prevent="goToProfile" class="nav-link" :style="{ color: theme.textPrimary, borderColor: theme.border }">Perfil</a>
       <a @click.prevent="handleExploreRaffles" class="nav-link" :style="{ color: theme.textPrimary, borderColor: theme.border }">
         Organizar Rifas
       </a>
@@ -77,6 +74,10 @@ const handleExploreRaffles = () => {
 
 const handleAdminPanel = () => {
   window.location.href = '/admin';
+};
+
+const goToProfile = () => {
+  window.location.href = `/profile/${authUser.value.id}`;
 };
 
 const logout = () => {
