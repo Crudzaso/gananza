@@ -14,7 +14,7 @@ use Modules\Raffle\Http\Controllers\RaffleController;
 |
 */
 
-Route::prefix('raffles')->name('raffles.')->group(function () {
+Route::middleware(['auth', 'role:admin|organizador'])->prefix('raffles')->name('raffles.')->group(function () {
     Route::get('/admin/rifas', [RaffleController::class, 'index'])->name('index');
     Route::get('/admin/crear-rifa', [RaffleController::class, 'create'])->name('create');
     Route::post('/admin/actualizar-rifa', [RaffleController::class, 'store'])->name('store');

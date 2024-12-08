@@ -13,7 +13,11 @@ class RaffleController extends Controller
 {
     public function index()
     {
-        $raffles = Raffle::with('organizer', 'lottery')->paginate(10);
+        $user = auth()->user();
+        $raffles = Raffle::with('organizer', 'lottery')
+            ->where('organizer_id', $user->id)
+            ->paginate(10);
+
         return view('raffle::index', compact('raffles'));
     }
 
@@ -38,18 +42,17 @@ class RaffleController extends Controller
         ]);
 
         Raffle::create([
-        'name' => $request->name,
-        'organizer_id' => $request->organizer_id,
-        'lottery_id' => $request->lottery_id,
-       
-        'total_tickets' => $request->total_tickets,
-        'ticket_price' => $request->ticket_price,
-        'tickets_sold' => $request->tickets_sold ?? 0,
-        'description' => $request->description,
-        'start_date' => $request->start_date,
-        'end_date' => $request->end_date,
-        'total_sales' => 0, // valor predeterminado de total_sales
-    ]);
+            'name' => $request->name,
+            'organizer_id' => $request->organizer_id,
+            'lottery_id' => $request->lottery_id,
+            'total_tickets' => $request->total_tickets,
+            'ticket_price' => $request->ticket_price,
+            'tickets_sold' => $request->tickets_sold ?? 0,
+            'description' => $request->description,
+            'start_date' => $request->start_date,
+            'end_date' => $request->end_date,
+            'total_sales' => 0, // valor predeterminado de total_sales
+        ]);
 
         return redirect()->route('raffles.index')->with('success', 'Rifa creada exitosamente.');
     }
@@ -64,24 +67,31 @@ class RaffleController extends Controller
 
     public function update(Request $request, $id)
     {
-        $request->validate([
-            'organizer_id' => 'required|exists:users,id',
-            'image' => 'nullable|string',
-            'lottery_id' => 'required|exists:lotteries,id',
-            'ticket_price' => 'required|numeric|min:0',
-            'total_tickets' => 'required|integer|min:1',
-            'tickets_sold' => 'nullable|integer|min:0',
-            'description' => 'nullable|string',
-            'start_date' => 'required|date',
-            'end_date' => 'required|date|after:start_date',
-        ]);
-
         $raffle = Raffle::findOrFail($id);
-        $raffle->update($request->all());
-
+    
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'end_date' => 'required|date|after:start_date',
+            'image' => 'nullable|image|max:2048', // Validar si es una imagen
+        ]);
+    
+        // Manejar imagen si se sube un nuevo archivo
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('raffle_images', 'public');
+            $raffle->image = $imagePath; // Actualizar la ruta de la imagen
+        }
+    
+        // Actualizar otros campos
+        $raffle->update([
+            'name' => $request->name,
+            'description' => $request->description,
+            'end_date' => $request->end_date,
+        ]);
+    
         return redirect()->route('raffles.index')->with('success', 'Rifa actualizada exitosamente.');
     }
-
+    
     public function destroy($id)
     {
         $raffle = Raffle::findOrFail($id);
@@ -121,7 +131,6 @@ class RaffleController extends Controller
         return response()->json($raffles);
     }
 
-
     public function getActiveRaffles()
     {
         $activeRaffles = Raffle::where('end_date', '>', now())->get();
@@ -133,12 +142,12 @@ class RaffleController extends Controller
         $filter = $request->input('filter');
         $date = $request->input('date');
         $query = Raffle::with('organizer', 'lottery');
-    
+
         // Aplicar filtro adicional por fecha
         if ($date) {
             $query->whereDate('end_date', '>', $date);
         }
-    
+
         switch ($filter) {
             case 'popular':
                 $query->where('tickets_sold', '>=', 50)
@@ -154,9 +163,8 @@ class RaffleController extends Controller
                 $query->where('end_date', '>', now());
                 break;
         }
-    
+
         $raffles = $query->paginate(6);
         return response()->json($raffles);
     }
-    
 }
