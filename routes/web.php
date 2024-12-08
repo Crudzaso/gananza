@@ -59,12 +59,14 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
         Route::delete('/{user}', [UserController::class, 'destroy'])->name('users.destroy');
     });
 });
+Route::put('users/{user}', [UserController::class, 'update'])->name('users.update');
 
 // Rutas autenticadas generales
 Route::middleware(['auth'])->group(function () {
     // Perfil de usuario
     Route::get('/profile/{user}', [UserController::class, 'showProfile'])->name('users.profile');
     Route::post('/users/{user}/update-photo', [UserController::class, 'updateProfilePhoto'])->name('user.update-photo');
+
 
     // Rifas
     Route::get('/raffles-actives', [RaffleController::class, 'getRaffles'])->name('raffles.actives');

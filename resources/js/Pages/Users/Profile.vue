@@ -67,65 +67,72 @@
       </div>
     </div>
 
-    <!-- Modal de Edición de Perfil -->
-    <transition name="fade">
-      <div v-if="showModal" class="modal-overlay" @click.self="closeModal">
-        <div class="modal-container">
-          <!-- Header -->
-          <div class="modal-header">
-            <h2>Editar Perfil</h2>
-            <button class="close-button" @click="closeModal">&times;</button>
-          </div>
+    <div v-if="showModal" class="modal-overlay" @click.self="closeModal">
+      <div class="modal-container" :style="{
+        background: isDarkMode ? '#1E1E1E' : '#FFFFFF',
+        color: isDarkMode ? '#E0E0E0' : '#212121'
+      }">
+        <div class="modal-header">
+          <h2 :style="{ color: isDarkMode ? '#E0E0E0' : '#212121' }">
+            Actualizar Perfil
+          </h2>
+          <button @click="closeModal" class="close-button" :style="{
+            color: isDarkMode ? '#B0BEC5' : '#757575',
+            background: 'transparent'
+          }">
+            ×
+          </button>
+        </div>
 
-          <!-- Formulario -->
-          <form @submit.prevent="submit" class="form-container">
+        <form @submit.prevent="submit" class="modal-form">
+          <div class="form-grid">
             <div class="form-group">
-              <label for="name">Nombre</label>
-              <input id="name" v-model="form.name" type="text" class="input-field" placeholder="Ingresa tu nombre" />
+              <label :style="{ color: isDarkMode ? '#B0BEC5' : '#757575' }">Nombre</label>
+              <input v-model="form.name" type="text" :style="inputStyle" required />
             </div>
+
             <div class="form-group">
-              <label for="lastname">Apellido</label>
-              <input id="lastname" v-model="form.lastname" type="text" class="input-field"
-                placeholder="Ingresa tu apellido" />
+              <label :style="{ color: isDarkMode ? '#B0BEC5' : '#757575' }">Apellido</label>
+              <input v-model="form.lastname" type="text" :style="inputStyle" required />
             </div>
+
             <div class="form-group">
-              <label for="document">Documento</label>
-              <input id="document" v-model="form.document" type="text" class="input-field"
-                placeholder="Ingresa tu documento" />
-            </div>
-            <div class="form-group">
-              <label for="document_type">Tipo de Documento</label>
-              <select id="document_type" v-model="form.document_type" class="input-field">
+              <label :style="{ color: isDarkMode ? '#B0BEC5' : '#757575' }">Tipo de Documento</label>
+              <select v-model="form.document_type" :style="inputStyle" required>
+                <option value="">Seleccionar</option>
                 <option value="DNI">DNI</option>
                 <option value="Pasaporte">Pasaporte</option>
-                <option value="Licencia">Licencia</option>
+                <option value="CE">Carné de Extranjería</option>
               </select>
             </div>
-            <div class="form-group">
-              <label for="phone_number">Teléfono</label>
-              <input id="phone_number" v-model="form.phone_number" type="tel" class="input-field"
-                placeholder="Ingresa tu teléfono" />
-            </div>
-            <div class="form-group">
-              <label for="email">Email</label>
-              <input id="email" v-model="form.email" type="email" class="input-field" placeholder="Ingresa tu email" />
-            </div>
-            <div class="form-group">
-              <label for="profile_photo">Foto de Perfil</label>
-              <input id="profile_photo" ref="fileInput" type="file" @change="handleProfilePhotoChange"
-                class="input-field" />
-            </div>
-          </form>
 
-          <!-- Botones -->
-          <div class="modal-buttons">
-            <button type="button" class="btn-cancel" @click="closeModal">Cancelar</button>
-            <button type="submit" class="btn-save">Guardar Cambios</button>
+            <div class="form-group">
+              <label :style="{ color: isDarkMode ? '#B0BEC5' : '#757575' }">Número de Documento</label>
+              <input v-model="form.document" type="text" :style="inputStyle" required />
+            </div>
+
+            <div class="form-group">
+              <label :style="{ color: isDarkMode ? '#B0BEC5' : '#757575' }">Teléfono</label>
+              <input v-model="form.phone_number" type="tel" :style="inputStyle" required />
+            </div>
+
+            <div class="form-group">
+              <label :style="{ color: isDarkMode ? '#B0BEC5' : '#757575' }">Correo Electrónico</label>
+              <input v-model="form.email" type="email" :style="inputStyle" required />
+            </div>
           </div>
-        </div>
-      </div>
-    </transition>
 
+          <div class="modal-actions">
+            <button type="button" @click="closeModal" :style="buttonCancelStyle">
+              Cancelar
+            </button>
+            <button type="submit" :style="buttonSaveStyle">
+              Guardar Cambios
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -498,39 +505,12 @@ export default {
   font-size: 0.875rem;
 }
 
-.modal-container {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between; /* Asegura que los botones estén al final */
-  align-items: stretch;
-  max-height: 90vh; /* Limita la altura total del modal */
-  overflow-y: auto; /* Permite scroll si el contenido excede el espacio */
-}
-
-.modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 16px;
-  border-bottom: 1px solid #e0eaf1;
-}
-
-.modal-header h2 {
-  font-size: 1.25rem;
-  font-weight: 600;
-}
-
 .form-container {
   display: flex;
   flex-direction: column;
-  gap: 12px; /* Espaciado entre los campos */
+  gap: 12px;
+  /* Espaciado entre los campos */
   padding: 16px;
-}
-
-.form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
 }
 
 .input-field {
@@ -546,35 +526,6 @@ export default {
   border-color: #82caff;
 }
 
-.modal-buttons {
-  display: flex;
-  justify-content: flex-end;
-  gap: 12px;
-  padding: 16px;
-  border-top: 1px solid #e0eaf1;
-}
-
-.modal-buttons button {
-  padding: 8px 16px;
-  border-radius: 8px;
-  font-weight: 500;
-}
-
-.modal-buttons .btn-cancel {
-  background-color: #ffffff;
-  color: #7f8c8d;
-  border: 1px solid #e0eaf1;
-}
-
-.modal-buttons .btn-save {
-  background-color: #82caff;
-  color: white;
-}
-
-.modal-buttons .btn-save:hover {
-  background-color: #5bb2ff;
-}
-
 /* Transiciones */
 .fade-enter-active,
 .fade-leave-active {
@@ -588,6 +539,78 @@ export default {
 
 .hidden-file-input {
   display: none;
+}
+
+/* Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-container {
+  width: 90%;
+  max-width: 600px;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.close-button {
+  border: none;
+  background: transparent;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.full-width {
+  grid-column: span 2;
+}
+
+label {
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+input,
+select {
+  padding: 10px;
+  border-radius: 8px;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+
+.modal-actions button {
+  margin-left: 10px;
 }
 
 @media screen and (max-width: 1024px) {
@@ -641,47 +664,6 @@ export default {
     margin-bottom: 8px;
   }
 
-  .modal-container {
-    width: 95%;
-    margin: 0 10px;
-  }
-
-  .form-group {
-    margin-bottom: 12px;
-  }
-
-  .modal-buttons {
-    flex-direction: column;
-  }
-
-  .modal-buttons button {
-    width: 100%;
-    margin-bottom: 8px;
-  }
-
-  .modal-container {
-    padding: 12px;
-    width: 90%;
-    max-width: 400px;
-  }
-
-  .form-container {
-    gap: 10px;
-  }
-
-  .form-group label {
-    font-size: 0.9rem;
-  }
-
-  .input-field {
-    font-size: 0.85rem;
-    padding: 6px 10px;
-  }
-
-  .modal-buttons button {
-    font-size: 0.85rem;
-    padding: 6px 12px;
-  }
 }
 
 @media screen and (max-width: 480px) {
