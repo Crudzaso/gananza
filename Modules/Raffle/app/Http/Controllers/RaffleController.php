@@ -13,7 +13,11 @@ class RaffleController extends Controller
 {
     public function index()
     {
-        $raffles = Raffle::with('organizer', 'lottery')->paginate(10);
+        $user = auth()->user();
+        $raffles = Raffle::with('organizer', 'lottery')
+            ->where('organizer_id', $user->id)
+            ->paginate(10);
+
         return view('raffle::index', compact('raffles'));
     }
 
