@@ -607,4 +607,5 @@ export default {
 .hidden-file-input {
   display: none;
 }
+
 </style>
