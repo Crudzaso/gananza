@@ -16,6 +16,8 @@
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+
 
 
     {{-- Vite CSS --}}
@@ -24,10 +26,13 @@
 <body class="bg-gray-100 text-gray-800">
     <div id="app">
         @yield('content')
+        @yield('js')
     </div>
 
     {{-- Alpine.js --}}
     <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+
 
     {{-- Vite JS --}}
     @vite('Modules/Raffle/resources/assets/js/app.js', 'build-raffle')
