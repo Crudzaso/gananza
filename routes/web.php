@@ -52,7 +52,7 @@ Route::middleware(['auth', 'role:admin'])->get('dashboard/admin', function () {
 Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/users', [UserController::class, 'index'])->name('users.index');
     Route::get('/users/create', [UserController::class, 'create'])->name('users.create');
-    Route::get('/users/{user}/edit', [UserController::class, 'edit'])->name('users.edit');
+    Route::get('/users/{user}/edit', [UserController::class, 'edit']    )->name('users.edit');
     Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
     Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
 });
@@ -97,3 +97,10 @@ Route::post('/payment/store', [PaymentController::class, 'store']);
 Route::post('/verify-payment', [PaymentVerificationController::class, 'verifyPayment']);
 
 
+Route::get('/test-404', function () {
+    abort(404);
+});
+
+Route::get('/test-500', function () {
+    abort(500);
+});

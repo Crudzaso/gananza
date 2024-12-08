@@ -1,8 +1,10 @@
 <?php
 
+use App\Helpers\DiscordNotifier;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Support\Facades\Log;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -27,5 +29,9 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        //
+        // Captura todas las excepciones reportables y envíalas a Discord
+        $exceptions->report(function (Throwable $exception) {
+            Log::info('Excepción reportada: ' . $exception->getMessage()); // Log de depuración
+            DiscordNotifier::notifyException($exception); // Reportar la excepción a Discord
+        });
     })->create();

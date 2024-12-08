@@ -1,19 +1,15 @@
 <template>
-  <!-- Main Container -->
   <div :class="['raffle-card shadow-lg rounded-lg p-4 flex flex-col items-center gap-4 mx-auto', theme.cardBackground]">
-    <!-- Raffle Image -->
     <img
       src="../../../../public/assets/media/auth/Letra-Gananza.svg"
       alt="Prize"
       class="h-32 w-32 object-cover rounded-lg mb-3"
     />
-    <!-- Raffle Title and Organizer -->
     <h3 :class="['text-lg font-semibold', theme.textPrimary]">{{ raffle.name }}</h3>
     <p :class="theme.textSecondary">Organizador: {{ raffle.organizer.name }}</p>
     <p :class="theme.textSecondary">
       Ticket de precios <span :class="theme.textHighlight">${{ raffle.ticket_price }}</span>
     </p>
-    <!-- Buy Button -->
     <button
       @click.prevent="openSelectionModal"
       :class="theme.buttonPrimary"
@@ -22,24 +18,10 @@
       Comprar
     </button>
 
-    <!-- Modal for Selecting Numbers -->
-    <TransitionRoot
-      appear
-      :show="showSelectionModal"
-      as="template"
-    >
-      <Dialog
-        as="div"
-        @close="closeSelectionModal"
-        class="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm"
-      >
-        <TransitionChild
-          as="template"
-          enter="ease-out duration-300"
-          leave="ease-in duration-200"
-        >
+    <TransitionRoot appear :show="showSelectionModal" as="template">
+      <Dialog as="div" @close="closeSelectionModal" class="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm">
+        <TransitionChild as="template" enter="ease-out duration-300" leave="ease-in duration-200">
           <DialogPanel :class="[theme.modalBackground, 'w-full max-w-3xl p-8 rounded-2xl shadow-2xl flex gap-8']">
-            <!-- Number Selection -->
             <div class="w-2/3 flex flex-col items-center gap-4">
               <div class="grid grid-cols-5 gap-4 mb-4">
                 <button
@@ -51,27 +33,16 @@
                   {{ number }}
                 </button>
               </div>
-              <!-- Pagination for Numbers -->
               <div class="flex justify-center items-center w-full">
-                <button
-                  @click="goToPreviousPage"
-                  :disabled="currentPage === 1"
-                  class="px-4 py-2 bg-gray-300 rounded-lg mx-2"
-                >
+                <button @click="goToPreviousPage" :disabled="currentPage === 1" class="px-4 py-2 bg-gray-300 rounded-lg mx-2">
                   Atras
                 </button>
-                <span> Página {{ currentPage }} de {{ totalPages }}</span>
-                <button
-                  @click="goToNextPage"
-                  :disabled="currentPage === totalPages"
-                  class="px-4 py-2 bg-gray-300 rounded-lg mx-2"
-                >
+                <span :class="[theme.textPrimary]">Página {{ currentPage }} de {{ totalPages }}</span>
+                <button @click="goToNextPage" :disabled="currentPage === totalPages" class="px-4 py-2 bg-gray-300 rounded-lg mx-2">
                   Siguiente
                 </button>
               </div>
             </div>
-
-            <!-- Invoice Section -->
             <div class="w-1/3 flex flex-col items-center justify-center bg-white p-4 rounded-lg shadow-lg">
               <h3 class="text-lg font-semibold mb-4">Factura</h3>
               <div class="w-full mb-4">
@@ -80,13 +51,9 @@
               </div>
               <div class="w-full mb-4">
                 <label class="text-gray-700">Numeros Seleccionados</label>
-                <div class="py-2 px-4 bg-gray-200 rounded-lg text-center">{{ selectedNumber.join(', ') || 'Ninguno' }}
-                </div>
+                <div class="py-2 px-4 bg-gray-200 rounded-lg text-center">{{ selectedNumber.join(', ') || 'Ninguno' }}</div>
               </div>
-              <button
-                @click="proceedToPaymentModal"
-                :class="[theme.buttonPrimary, 'px-4 py-2 rounded-lg']"
-              >
+              <button @click="proceedToPaymentModal" :class="[theme.buttonPrimary, 'px-4 py-2 rounded-lg']">
                 Comprar
               </button>
             </div>
@@ -95,30 +62,12 @@
       </Dialog>
     </TransitionRoot>
 
-    <!-- Modal for Invoice -->
-    <TransitionRoot
-      appear
-      :show="showModal"
-      as="template"
-    >
-      <Dialog
-        as="div"
-        @close="closeModal"
-        class="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm"
-      >
-        <TransitionChild
-          as="template"
-          enter="ease-out duration-300"
-          leave="ease-in duration-200"
-        >
+    <TransitionRoot appear :show="showModal" as="template">
+      <Dialog as="div" @close="closeModal" class="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm">
+        <TransitionChild as="template" enter="ease-out duration-300" leave="ease-in duration-200">
           <DialogPanel :class="[theme.modalBackground, 'w-full max-w-lg p-8 rounded-2xl shadow-2xl']">
             <div>
-              <!-- Invoice Table -->
-              <table
-                cellspacing="0"
-                cellpadding="10"
-                class="w-full text-left border-collapse"
-              >
+              <table cellspacing="0" cellpadding="10" class="w-full text-left border-collapse">
                 <thead>
                   <tr>
                     <th class="border-b-2 py-2">Nombre</th>
@@ -131,24 +80,16 @@
                     <td class="border-t py-2">{{ userName }}</td>
                     <td class="border-t py-2">{{ selectedNumber.join(', ') || 'None' }}</td>
                     <td class="border-t py-2">
-                      ${{ selectedNumber.length > 0 ? (raffle.ticket_price * selectedNumber.length).toFixed(2) : '0.00'
-                      }}
+                      ${{ selectedNumber.length > 0 ? (raffle.ticket_price * selectedNumber.length).toFixed(2) : '0.00' }}
                     </td>
                   </tr>
                 </tbody>
               </table>
             </div>
-            <!-- Payment and Close Buttons -->
-            <button
-              @click="openVerificationModal"
-              :class="[theme.buttonPrimary, 'px-4 py-2 rounded-lg mr-2']"
-            >
+            <button @click="openVerificationModal" :class="[theme.buttonPrimary, 'px-4 py-2 rounded-lg mr-2']">
               Ir a pagar
             </button>
-            <button
-              @click="closeModal"
-              :class="[theme.buttonDanger, 'px-4 py-2 rounded-lg']"
-            >
+            <button @click="closeModal" :class="[theme.buttonDanger, 'px-4 py-2 rounded-lg']">
               Cerrar
             </button>
           </DialogPanel>
@@ -156,29 +97,12 @@
       </Dialog>
     </TransitionRoot>
 
-    <!-- Payment Verification Modal -->
-    <TransitionRoot
-      appear
-      :show="showVerificationModal"
-      as="template"
-    >
-      <Dialog
-        as="div"
-        @close="closeVerificationModal"
-        class="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm"
-      >
-        <TransitionChild
-          as="template"
-          enter="ease-out duration-300"
-          leave="ease-in duration-200"
-        >
+    <TransitionRoot appear :show="showVerificationModal" as="template">
+      <Dialog as="div" @close="closeVerificationModal" class="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm">
+        <TransitionChild as="template" enter="ease-out duration-300" leave="ease-in duration-200">
           <DialogPanel :class="[theme.modalBackground, 'w-full max-w-lg p-8 rounded-2xl shadow-2xl']">
             <h2>Aquí va la pasarela de pagos</h2>
-            <!-- Receipt Validation Form -->
-            <button
-              @click="closeVerificationModal"
-              :class="[theme.buttonDanger, 'px-4 py-2 rounded-lg mt-4']"
-            >
+            <button @click="closeVerificationModal" :class="[theme.buttonDanger, 'px-4 py-2 rounded-lg mt-4']">
               Cerrar
             </button>
           </DialogPanel>
@@ -189,13 +113,11 @@
 </template>
 
 <script setup>
-/* Imports and Setup */
 import { ref, computed } from 'vue';
 import { usePage } from '@inertiajs/vue3';
 import { useDarkMode } from '@/composables/useDarkMode';
 import { TransitionRoot, TransitionChild, Dialog, DialogPanel } from '@headlessui/vue';
 
-/* Props and Reactive Data */
 const raffleProps = defineProps({ raffle: Object });
 const showSelectionModal = ref(false);
 const showModal = ref(false);
@@ -205,23 +127,21 @@ const referenceNumber = ref('');
 const numbers = ref([]);
 const selectedNumber = ref([]);
 
-/* Pagination Variables */
 const currentPage = ref(1);
 const itemsPerPage = 15;
 const totalPages = computed(() => Math.ceil(totalTickets.value / itemsPerPage));
 
-/* User and Theme Settings */
 const user = usePage().props.auth?.user || null;
 const userName = ref(user ? user.name : 'Unauthenticated User');
 const { isDarkMode } = useDarkMode();
 const theme = computed(() => ({
+  textPrimary: isDarkMode.value ? 'text-white' : 'text-black',
   cardBackground: isDarkMode.value ? 'bg-[#1c1c1e]' : 'bg-[#f9f9f9]',
   modalBackground: isDarkMode.value ? 'bg-[#2c2c2e]' : 'bg-white',
   buttonPrimary: 'bg-blue-600 text-white',
   buttonDanger: 'bg-red-500 text-white',
 }));
 
-/* Number Selection Logic */
 const initializeNumbers = () => {
   numbers.value = Array.from({ length: totalTickets.value }, (_, i) => i + 1);
 };
@@ -253,7 +173,6 @@ const handleNumberClick = (number) => {
   }
 };
 
-/* Modal Logic */
 const openSelectionModal = () => {
   initializeNumbers();
   showSelectionModal.value = true;
@@ -291,7 +210,6 @@ const closeVerificationModal = () => {
 </script>
 
 <style scoped>
-/* Button Styles */
 .number-button {
   transition: transform 0.2s, box-shadow 0.2s;
 }

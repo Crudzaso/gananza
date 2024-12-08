@@ -2,9 +2,12 @@
 
 namespace App\Providers;
 
+use App\Listeners\SendHttpErrorNotification;
 use Illuminate\Auth\Events\Login;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use App\Listeners\SendLoginNotification;
+use Illuminate\Auth\Events\Logout;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -17,7 +20,11 @@ class EventServiceProvider extends ServiceProvider
         Login::class => [
             SendLoginNotification::class,
         ],
+        Logout::class => [
+            SendLoginNotification::class,
+        ],
     ];
+
 
     /**
      * Register any events for your application.

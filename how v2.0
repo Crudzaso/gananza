@@ -1,0 +1,688 @@
+[33mcommit 5449984500fe2e61179ed3048e4d737a717cc840[m[33m ([m[1;33mtag: [m[1;33mv1.0[m[33m, [m[1;31morigin/test/payment-method[m[33m)[m
+Author: DiegoAndresMejia <diegomejiasobsu@gmail.com>
+Date:   Mon Dec 2 01:43:07 2024 -0500
+
+    create: add the mercadopago payment method (in progress)
+
+[1mdiff --git a/app/Http/Controllers/PaymentController.php b/app/Http/Controllers/PaymentController.php[m
+[1mindex 1225dfb..1a0442e 100644[m
+[1m--- a/app/Http/Controllers/PaymentController.php[m
+[1m+++ b/app/Http/Controllers/PaymentController.php[m
+[36m@@ -7,6 +7,8 @@[m
+ use Modules\Payment\Models\Payment;[m
+ use Modules\Raffle\Models\Raffle;[m
+ use Modules\Ticket\Models\Ticket;[m
+[32m+[m[32muse MercadoPago\MercadoPagoConfig;[m
+[32m+[m[32muse MercadoPago\Client\Preference\PreferenceClient;[m
+ [m
+ class PaymentController extends Controller[m
+ {[m
+[36m@@ -56,4 +58,74 @@[m [mpublic function store(Request $request)[m
+             'ticket' => $ticket,[m
+             'payment' => $payment,[m
+         ]);[m
+[31m-    }}[m
+[32m+[m[32m    }[m
+[32m+[m[32m    public function createPreference(Request $request)[m
+[32m+[m[32m    {[m
+[32m+[m[32m        // Configura el token de acceso de MercadoPago[m
+[32m+[m[32m        MercadoPagoConfig::setAccessToken(env('MERCADOPAGO_ACCESS_TOKEN'));[m
+[32m+[m[41m    [m
+[32m+[m[32m        // Obtiene al usuario autenticado[m
+[32m+[m[32m        $user = auth()->user();[m
+[32m+[m[41m    [m
+[32m+[m[32m        // Obtiene el monto y los números seleccionados[m
+[32m+[m[32m        $amount = $request->input('amount'); // Monto enviado desde el frontend[m
+[32m+[m[32m        $numbers = $request->input('numbers', []); // Números seleccionados (opcional)[m
+[32m+[m[41m    [m
+[32m+[m[32m        // Crear la preferencia[m
+[32m+[m[32m        $client = new PreferenceClient();[m
+[32m+[m[32m        $preference = $client->create([[m
+[32m+[m[32m            "items" => [[m
+[32m+[m[32m                [[m
+[32m+[m[32m                    "title" => "Compra de Tickets de Rifa",[m
+[32m+[m[32m                    "quantity" => 1,[m
+[32m+[m[32m                    "unit_price" => $amount, // Monto dinámico enviado desde el frontend[m
+[32m+[m[32m                ][m
+[32m+[m[32m            ],[m
+[32m+[m[32m            "payer" => [[m
+[32m+[m[32m                "name" => $user->name,[m
+[32m+[m[32m                "surname" => $user->lastname,[m
+[32m+[m[32m                "email" => $user->email,[m
+[32m+[m[32m                "phone" => [[m
+[32m+[m[32m                    "area_code" => substr($user->phone_number, 0, 3), // Primera parte del número[m
+[32m+[m[32m                    "number" => substr($user->phone_number, 3), // Resto del número[m
+[32m+[m[32m                ],[m
+[32m+[m[32m                "identification" => [[m
+[32m+[m[32m                    "type" => $user->document_type, // Tipo de documento (ejemplo: DNI, CC)[m
+[32m+[m[32m                    "number" => $user->document, // Número del documento[m
+[32m+[m[32m                ],[m
+[32m+[m[32m            ],[m
+[32m+[m[32m            "back_urls" => [[m
+[32m+[m[32m                "success" => route('payment.success'),[m
+[32m+[m[32m                "failure" => route('payment.failure'),[m
+[32m+[m[32m                "pending" => route('payment.pending'),[m
+[32m+[m[32m            ],[m
+[32m+[m[32m            "auto_return" => "approved",[m
+[32m+[m[32m            "external_reference" => "TICKETS_RIFA-" . uniqid(), // Referencia única[m
+[32m+[m[32m            "statement_descriptor" => "RIFA_TICKETS", // Descripción en extracto bancario[m
+[32m+[m[32m        ]);[m
+[32m+[m[41m    [m
+[32m+[m[32m        // Retorna el ID de la preferencia al frontend[m
+[32m+[m[32m        return response()->json([[m
+[32m+[m[32m            'id' => $preference->id,[m
+[32m+[m[32m            'numbers' => $numbers, // Devuelve los números seleccionados (opcional)[m
+[32m+[m[32m        ]);[m
+[32m+[m[32m    }[m
+[32m+[m[41m    [m
+[32m+[m[32m    public function handleSuccess()[m
+[32m+[m[32m    {[m
+[32m+[m[32m        // Opcional: puedes procesar información del pago aquí[m
+[32m+[m[32m        return redirect('/dashboard')->with('success', 'Pago completado exitosamente.');[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    public function handleFailure()[m
+[32m+[m[32m    {[m
+[32m+[m[32m        // Opcional: puedes registrar errores o mostrar mensajes[m
+[32m+[m[32m        return redirect('/dashboard')->with('error', 'El pago no se pudo completar. Inténtalo de nuevo.');[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    public function handlePending()[m
+[32m+[m[32m    {[m
+[32m+[m[32m        // Opcional: maneja pagos pendientes[m
+[32m+[m[32m        return redirect('/dashboard')->with('info', 'El pago está pendiente de aprobación.');[m
+[32m+[m[32m    }[m
+[32m+[m[32m}[m
+[1mdiff --git a/composer.json b/composer.json[m
+[1mindex b67fae1..2c0dff4 100644[m
+[1m--- a/composer.json[m
+[1m+++ b/composer.json[m
+[36m@@ -16,6 +16,7 @@[m
+         "laravel/socialite": "^5.16",[m
+         "laravel/telescope": "^5.2",[m
+         "laravel/tinker": "^2.9",[m
+[32m+[m[32m        "mercadopago/dx-php": "3.0.7",[m
+         "nwidart/laravel-modules": "^11.1",[m
+         "php-imap/php-imap": "^2.0",[m
+         "spatie/laravel-permission": "^6.9",[m
+[1mdiff --git a/composer.lock b/composer.lock[m
+[1mindex 06f9206..b97b4d5 100644[m
+[1m--- a/composer.lock[m
+[1m+++ b/composer.lock[m
+[36m@@ -4,7 +4,7 @@[m
+         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",[m
+         "This file is @generated automatically"[m
+     ],[m
+[31m-    "content-hash": "8663b66401d53b74273676a3c99b7ae7",[m
+[32m+[m[32m    "content-hash": "ddbe8f81e50b86b1374753c8535fb151",[m
+     "packages": [[m
+         {[m
+             "name": "almasaeed2010/adminlte",[m
+[36m@@ -4017,6 +4017,45 @@[m
+             },[m
+             "time": "2024-03-31T07:05:07+00:00"[m
+         },[m
+[32m+[m[32m        {[m
+[32m+[m[32m            "name": "mercadopago/dx-php",[m
+[32m+[m[32m            "version": "3.0.7",[m
+[32m+[m[32m            "source": {[m
+[32m+[m[32m                "type": "git",[m
+[32m+[m[32m                "url": "https://github.com/mercadopago/sdk-php.git",[m
+[32m+[m[32m                "reference": "3e52ce992bbe79116eafbe9b7b658f0c3f105290"[m
+[32m+[m[32m            },[m
+[32m+[m[32m            "dist": {[m
+[32m+[m[32m                "type": "zip",[m
+[32m+[m[32m                "url": "https://api.github.com/repos/mercadopago/sdk-php/zipball/3e52ce992bbe79116eafbe9b7b658f0c3f105290",[m
+[32m+[m[32m                "reference": "3e52ce992bbe79116eafbe9b7b658f0c3f105290",[m
+[32m+[m[32m                "shasum": ""[m
+[32m+[m[32m            },[m
+[32m+[m[32m            "require": {[m
+[32m+[m[32m                "php": ">=8.2"[m
+[32m+[m[32m            },[m
+[32m+[m[32m            "require-dev": {[m
+[32m+[m[32m                "friendsofphp/php-cs-fixer": "^3.22",[m
+[32m+[m[32m                "phpunit/phpunit": "^10.2",[m
+[32m+[m[32m                "squizlabs/php_codesniffer": "3.*"[m
+[32m+[m[32m            },[m
+[32m+[m[32m            "type": "library",[m
+[32m+[m[32m            "autoload": {[m
+[32m+[m[32m                "psr-4": {[m
+[32m+[m[32m                    "MercadoPago\\": "src/MercadoPago"[m
+[32m+[m[32m                }[m
+[32m+[m[32m            },[m
+[32m+[m[32m            "notification-url": "https://packagist.org/downloads/",[m
+[32m+[m[32m            "license": [[m
+[32m+[m[32m                "MIT"[m
+[32m+[m[32m            ],[m
+[32m+[m[32m            "description": "Mercado Pago PHP SDK",[m
+[32m+[m[32m            "homepage": "https://github.com/mercadopago/sdk-php",[m
+[32m+[m[32m            "support": {[m
+[32m+[m[32m                "source": "https://github.com/mercadopago/sdk-php/tree/3.0.7"[m
+[32m+[m[32m            },[m
+[32m+[m[32m            "time": "2024-07-04T17:06:16+00:00"[m
+[32m+[m[32m        },[m
+         {[m
+             "name": "mobiledetect/mobiledetectlib",[m
+             "version": "4.8.06",[m
+[1mdiff --git a/package-lock.json b/package-lock.json[m
+[1mindex 5a2b34e..9e67baa 100644[m
+[1m--- a/package-lock.json[m
+[1m+++ b/package-lock.json[m
+[36m@@ -6,6 +6,7 @@[m
+         "": {[m
+             "dependencies": {[m
+                 "@headlessui/vue": "^1.7.23",[m
+[32m+[m[32m                "@inertiajs/inertia": "^0.11.1",[m
+                 "@splidejs/vue-splide": "^0.6.12",[m
+                 "chart.js": "^4.4.6",[m
+                 "lucide-vue-next": "^0.454.0",[m
+[36m@@ -19,7 +20,7 @@[m
+                 "@tailwindcss/typography": "^0.5.10",[m
+                 "@vitejs/plugin-vue": "^5.0.0",[m
+                 "autoprefixer": "^10.4.16",[m
+[31m-                "axios": "^1.7.4",[m
+[32m+[m[32m                "axios": "^1.7.8",[m
+                 "concurrently": "^9.0.1",[m
+                 "laravel-vite-plugin": "^1.0",[m
+                 "postcss": "^8.4.32",[m
+[36m@@ -506,6 +507,26 @@[m
+                 "qs": "^6.9.0"[m
+             }[m
+         },[m
+[32m+[m[32m        "node_modules/@inertiajs/inertia": {[m
+[32m+[m[32m            "version": "0.11.1",[m
+[32m+[m[32m            "resolved": "https://registry.npmjs.org/@inertiajs/inertia/-/inertia-0.11.1.tgz",[m
+[32m+[m[32m            "integrity": "sha512-btmV53c54oW4Z9XF0YyTdIUnM7ue0ONy3/KJOz6J1C5CYIwimiKfDMpz8ZbGJuxS+SPdOlNsqj2ZhlHslpJRZg==",[m
+[32m+[m[32m            "license": "MIT",[m
+[32m+[m[32m            "dependencies": {[m
+[32m+[m[32m                "axios": "^0.21.1",[m
+[32m+[m[32m                "deepmerge": "^4.0.0",[m
+[32m+[m[32m                "qs": "^6.9.0"[m
+[32m+[m[32m            }[m
+[32m+[m[32m        },[m
+[32m+[m[32m        "node_modules/@inertiajs/inertia/node_modules/axios": {[m
+[32m+[m[32m            "version": "0.21.4",[m
+[32m+[m[32m            "resolved": "https://registry.npmjs.org/axios/-/axios-0.21.4.tgz",[m
+[32m+[m[32m            "integrity": "sha512-ut5vewkiu8jjGBdqpM44XxjuCjq9LAKeHVmoVfHVzy8eHgxxq8SbAVQNovDA8mVi05kP0Ea/n/UzcSHcTJQfNg==",[m
+[32m+[m[32m            "license": "MIT",[m
+[32m+[m[32m            "dependencies": {[m
+[32m+[m[32m                "follow-redirects": "^1.14.0"[m
+[32m+[m[32m            }[m
+[32m+[m[32m        },[m
+         "node_modules/@inertiajs/vue3": {[m
+             "version": "1.2.0",[m
+             "resolved": "https://registry.npmjs.org/@inertiajs/vue3/-/vue3-1.2.0.tgz",[m
+[36m@@ -1197,9 +1218,9 @@[m
+             }[m
+         },[m
+         "node_modules/axios": {[m
+[31m-            "version": "1.7.7",[m
+[31m-            "resolved": "https://registry.npmjs.org/axios/-/axios-1.7.7.tgz",[m
+[31m-            "integrity": "sha512-S4kL7XrjgBmvdGut0sN3yJxqYzrDOnivkBiN0OFs6hLiUam3UPvswUo0kqGyhqUZGEOytHyumEdXsAkgCOUf3Q==",[m
+[32m+[m[32m            "version": "1.7.8",[m
+[32m+[m[32m            "resolved": "https://registry.npmjs.org/axios/-/axios-1.7.8.tgz",[m
+[32m+[m[32m            "integrity": "sha512-Uu0wb7KNqK2t5K+YQyVCLM76prD5sRFjKHbJYCP1J7JFGEQ6nN7HWn9+04LAeiJ3ji54lgS/gZCH1oxyrf1SPw==",[m
+             "dev": true,[m
+             "license": "MIT",[m
+             "dependencies": {[m
+[36m@@ -1288,7 +1309,6 @@[m
+             "version": "1.0.7",[m
+             "resolved": "https://registry.npmjs.org/call-bind/-/call-bind-1.0.7.tgz",[m
+             "integrity": "sha512-GHTSNSYICQ7scH7sZ+M2rFopRoLh8t2bLSW6BbgrtLsahOIB5iyAVJf9GjWK3cYTDaMj4XdBpM1cA6pIS0Kv2w==",[m
+[31m-            "dev": true,[m
+             "license": "MIT",[m
+             "dependencies": {[m
+                 "es-define-property": "^1.0.0",[m
+[36m@@ -1616,7 +1636,6 @@[m
+             "version": "4.3.1",[m
+             "resolved": "https://registry.npmjs.org/deepmerge/-/deepmerge-4.3.1.tgz",[m
+             "integrity": "sha512-3sUqbMEc77XqpdNO7FRyRog+eW3ph+GYCbj+rK+uYyRMuwsVy0rMiVtPn+QJlKFvWP/1PYpapqYn0Me2knFn+A==",[m
+[31m-            "dev": true,[m
+             "license": "MIT",[m
+             "engines": {[m
+                 "node": ">=0.10.0"[m
+[36m@@ -1626,7 +1645,6 @@[m
+             "version": "1.1.4",[m
+             "resolved": "https://registry.npmjs.org/define-data-property/-/define-data-property-1.1.4.tgz",[m
+             "integrity": "sha512-rBMvIzlpA8v6E+SJZoo++HAYqsLrkg7MSfIinMPFhmkorw7X+dOXVJQs+QT69zGkzMyfDnIMN2Wid1+NbL3T+A==",[m
+[31m-            "dev": true,[m
+             "license": "MIT",[m
+             "dependencies": {[m
+                 "es-define-property": "^1.0.0",[m
+[36m@@ -1707,7 +1725,6 @@[m
+             "version": "1.0.0",[m
+             "resolved": "https://registry.npmjs.org/es-define-property/-/es-define-property-1.0.0.tgz",[m
+             "integrity": "sha512-jxayLKShrEqqzJ0eumQbVhTYQM27CfT1T35+gCgDFoL82JLsXqTJ76zv6A0YLOgEnLUMvLzsDsGIrl8NFpT2gQ==",[m
+[31m-            "dev": true,[m
+             "license": "MIT",[m
+             "dependencies": {[m
+                 "get-intrinsic": "^1.2.4"[m
+[36m@@ -1720,7 +1737,6 @@[m
+             "version": "1.3.0",[m
+             "resolved": "https://registry.npmjs.org/es-errors/-/es-errors-1.3.0.tgz",[m
+             "integrity": "sha512-Zf5H2Kxt2xjTvbJvP2ZWLEICxA6j+hAmMzIlypy4xcBg1vKVnx89Wy0GbS+kf5cwCVFFzdCFh2XSCFNULS6csw==",[m
+[31m-            "dev": true,[m
+             "license": "MIT",[m
+             "engines": {[m
+                 "node": ">= 0.4"[m
+[36m@@ -1851,7 +1867,6 @@[m
+             "version": "1.15.9",[m
+             "resolved": "https://registry.npmjs.org/follow-redirects/-/follow-redirects-1.15.9.tgz",[m
+             "integrity": "sha512-gew4GsXizNgdoRyqmyfMHyAmXsZDk6mHkSxZFCzW9gwlbtOW44CDtYavM+y+72qD/Vq2l550kMF52DT8fOLJqQ==",[m
+[31m-            "dev": true,[m
+             "funding": [[m
+                 {[m
+                     "type": "individual",[m
+[36m@@ -1933,7 +1948,6 @@[m
+             "version": "1.1.2",[m
+             "resolved": "https://registry.npmjs.org/function-bind/-/function-bind-1.1.2.tgz",[m
+             "integrity": "sha512-7XHNxH7qX9xG5mIwxkhumTox/MIRNcOgDrxWsMt2pAr23WHp6MrRlN7FBSFpCpr+oVO0F744iUgR82nJMfG2SA==",[m
+[31m-            "dev": true,[m
+             "license": "MIT",[m
+             "funding": {[m
+                 "url": "https://github.com/sponsors/ljharb"[m
+[36m@@ -1952,7 +1966,6 @@[m
+             "version": "1.2.4",[m
+             "resolved": "https://registry.npmjs.org/get-intrinsic/-/get-intrinsic-1.2.4.tgz",[m
+             "integrity": "sha512-5uYhsJH8VJBTv7oslg4BznJYhDoRI6waYCxMmCdnTrcCrHA/fCFKoTFz2JKKE0HdDFUF7/oQuhzumXJK7paBRQ==",[m
+[31m-            "dev": true,[m
+             "license": "MIT",[m
+             "dependencies": {[m
+                 "es-errors": "^1.3.0",[m
+[36m@@ -2006,7 +2019,6 @@[m
+             "version": "1.0.1",[m
+             "resolved": "https://registry.npmjs.org/gopd/-/gopd-1.0.1.tgz",[m
+             "integrity": "sha512-d65bNlIadxvpb/A2abVdlqKqV563juRnZ1Wtk6s1sIR8uNsXR70xqIzVqxVf1eTqDunwT2MkczEeaezCKTZhwA==",[m
+[31m-            "dev": true,[m
+             "license": "MIT",[m
+             "dependencies": {[m
+                 "get-intrinsic": "^1.1.3"[m
+[36m@@ -2029,7 +2041,6 @@[m
+             "version": "1.0.2",[m
+             "resolved": "https://registry.npmjs.org/has-property-descriptors/-/has-property-descriptors-1.0.2.tgz",[m
+             "integrity": "sha512-55JNKuIW+vq4Ke1BjOTjM2YctQIvCT7GFzHwmfZPGo5wnrgkid0YQtnAleFSqumZm4az3n2BS+erby5ipJdgrg==",[m
+[31m-            "dev": true,[m
+             "license": "MIT",[m
+             "dependencies": {[m
+                 "es-define-property": "^1.0.0"[m
+[36m@@ -2042,7 +2053,6 @@[m
+             "version": "1.0.3",[m
+             "resolved": "https://registry.npmjs.org/has-proto/-/has-proto-1.0.3.tgz",[m
+             "integrity": "sha512-SJ1amZAJUiZS+PhsVLf5tGydlaVB8EdFpaSO4gmiUKUOxk8qzn5AIy4ZeJUmh22znIdk/uMAUT2pl3FxzVUH+Q==",[m
+[31m-            "dev": true,[m
+             "license": "MIT",[m
+             "engines": {[m
+                 "node": ">= 0.4"[m
+[36m@@ -2055,7 +2065,6 @@[m
+             "version": "1.0.3",[m
+             "resolved": "https://registry.npmjs.org/has-symbols/-/has-symbols-1.0.3.tgz",[m
+             "integrity": "sha512-l3LCuF6MgDNwTDKkdYGEihYjt5pRPbEg46rtlmnSPlUbgmB8LOIrKJbYYFBSbnPaJexMKtiPO8hmeRjRz2Td+A==",[m
+[31m-            "dev": true,[m
+             "license": "MIT",[m
+             "engines": {[m
+                 "node": ">= 0.4"[m
+[36m@@ -2068,7 +2077,6 @@[m
+             "version": "2.0.2",[m
+             "resolved": "https://registry.npmjs.org/hasown/-/hasown-2.0.2.tgz",[m
+             "integrity": "sha512-0hJU9SCPvmMzIBdZFqNPXWa6dqh7WdH0cII9y+CyS8rG3nL48Bclra9HmKhVVUHyPWNH5Y7xDwAB7bfgSjkUMQ==",[m
+[31m-            "dev": true,[m
+             "license": "MIT",[m
+             "dependencies": {[m
+                 "function-bind": "^1.1.2"[m
+[36m@@ -2468,7 +2476,6 @@[m
+             "version": "1.13.2",[m
+             "resolved": "https://registry.npmjs.org/object-inspect/-/object-inspect-1.13.2.tgz",[m
+             "integrity": "sha512-IRZSRuzJiynemAXPYtPe5BoI/RESNYR7TYm50MC5Mqbd3Jmw5y790sErYw3V6SryFJD64b74qQQs9wn5Bg/k3g==",[m
+[31m-            "dev": true,[m
+             "license": "MIT",[m
+             "engines": {[m
+                 "node": ">= 0.4"[m
+[36m@@ -2922,7 +2929,6 @@[m
+             "version": "6.13.0",[m
+             "resolved": "https://registry.npmjs.org/qs/-/qs-6.13.0.tgz",[m
+             "integrity": "sha512-+38qI9SOr8tfZ4QmJNplMUxqjbe7LKvvZgWdExBOmd+egZTtjLB67Gu0HRX3u/XOq7UU2Nx6nsjvS16Z9uwfpg==",[m
+[31m-            "dev": true,[m
+             "license": "BSD-3-Clause",[m
+             "dependencies": {[m
+                 "side-channel": "^1.0.6"[m
+[36m@@ -3104,7 +3110,6 @@[m
+             "version": "1.2.2",[m
+             "resolved": "https://registry.npmjs.org/set-function-length/-/set-function-length-1.2.2.tgz",[m
+             "integrity": "sha512-pgRc4hJ4/sNjWCSS9AmnS40x3bNMDTknHgL5UaMBTMyJnU90EgWh1Rz+MC9eFu4BuN/UwZjKQuY/1v3rM7HMfg==",[m
+[31m-            "dev": true,[m
+             "license": "MIT",[m
+             "dependencies": {[m
+                 "define-data-property": "^1.1.4",[m
+[36m@@ -3155,7 +3160,6 @@[m
+             "version": "1.0.6",[m
+             "resolved": "https://registry.npmjs.org/side-channel/-/side-channel-1.0.6.tgz",[m
+             "integrity": "sha512-fDW/EZ6Q9RiO8eFG8Hj+7u/oW+XrPTIChwCOM2+th2A6OblDtYYIpve9m+KvI9Z4C9qSEXlaGR6bTEYHReuglA==",[m
+[31m-            "dev": true,[m
+             "license": "MIT",[m
+             "dependencies": {[m
+                 "call-bind": "^1.0.7",[m
+[1mdiff --git a/package.json b/package.json[m
+[1mindex 3d50587..cc07832 100644[m
+[1m--- a/package.json[m
+[1m+++ b/package.json[m
+[36m@@ -11,7 +11,7 @@[m
+         "@tailwindcss/typography": "^0.5.10",[m
+         "@vitejs/plugin-vue": "^5.0.0",[m
+         "autoprefixer": "^10.4.16",[m
+[31m-        "axios": "^1.7.4",[m
+[32m+[m[32m        "axios": "^1.7.8",[m
+         "concurrently": "^9.0.1",[m
+         "laravel-vite-plugin": "^1.0",[m
+         "postcss": "^8.4.32",[m
+[36m@@ -21,6 +21,7 @@[m
+     },[m
+     "dependencies": {[m
+         "@headlessui/vue": "^1.7.23",[m
+[32m+[m[32m        "@inertiajs/inertia": "^0.11.1",[m
+         "@splidejs/vue-splide": "^0.6.12",[m
+         "chart.js": "^4.4.6",[m
+         "lucide-vue-next": "^0.454.0",[m
+[1mdiff --git a/resources/js/Components/Dashboard/RaffleCard.vue b/resources/js/Components/Dashboard/RaffleCard.vue[m
+[1mindex aacf29c..2581146 100644[m
+[1m--- a/resources/js/Components/Dashboard/RaffleCard.vue[m
+[1m+++ b/resources/js/Components/Dashboard/RaffleCard.vue[m
+[36m@@ -2,11 +2,8 @@[m
+   <!-- Main Container -->[m
+   <div :class="['raffle-card shadow-lg rounded-lg p-4 flex flex-col items-center gap-4 mx-auto', theme.cardBackground]">[m
+     <!-- Raffle Image -->[m
+[31m-    <img[m
+[31m-      src="../../../../public/assets/media/auth/Letra-Gananza.svg"[m
+[31m-      alt="Prize"[m
+[31m-      class="h-32 w-32 object-cover rounded-lg mb-3"[m
+[31m-    />[m
+[32m+[m[32m    <img src="../../../../public/assets/media/auth/Letra-Gananza.svg" alt="Prize"[m
+[32m+[m[32m      class="h-32 w-32 object-cover rounded-lg mb-3" />[m
+     <!-- Raffle Title and Organizer -->[m
+     <h3 :class="['text-lg font-semibold', theme.textPrimary]">{{ raffle.name }}</h3>[m
+     <p :class="theme.textSecondary">Organizador: {{ raffle.organizer.name }}</p>[m
+[36m@@ -14,58 +11,34 @@[m
+       Ticket de precios <span :class="theme.textHighlight">${{ raffle.ticket_price }}</span>[m
+     </p>[m
+     <!-- Buy Button -->[m
+[31m-    <button[m
+[31m-      @click.prevent="openSelectionModal"[m
+[31m-      :class="theme.buttonPrimary"[m
+[31m-      class="py-2 px-4 rounded-lg hover:scale-105 transition"[m
+[31m-    >[m
+[32m+[m[32m    <button @click.prevent="openSelectionModal" :class="theme.buttonPrimary"[m
+[32m+[m[32m      class="py-2 px-4 rounded-lg hover:scale-105 transition">[m
+       Comprar[m
+     </button>[m
+ [m
+     <!-- Modal for Selecting Numbers -->[m
+[31m-    <TransitionRoot[m
+[31m-      appear[m
+[31m-      :show="showSelectionModal"[m
+[31m-      as="template"[m
+[31m-    >[m
+[31m-      <Dialog[m
+[31m-        as="div"[m
+[31m-        @close="closeSelectionModal"[m
+[31m-        class="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm"[m
+[31m-      >[m
+[31m-        <TransitionChild[m
+[31m-          as="template"[m
+[31m-          enter="ease-out duration-300"[m
+[31m-          leave="ease-in duration-200"[m
+[31m-        >[m
+[32m+[m[32m    <TransitionRoot appear :show="showSelectionModal" as="template">[m
+[32m+[m[32m      <Dialog as="div" @close="closeSelectionModal"[m
+[32m+[m[32m        class="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm">[m
+[32m+[m[32m        <TransitionChild as="template" enter="ease-out duration-300" leave="ease-in duration-200">[m
+           <DialogPanel :class="[theme.modalBackground, 'w-full max-w-3xl p-8 rounded-2xl shadow-2xl flex gap-8']">[m
+             <!-- Number Selection -->[m
+             <div class="w-2/3 flex flex-col items-center gap-4">[m
+               <div class="grid grid-cols-5 gap-4 mb-4">[m
+[31m-                <button[m
+[31m-                  v-for="number in paginatedNumbers"[m
+[31m-                  :key="number"[m
+[31m-                  @click="handleNumberClick(number)"[m
+[31m-                  :class="['number-button py-2 px-4 rounded-lg transition', selectedNumber.includes(number) ? 'bg-blue-600 text-white' : 'bg-gray-200 hover:bg-blue-600 hover:text-white']"[m
+[31m-                >[m
+[32m+[m[32m                <button v-for="number in paginatedNumbers" :key="number" @click="handleNumberClick(number)"[m
+[32m+[m[32m                  :class="['number-button py-2 px-4 rounded-lg transition', selectedNumber.includes(number) ? 'bg-blue-600 text-white' : 'bg-gray-200 hover:bg-blue-600 hover:text-white']">[m
+                   {{ number }}[m
+                 </button>[m
+               </div>[m
+               <!-- Pagination for Numbers -->[m
+               <div class="flex justify-center items-center w-full">[m
+[31m-                <button[m
+[31m-                  @click="goToPreviousPage"[m
+[31m-                  :disabled="currentPage === 1"[m
+[31m-                  class="px-4 py-2 bg-gray-300 rounded-lg mx-2"[m
+[31m-                >[m
+[32m+[m[32m                <button @click="goToPreviousPage" :disabled="currentPage === 1"[m
+[32m+[m[32m                  class="px-4 py-2 bg-gray-300 rounded-lg mx-2">[m
+                   Atras[m
+                 </button>[m
+                 <span :class="[theme.textPrimary]">Página {{ currentPage }} de {{ totalPages }}</span>[m
+[31m-                <button[m
+[31m-                  @click="goToNextPage"[m
+[31m-                  :disabled="currentPage === totalPages"[m
+[31m-                  class="px-4 py-2 bg-gray-300 rounded-lg mx-2"[m
+[31m-                >[m
+[32m+[m[32m                <button @click="goToNextPage" :disabled="currentPage === totalPages"[m
+[32m+[m[32m                  class="px-4 py-2 bg-gray-300 rounded-lg mx-2">[m
+                   Siguiente[m
+                 </button>[m
+               </div>[m
+[36m@@ -83,10 +56,7 @@[m
+                 <div class="py-2 px-4 bg-gray-200 rounded-lg text-center">{{ selectedNumber.join(', ') || 'Ninguno' }}[m
+                 </div>[m
+               </div>[m
+[31m-              <button[m
+[31m-                @click="proceedToPaymentModal"[m
+[31m-                :class="[theme.buttonPrimary, 'px-4 py-2 rounded-lg']"[m
+[31m-              >[m
+[32m+[m[32m              <button @click="proceedToPaymentModal" :class="[theme.buttonPrimary, 'px-4 py-2 rounded-lg']">[m
+                 Comprar[m
+               </button>[m
+             </div>[m
+[36m@@ -96,29 +66,13 @@[m
+     </TransitionRoot>[m
+ [m
+     <!-- Modal for Invoice -->[m
+[31m-    <TransitionRoot[m
+[31m-      appear[m
+[31m-      :show="showModal"[m
+[31m-      as="template"[m
+[31m-    >[m
+[31m-      <Dialog[m
+[31m-        as="div"[m
+[31m-        @close="closeModal"[m
+[31m-        class="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm"[m
+[31m-      >[m
+[31m-        <TransitionChild[m
+[31m-          as="template"[m
+[31m-          enter="ease-out duration-300"[m
+[31m-          leave="ease-in duration-200"[m
+[31m-        >[m
+[32m+[m[32m    <TransitionRoot appear :show="showModal" as="template">[m
+[32m+[m[32m      <Dialog as="div" @close="closeModal" class="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm">[m
+[32m+[m[32m        <TransitionChild as="template" enter="ease-out duration-300" leave="ease-in duration-200">[m
+           <DialogPanel :class="[theme.modalBackground, 'w-full max-w-lg p-8 rounded-2xl shadow-2xl']">[m
+             <div>[m
+               <!-- Invoice Table -->[m
+[31m-              <table[m
+[31m-                cellspacing="0"[m
+[31m-                cellpadding="10"[m
+[31m-                class="w-full text-left border-collapse"[m
+[31m-              >[m
+[32m+[m[32m              <table cellspacing="0" cellpadding="10" class="w-full text-left border-collapse">[m
+                 <thead>[m
+                   <tr>[m
+                     <th class="border-b-2 py-2">Nombre</th>[m
+[36m@@ -139,16 +93,10 @@[m
+               </table>[m
+             </div>[m
+             <!-- Payment and Close Buttons -->[m
+[31m-            <button[m
+[31m-              @click="openVerificationModal"[m
+[31m-              :class="[theme.buttonPrimary, 'px-4 py-2 rounded-lg mr-2']"[m
+[31m-            >[m
+[32m+[m[32m            <button @click="openVerificationModal" :class="[theme.buttonPrimary, 'px-4 py-2 rounded-lg mr-2']">[m
+               Ir a pagar[m
+             </button>[m
+[31m-            <button[m
+[31m-              @click="closeModal"[m
+[31m-              :class="[theme.buttonDanger, 'px-4 py-2 rounded-lg']"[m
+[31m-            >[m
+[32m+[m[32m            <button @click="closeModal" :class="[theme.buttonDanger, 'px-4 py-2 rounded-lg']">[m
+               Cerrar[m
+             </button>[m
+           </DialogPanel>[m
+[36m@@ -157,28 +105,18 @@[m
+     </TransitionRoot>[m
+ [m
+     <!-- Payment Verification Modal -->[m
+[31m-    <TransitionRoot[m
+[31m-      appear[m
+[31m-      :show="showVerificationModal"[m
+[31m-      as="template"[m
+[31m-    >[m
+[31m-      <Dialog[m
+[31m-        as="div"[m
+[31m-        @close="closeVerificationModal"[m
+[31m-        class="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm"[m
+[31m-      >[m
+[31m-        <TransitionChild[m
+[31m-          as="template"[m
+[31m-          enter="ease-out duration-300"[m
+[31m-          leave="ease-in duration-200"[m
+[31m-        >[m
+[32m+[m[32m    <TransitionRoot appear :show="showVerificationModal" as="template">[m
+[32m+[m[32m      <Dialog as="div" @close="closeVerificationModal"[m
+[32m+[m[32m        class="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm">[m
+[32m+[m[32m        <TransitionChild as="template" enter="ease-out duration-300" leave="ease-in duration-200">[m
+           <DialogPanel :class="[theme.modalBackground, 'w-full max-w-lg p-8 rounded-2xl shadow-2xl']">[m
+[31m-            <h2>Aquí va la pasarela de pagos</h2>[m
+[31m-            <!-- Receipt Validation Form -->[m
+[31m-            <button[m
+[31m-              @click="closeVerificationModal"[m
+[31m-              :class="[theme.buttonDanger, 'px-4 py-2 rounded-lg mt-4']"[m
+[31m-            >[m
+[32m+[m[32m            <h2 class="text-xl font-semibold mb-4">Procesar Pago</h2>[m
+[32m+[m
+[32m+[m[32m            <!-- Contenedor del botón de MercadoPago -->[m
+[32m+[m[32m            <div id="wallet_container" class="my-4"></div>[m
+[32m+[m
+[32m+[m[32m            <!-- Botón para cerrar -->[m
+[32m+[m[32m            <button @click="closeVerificationModal" :class="[theme.buttonDanger, 'px-4 py-2 rounded-lg mt-4']">[m
+               Cerrar[m
+             </button>[m
+           </DialogPanel>[m
+[36m@@ -194,6 +132,8 @@[m [mimport { ref, computed } from 'vue';[m
+ import { usePage } from '@inertiajs/vue3';[m
+ import { useDarkMode } from '@/composables/useDarkMode';[m
+ import { TransitionRoot, TransitionChild, Dialog, DialogPanel } from '@headlessui/vue';[m
+[32m+[m[32mimport axios from 'axios';[m
+[32m+[m
+ [m
+ /* Props and Reactive Data */[m
+ const raffleProps = defineProps({ raffle: Object });[m
+[36m@@ -204,6 +144,8 @@[m [mconst totalTickets = ref(raffleProps.raffle.total_tickets || 0);[m
+ const referenceNumber = ref('');[m
+ const numbers = ref([]);[m
+ const selectedNumber = ref([]);[m
+[32m+[m[32mconst preferenceId = ref(null);[m
+[32m+[m
+ [m
+ /* Pagination Variables */[m
+ const currentPage = ref(1);[m
+[36m@@ -282,6 +224,7 @@[m [mconst closeModal = () => {[m
+ };[m
+ [m
+ const openVerificationModal = () => {[m
+[32m+[m[32m  initializeMercadoPago();[m
+   closeModal();[m
+   showVerificationModal.value = true;[m
+ };[m
+[36m@@ -289,6 +232,56 @@[m [mconst openVerificationModal = () => {[m
+ const closeVerificationModal = () => {[m
+   showVerificationModal.value = false;[m
+ };[m
+[32m+[m
+[32m+[m[32mconst initializeMercadoPago = async () => {[m
+[32m+[m[32m  try {[m
+[32m+[m[32m    // Calcula el monto total dinámico basado en la cantidad de números seleccionados[m
+[32m+[m[32m    const totalAmount = selectedNumber.value.length > 0[m[41m [m
+[32m+[m[32m      ? raffleProps.raffle.ticket_price * selectedNumber.value.length[m[41m [m
+[32m+[m[32m      : 0;[m
+[32m+[m
+[32m+[m[32m    // Validación: Asegúrate de que el monto sea mayor a 0[m
+[32m+[m[32m    if (totalAmount <= 0) {[m
+[32m+[m[32m      console.error('El monto total debe ser mayor a 0.');[m
+[32m+[m[32m      alert('Selecciona al menos un número para continuar con la compra.');[m
+[32m+[m[32m      return;[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    // Prepara los datos para enviar al backend[m
+[32m+[m[32m    const payload = {[m
+[32m+[m[32m      amount: totalAmount, // Monto dinámico calculado[m
+[32m+[m[32m      numbers: [...selectedNumber.value], // Números seleccionados (valores planos)[m
+[32m+[m[32m    };[m
+[32m+[m
+[32m+[m[32m    // Realiza la solicitud al backend[m
+[32m+[m[32m    const response = await axios.post('/payment/preference', payload);[m
+[32m+[m
+[32m+[m[32m    // Valida que la respuesta contenga un ID de preferencia[m
+[32m+[m[32m    if (!response.data.id) {[m
+[32m+[m[32m      throw new Error('No se recibió un ID de preferencia válido del backend.');[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    // Asigna el ID de la preferencia[m
+[32m+[m[32m    preferenceId.value = response.data.id;[m
+[32m+[m
+[32m+[m[32m    // Inicializa MercadoPago y renderiza el botón[m
+[32m+[m[32m    const mp = new window.MercadoPago('APP_USR-3f0baf72-345b-40ac-ba99-745f71d22b81', {[m
+[32m+[m[32m      locale: 'es-MX', // Ajusta el idioma al español de México[m
+[32m+[m[32m    });[m
+[32m+[m
+[32m+[m[32m    // Renderiza el botón de pago[m
+[32m+[m[32m    mp.bricks().create('wallet', 'wallet_container', {[m
+[32m+[m[32m      initialization: {[m
+[32m+[m[32m        preferenceId: preferenceId.value,[m
+[32m+[m[32m      },[m
+[32m+[m[32m    });[m
+[32m+[m[32m  } catch (error) {[m
+[32m+[m[32m    // Manejo de errores[m
+[32m+[m[32m    console.error('Error inicializando MercadoPago:', error);[m
+[32m+[m[32m    alert('Ocurrió un error al procesar el pago. Por favor, inténtalo de nuevo más tarde.');[m
+[32m+[m[32m  }[m
+[32m+[m[32m};[m
+[32m+[m
+ </script>[m
+ [m
+ <style scoped>[m
+[1mdiff --git a/resources/views/app.blade.php b/resources/views/app.blade.php[m
+[1mindex 2a12ebc..7590dfc 100644[m
+[1m--- a/resources/views/app.blade.php[m
+[1m+++ b/resources/views/app.blade.php[m
+[36m@@ -29,6 +29,7 @@[m
+     <!-- Cargar scripts de Metronic después de que Vue.js esté listo -->[m
+     <script src="{{ asset('assets/plugins/global/plugins.bundle.js') }}"></script>[m
+     <script src="{{ asset('assets/js/scripts.bundle.js') }}"></script>[m
+[32m+[m[32m    <script src="https://sdk.mercadopago.com/js/v2"></script>[m
+ [m
+     <!-- Scripts personalizados (si es necesario) -->[m
+     <script>[m
+[1mdiff --git a/routes/web.php b/routes/web.php[m
+[1mindex 4f96746..1afaaba 100644[m
+[1m--- a/routes/web.php[m
+[1m+++ b/routes/web.php[m
+[36m@@ -96,4 +96,10 @@[m
+ [m
+ Route::post('/verify-payment', [PaymentVerificationController::class, 'verifyPayment']);[m
+ [m
+[32m+[m[32m//testing to the payment method[m
+ [m
+[32m+[m[32mRoute::post('/payment/preference', [PaymentController::class, 'createPreference'])->name('payment.preference');[m
+[32m+[m
+[32m+[m[32mRoute::get('/payment/success', [PaymentController::class, 'handleSuccess'])->name('payment.success');[m
+[32m+[m[32mRoute::get('/payment/failure', [PaymentController::class, 'handleFailure'])->name('payment.failure');[m
+[32m+[m[32mRoute::get('/payment/pending', [PaymentController::class, 'handlePending'])->name('payment.pending');[m

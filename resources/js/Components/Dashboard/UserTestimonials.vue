@@ -92,7 +92,7 @@
   
   <style scoped>
   .testimonials-section {
-    padding: 3rem;
+    padding: 5rem;
     min-height: 300px; /* Incrementamos la altura mínima para evitar mezcla con los controles */
     border-radius: 12px;
     transition: background-color 0.3s ease-in-out;
@@ -100,6 +100,7 @@
   
   .testimonials-slider {
     overflow: hidden;
+    height: 15rem;
   }
   
   .testimonial-slide {
