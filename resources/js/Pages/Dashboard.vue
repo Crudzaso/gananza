@@ -9,7 +9,6 @@
         >
           <HeroBanner />
           <ActiveRaffles />
-          <LastChanceRaffles />
           <UserTestimonials />
           <OrganizerRegisterSection />
           <Footer  />
@@ -23,7 +22,6 @@
 import Navbar from '../Components/Dashboard/NavBar.vue';
 import HeroBanner from '../Components/Dashboard/HeroBanner.vue';
 import ActiveRaffles from '../Components/Dashboard/ActiveRaffles.vue';
-import LastChanceRaffles from '../Components/Dashboard/LastChanceRaffles.vue';
 import { useDarkMode } from '@/composables/useDarkMode';
 import { computed } from 'vue';
 import UserTestimonials from '@/Components/Dashboard/UserTestimonials.vue';

@@ -4,7 +4,6 @@ namespace Modules\Lottery\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-// use Modules\Lottery\Database\Factories\LotteryFactory;
 use Modules\Raffle\Models\Raffle;
 use Modules\Draws\Models\Draws;
 

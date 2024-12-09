@@ -35,6 +35,8 @@
       <p :class="theme.textSecondary">Números disponibles: {{ raffle.total_tickets }}</p>
       <p :class="theme.textSecondary">Total vendido: ${{ raffle.total_sales }}</p>
       <p :class="theme.textSecondary">Fecha de juego: <br>{{ raffle.end_date }}</p>
+
+      <!-- Buy Button -->
       <button
         v-if="!countdownEnded"
         @click.prevent="openSelectionModal"
@@ -42,7 +44,6 @@
       >
         Comprar
       </button>
-
       <p
         v-else
         class="text-gray-500 mt-4"
