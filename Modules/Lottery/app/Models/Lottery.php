@@ -27,7 +27,8 @@ public function draws()
     protected $fillable = [
         'name',
         'description',
-        'url_imagen'
+        'url_imagen',
+        'slug',
     ];
 
      protected static function newFactory()
