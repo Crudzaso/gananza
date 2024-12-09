@@ -39,8 +39,18 @@ class RaffleController extends Controller
             'description' => 'nullable|string',
             'start_date' => 'required|date',
             'end_date' => 'required|date|after:start_date',
+            'image' => 'nullable|image|max:2048', // Validar si es una imagen
         ]);
-
+    
+        $imagePath = null;
+    
+        // Verificar si se subió una imagen
+        if ($request->hasFile('image')) {
+            // Guardar la imagen en el disco 'public' y obtener la ruta
+            $imagePath = $request->file('image')->store('raffle_images', 'public');
+        }
+    
+        // Crear la rifa
         Raffle::create([
             'name' => $request->name,
             'organizer_id' => $request->organizer_id,
@@ -51,11 +61,13 @@ class RaffleController extends Controller
             'description' => $request->description,
             'start_date' => $request->start_date,
             'end_date' => $request->end_date,
-            'total_sales' => 0, // valor predeterminado de total_sales
+            'total_sales' => 0, // Valor predeterminado
+            'image' => $imagePath, // Guardar la ruta de la imagen en la base de datos
         ]);
-
+    
         return redirect()->route('raffles.index')->with('success', 'Rifa creada exitosamente.');
     }
+    
 
     public function edit($id)
     {

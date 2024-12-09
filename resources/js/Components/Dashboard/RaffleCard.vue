@@ -1,174 +1,206 @@
 <template>
   <!-- Main Container -->
   <div
-    :class="['raffle-card shadow-lg rounded-lg p-4 items-center gap-10 mx-auto grid grid-cols-2', theme.cardBackground]">
-    <div>
-      <!-- Countdown Timer -->
-      <div class="countdown p-0.3 x-sm rounded-lg text-center"
-        :class="countdownEnded ? 'bg-red-600 text-white' : 'bg-yellow-600 text-white'">
-        <p v-if="countdownEnded">¡Ya terminó!</p>
-        <p v-else>
-          {{ countdown.days }} :
-          {{ countdown.hours }} :
-          {{ countdown.minutes }} :
-          {{ countdown.seconds }}
-        </p>
-      </div>
-      <img src="../../../../public/assets/media/auth/Logo-Gananza2.svg" alt="Prize"
-        class="h-32 w-32 flex items-center justify-center rounded-lg mb-3" />
-    </div>
-    <!-- Raffle Title and Organizer -->
-    <div>
-      <h3 :class="theme.textSecondary">{{ raffle.name }}</h3>
-      <p :class="theme.textSecondary">Organizador: <br> {{ raffle.organizer.name }}</p>
-      <p :class="theme.textSecondary">
-        Precio <span :class="theme.textHighlight">${{ raffle.ticket_price }}</span>
+  :class="['raffle-card shadow-lg rounded-xl p-8 items-center gap-8 mx-auto flex flex-col md:flex-row w-full md:w-3/10', theme.cardBackground]"
+>
+  <!-- Image and Countdown -->
+  <div class="flex flex-col items-center justify-center gap-6 w-full md:w-1/3">
+    <!-- Countdown Timer -->
+    <div
+      class="countdown py-2 px-4 rounded-full text-center text-sm font-semibold shadow-md"
+      :class="countdownEnded ? 'bg-red-500 text-white' : 'bg-yellow-500 text-white'"
+    >
+      <p v-if="countdownEnded">¡Ya terminó!</p>
+      <p v-else>
+        {{ countdown.days }} días, {{ countdown.hours }}:{{ countdown.minutes }}:{{ countdown.seconds }}
       </p>
-      <br>
-      <p :class="theme.textSecondary">Numeros disponibles: {{ raffle.total_tickets }}</p>
-      <p :class="theme.textSecondary"> Total Vendido: $ {{ raffle.total_sales }}</p>
-      <!-- Buy Button -->
-      <button v-if="!countdownEnded" @click.prevent="openSelectionModal"
-        :class="[theme.buttonPrimary, 'mt-4 py-2 px-4 rounded-lg hover:scale-105 transition']">
+    </div>
+
+    <!-- Raffle Image -->
+    <img
+      :src="raffle.image ? `/storage/${raffle.image}` : '/assets/media/auth/Login-image.svg'"
+      alt="Prize"
+      class="h-48 w-48 object-cover rounded-lg shadow-md"
+      @error="handleImageError"
+    />
+  </div>
+
+  <!-- Raffle Details -->
+  <div class="flex flex-col justify-between w-full md:w-2/3">
+    <!-- Title -->
+    <div>
+      <h3
+        class="text-2xl font-bold mb-4 text-center md:text-left"
+        :class="[theme.textPrimary, 'text-shadow-md']"
+      >
+        {{ raffle.name }}
+      </h3>
+    </div>
+
+    <!-- Organizer and Details -->
+    <div class="text-base mb-6 space-y-2">
+      <p :class="theme.textSecondary">
+        Organizador: <span class="font-medium">{{ raffle.organizer.name }}</span>
+      </p>
+      <p :class="theme.textSecondary">
+        Precio: <span class="font-semibold">${{ raffle.ticket_price }}</span>
+      </p>
+      <p :class="theme.textSecondary">
+        Números disponibles: <span class="font-medium">{{ raffle.total_tickets }}</span>
+      </p>
+      <p :class="theme.textSecondary">
+        Total vendido: <span class="font-medium">${{ raffle.total_sales }}</span>
+      </p>
+    </div>
+
+    <!-- Buy Button -->
+    <div class="text-center">
+      <button
+        v-if="!countdownEnded"
+        @click.prevent="openSelectionModal"
+        :class="[theme.buttonPrimary, 'py-3 px-8 rounded-lg text-base font-semibold hover:scale-105 transition']"
+      >
         Comprar
       </button>
 
-      <p v-else class="text-gray-500 mt-4">
+      <p v-else class="text-gray-500 text-center">
         Rifa finalizada
       </p>
-
-      <!-- Modal for Selecting Numbers -->
-      <TransitionRoot appear :show="showSelectionModal" as="template">
-        <Dialog as="div" @close="closeSelectionModal"
-          class="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm">
-          <TransitionChild as="template" enter="ease-out duration-300" leave="ease-in duration-200">
-            <DialogPanel :class="[theme.modalBackground, 'w-full max-w-3xl p-8 rounded-2xl shadow-2xl flex gap-8']">
-              <!-- Number Selection -->
-              <div class="w-2/3 grid grid-col items-center justify-cente gap-x-6">
-                <div class="grid grid-cols-5 gap-4 mb-4">
-                  <button v-for="number in paginatedNumbers" :key="number" @click="handleNumberClick(number)"
-                    :class="['number-button py-2 px-4 rounded-lg transition', selectedNumber.includes(number) ? 'bg-blue-600 text-white' : 'bg-gray-200 hover:bg-blue-600 hover:text-white']">
-                    {{ number }}
-                  </button>
-                </div>
-
-                <!-- Buttons: "Limpiar" and "Random" -->
-                <div class="flex justify-evenly mt-2 p-6 ">
-                  <button @click="clearSelection" :class="[theme.buttonDanger, 'px-4 py-2 rounded-lg']">
-                    Limpiar
-                  </button>
-                  <button @click="selectRandomNumbers" :class="[theme.buttonPrimary, 'px-4 py-2 rounded-lg']">
-                    Random
-                  </button>
-                </div>
-
-                <!-- Pagination for Numbers -->
-                <div class="flex justify-center items-center w-full">
-                  <button @click="goToPreviousPage" :disabled="currentPage === 1"
-                    class="px-4 py-2 bg-gray-300 rounded-lg mx-2">
-                    < </button>
-
-                      <button @click="goToNextPage" :disabled="currentPage === totalPages"
-                        class="px-4 py-2 bg-gray-300 rounded-lg mx-2">
-                        >
-                      </button>
-                </div>
-                <div><span> Página {{ currentPage }} de {{ totalPages }}</span></div>
-              </div>
-
-              <!-- Invoice Section -->
-              <div class="w-1/3 flex flex-col items-center justify-center bg-white p-4 rounded-lg shadow-lg">
-                <h3 class="text-lg font-semibold mb-4">Factura</h3>
-                <div class="w-full mb-4">
-                  <label class="text-gray-700">Usuario</label>
-                  <div class="py-2 px-4 bg-gray-200 rounded-lg text-center">{{ userName || 'None' }}</div>
-                </div>
-                <div class="w-full mb-4">
-                  <label class="text-gray-700">Numeros Seleccionados</label>
-                  <div class="py-2 px-4 bg-gray-200 rounded-lg text-center">{{ selectedNumber.join(', ') || 'Ninguno' }}
+        <!-- Modal for Selecting Numbers -->
+        <TransitionRoot appear :show="showSelectionModal" as="template">
+          <Dialog as="div" @close="closeSelectionModal"
+            class="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm">
+            <TransitionChild as="template" enter="ease-out duration-300" leave="ease-in duration-200">
+              <DialogPanel :class="[theme.modalBackground, 'w-full max-w-3xl p-8 rounded-2xl shadow-2xl flex gap-8']">
+                <!-- Number Selection -->
+                <div class="w-2/3 grid grid-col items-center justify-cente gap-x-6">
+                  <div class="grid grid-cols-5 gap-4 mb-4">
+                    <button v-for="number in paginatedNumbers" :key="number" @click="handleNumberClick(number)"
+                      :class="['number-button py-2 px-4 rounded-lg transition', selectedNumber.includes(number) ? 'bg-blue-600 text-white' : 'bg-gray-200 hover:bg-blue-600 hover:text-white']">
+                      {{ number }}
+                    </button>
                   </div>
+
+                  <!-- Buttons: "Limpiar" and "Random" -->
+                  <div class="flex justify-evenly mt-2 p-6 ">
+                    <button @click="clearSelection" :class="[theme.buttonDanger, 'px-4 py-2 rounded-lg']">
+                      Limpiar
+                    </button>
+                    <button @click="selectRandomNumbers" :class="[theme.buttonPrimary, 'px-4 py-2 rounded-lg']">
+                      Random
+                    </button>
+                  </div>
+
+                  <!-- Pagination for Numbers -->
+                  <div class="flex justify-center items-center w-full">
+                    <button @click="goToPreviousPage" :disabled="currentPage === 1"
+                      class="px-4 py-2 bg-gray-300 rounded-lg mx-2">
+                      < </button>
+
+                        <button @click="goToNextPage" :disabled="currentPage === totalPages"
+                          class="px-4 py-2 bg-gray-300 rounded-lg mx-2">
+                          >
+                        </button>
+                  </div>
+                  <div><span> Página {{ currentPage }} de {{ totalPages }}</span></div>
                 </div>
-                <button @click="proceedToPaymentModal" :class="[theme.buttonPrimary, 'px-4 py-2 rounded-lg']">
-                  Comprar
+
+                <!-- Invoice Section -->
+                <div class="w-1/3 flex flex-col items-center justify-center bg-white p-4 rounded-lg shadow-lg">
+                  <h3 class="text-lg font-semibold mb-4">Factura</h3>
+                  <div class="w-full mb-4">
+                    <label class="text-gray-700">Usuario</label>
+                    <div class="py-2 px-4 bg-gray-200 rounded-lg text-center">{{ userName || 'None' }}</div>
+                  </div>
+                  <div class="w-full mb-4">
+                    <label class="text-gray-700">Numeros Seleccionados</label>
+                    <div class="py-2 px-4 bg-gray-200 rounded-lg text-center">{{ selectedNumber.join(', ') || 'Ninguno'
+                      }}
+                    </div>
+                  </div>
+                  <button @click="proceedToPaymentModal" :class="[theme.buttonPrimary, 'px-4 py-2 rounded-lg']">
+                    Comprar
+                  </button>
+                </div>
+              </DialogPanel>
+            </TransitionChild>
+          </Dialog>
+        </TransitionRoot>
+        <TransitionRoot appear :show="showWarningModal" as="template">
+          <Dialog as="div" @close="closeWarningModal"
+            class="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm">
+            <TransitionChild as="template" enter="ease-out duration-300" leave="ease-in duration-200">
+              <DialogPanel :class="[theme.modalBackground, 'w-full max-w-md p-8 rounded-2xl shadow-2xl']">
+                <h2 class="text-lg font-semibold mb-4 ">Ops</h2>
+                <p class="mb-4 p-14 text-xl text-center">¡Por favor, selecciona al menos un número antes de continuar
+                  con
+                  la compra!
+                </p>
+                <button @click="closeWarningModal" :class="[theme.buttonDanger, 'px-4 py-2 rounded-lg']">
+                  Cerrar
                 </button>
-              </div>
-            </DialogPanel>
-          </TransitionChild>
-        </Dialog>
-      </TransitionRoot>
-      <TransitionRoot appear :show="showWarningModal" as="template">
-        <Dialog as="div" @close="closeWarningModal"
-          class="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm">
-          <TransitionChild as="template" enter="ease-out duration-300" leave="ease-in duration-200">
-            <DialogPanel :class="[theme.modalBackground, 'w-full max-w-md p-8 rounded-2xl shadow-2xl']">
-              <h2 class="text-lg font-semibold mb-4 ">Ops</h2>
-              <p class="mb-4 p-14 text-xl text-center">¡Por favor, selecciona al menos un número antes de continuar con
-                la compra!
-              </p>
-              <button @click="closeWarningModal" :class="[theme.buttonDanger, 'px-4 py-2 rounded-lg']">
-                Cerrar
-              </button>
-            </DialogPanel>
-          </TransitionChild>
-        </Dialog>
-      </TransitionRoot>
+              </DialogPanel>
+            </TransitionChild>
+          </Dialog>
+        </TransitionRoot>
 
-      <TransitionRoot appear :show="showModal" as="template">
-        <Dialog as="div" @close="closeModal"
-          class="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm">
-          <TransitionChild as="template" enter="ease-out duration-300" leave="ease-in duration-200">
-            <DialogPanel :class="[theme.modalBackground, 'w-full max-w-lg p-14 rounded-2xl shadow-2xl ']">
-              <div class="py-10">
-                <!-- Invoice Table -->
-                <table cellspacing="10" cellpadding="10" class="w-full text-left border-collapse ">
-                  <thead>
-                    <tr>
-                      <th class="border-b-2 py-2">Nombre</th>
-                      <th class="border-b-2 py-2">Tus Numeros</th>
-                      <th class="border-b-2 py-2">Total a pagar</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td class="border-t py-2">{{ userName }}</td>
-                      <td class="border-t py-2">{{ selectedNumber.join(', ') || 'None' }}</td>
-                      <td class="border-t py-2">
-                        ${{ selectedNumber.length > 0 ? (raffle.ticket_price * selectedNumber.length).toFixed(2) :
-                          '0.00'
-                        }}
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-              <!-- Payment and Close Buttons -->
-              <button @click="openVerificationModal" :class="[theme.buttonPrimary, 'px-4 py-2 rounded-lg mr-2']">
-                Ir a pagar
-              </button>
-              <button @click="closeModal" :class="[theme.buttonDanger, 'px-4 py-2 rounded-lg']">
-                Cerrar
-              </button>
-            </DialogPanel>
-          </TransitionChild>
-        </Dialog>
-      </TransitionRoot>
+        <TransitionRoot appear :show="showModal" as="template">
+          <Dialog as="div" @close="closeModal"
+            class="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm">
+            <TransitionChild as="template" enter="ease-out duration-300" leave="ease-in duration-200">
+              <DialogPanel :class="[theme.modalBackground, 'w-full max-w-lg p-14 rounded-2xl shadow-2xl ']">
+                <div class="py-10">
+                  <!-- Invoice Table -->
+                  <table cellspacing="10" cellpadding="10" class="w-full text-left border-collapse ">
+                    <thead>
+                      <tr>
+                        <th class="border-b-2 py-2">Nombre</th>
+                        <th class="border-b-2 py-2">Tus Numeros</th>
+                        <th class="border-b-2 py-2">Total a pagar</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td class="border-t py-2">{{ userName }}</td>
+                        <td class="border-t py-2">{{ selectedNumber.join(', ') || 'None' }}</td>
+                        <td class="border-t py-2">
+                          ${{ selectedNumber.length > 0 ? (raffle.ticket_price * selectedNumber.length).toFixed(2) :
+                            '0.00'
+                          }}
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <!-- Payment and Close Buttons -->
+                <button @click="openVerificationModal" :class="[theme.buttonPrimary, 'px-4 py-2 rounded-lg mr-2']">
+                  Ir a pagar
+                </button>
+                <button @click="closeModal" :class="[theme.buttonDanger, 'px-4 py-2 rounded-lg']">
+                  Cerrar
+                </button>
+              </DialogPanel>
+            </TransitionChild>
+          </Dialog>
+        </TransitionRoot>
 
-      <!-- Payment Verification Modal -->
-      <TransitionRoot appear :show="showVerificationModal" as="template">
-        <Dialog as="div" @close="closeVerificationModal"
-          class="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm">
-          <TransitionChild as="template" enter="ease-out duration-300" leave="ease-in duration-200">
-            <DialogPanel :class="[theme.modalBackground, 'w-full max-w-lg p-8 rounded-2xl shadow-2xl']">
-              <h2>MercadoPago</h2>
-              <div id="wallet_container" class="my-4"></div>
-              <button @click="closeVerificationModal" :class="[theme.buttonDanger, 'px-4 py-2 rounded-lg mt-4']">
-                Cerrar
-              </button>
-            </DialogPanel>
-          </TransitionChild>
-        </Dialog>
-      </TransitionRoot>
+        <!-- Payment Verification Modal -->
+        <TransitionRoot appear :show="showVerificationModal" as="template">
+          <Dialog as="div" @close="closeVerificationModal"
+            class="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm">
+            <TransitionChild as="template" enter="ease-out duration-300" leave="ease-in duration-200">
+              <DialogPanel :class="[theme.modalBackground, 'w-full max-w-lg p-8 rounded-2xl shadow-2xl']">
+                <h2>MercadoPago</h2>
+                <div id="wallet_container" class="my-4"></div>
+                <button @click="closeVerificationModal" :class="[theme.buttonDanger, 'px-4 py-2 rounded-lg mt-4']">
+                  Cerrar
+                </button>
+              </DialogPanel>
+            </TransitionChild>
+          </Dialog>
+        </TransitionRoot>
 
+      </div>
     </div>
   </div>
 </template>
@@ -192,6 +224,7 @@ const referenceNumber = ref('');
 const numbers = ref([]);
 const selectedNumber = ref([]);
 const showWarningModal = ref(false);
+const defaultImage = '/assets/media/auth/Login-image.svg';
 const countdown = ref({
   days: 0,
   hours: 0,
@@ -199,6 +232,10 @@ const countdown = ref({
   seconds: 0,
 });
 const countdownEnded = ref(false);
+
+const handleImageError = (event) => {
+  event.target.src = defaultImage;
+};
 
 const calculateCountdown = () => {
   const now = new Date();
