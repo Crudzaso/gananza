@@ -35,8 +35,6 @@
       <p :class="theme.textSecondary">Números disponibles: {{ raffle.total_tickets }}</p>
       <p :class="theme.textSecondary">Total vendido: ${{ raffle.total_sales }}</p>
       <p :class="theme.textSecondary">Fecha de juego: <br>{{ raffle.end_date }}</p>
-
-      <!-- Buy Button -->
       <button
         v-if="!countdownEnded"
         @click.prevent="openSelectionModal"
@@ -44,6 +42,7 @@
       >
         Comprar
       </button>
+
       <p
         v-else
         class="text-gray-500 mt-4"
@@ -70,7 +69,7 @@
         >
           <DialogPanel :class="[theme.modalBackground, 'w-full max-w-3xl p-8 rounded-2xl shadow-2xl flex gap-8']">
             <!-- Number Selection -->
-            <div class="w-2/3 grid grid-col items-center justify-cente gap-x-6">
+            <div class="w-2/3 grid items-center gap-x-6">
               <div class="grid grid-cols-5 gap-4 mb-4">
                 <button
                   v-for="number in paginatedNumbers"
@@ -117,8 +116,6 @@
               </div>
               <div><span>Página {{ currentPage }} de {{ totalPages }}</span></div>
             </div>
-
-            <!-- Invoice Section -->
             <div class="w-1/3 flex flex-col items-center justify-center bg-white p-4 rounded-lg shadow-lg">
               <h3 class="text-lg font-semibold mb-4">Factura</h3>
               <div class="w-full mb-4">
@@ -126,7 +123,7 @@
                 <div class="py-2 px-4 bg-gray-200 rounded-lg text-center">{{ userName || 'None' }}</div>
               </div>
               <div class="w-full mb-4">
-                <label class="text-gray-700">Numeros Seleccionados</label>
+                <label class="text-gray-700">Números Seleccionados</label>
                 <div class="py-2 px-4 bg-gray-200 rounded-lg text-center">
                   {{ selectedNumber.join(', ') || 'Ninguno' }}
                 </div>
@@ -147,7 +144,6 @@
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue';
-import { usePage } from '@inertiajs/vue3';
 import { useDarkMode } from '@/composables/useDarkMode';
 import { TransitionRoot, TransitionChild, Dialog, DialogPanel } from '@headlessui/vue';
 
@@ -168,10 +164,18 @@ const countdown = ref({
 });
 const countdownEnded = ref(false);
 
+/* Methods */
+const openSelectionModal = () => {
+  if (!raffleProps.raffle.total_tickets || raffleProps.raffle.total_tickets <= 0) {
+    alert('No hay boletos disponibles');
+    return;
+  }
+  showSelectionModal.value = true;
+};
+
 const calculateCountdown = () => {
   const now = new Date();
   const endDate = new Date(raffleProps.raffle.end_date);
-
   const totalMilliseconds = endDate - now;
 
   if (totalMilliseconds <= 0) {
@@ -191,23 +195,25 @@ const calculateCountdown = () => {
   };
 };
 
+/* Lifecycle */
 let timerInterval;
 onMounted(() => {
   calculateCountdown();
   timerInterval = setInterval(calculateCountdown, 1000);
 });
-
 onUnmounted(() => {
   clearInterval(timerInterval);
 });
 
+/* Theme Configuration */
 const { isDarkMode } = useDarkMode();
 const theme = computed(() => ({
+  textPrimary: isDarkMode.value ? 'text-white' : 'text-black',
   cardBackground: isDarkMode.value ? 'bg-[#1c1c1e]' : 'bg-[#f9f9f9]',
-  textPrimary: isDarkMode.value ? 'text-white' : 'text-gray-900',
   textSecondary: isDarkMode.value ? 'text-gray-400' : 'text-gray-600',
   textHighlight: isDarkMode.value ? 'text-yellow-300' : 'text-yellow-600',
   buttonPrimary: 'bg-blue-600 text-white',
+  modalBackground: isDarkMode.value ? 'bg-[#2c2c2e]' : 'bg-white',
 }));
 </script>
 
