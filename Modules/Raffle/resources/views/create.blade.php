@@ -15,13 +15,11 @@
         <!-- Organizador -->
         <div class="mb-4">
             <label class="block text-sm font-medium text-gray-700">Organizador</label>
-            <select name="organizer_id" class="form-control" required>
-                <option value="">Seleccione un organizador</option>
-                @foreach($organizers as $user)
-                    <option value="{{ $user->id }}">{{ $user->name }}</option>
-                @endforeach
-            </select>
+            <input type="text" name="organizer_name" class="form-control" value="{{ auth()->user()->name }}" readonly>
+            <input type="hidden" name="organizer_id" value="{{ auth()->user()->id }}">
         </div>
+
+        <!-- Nombre de la rifa -->
         <div class="mb-4">
             <label class="block text-sm font-medium text-gray-700">Nombre de la rifa</label>
             <input type="text" name="name" class="form-control" required>
@@ -47,13 +45,13 @@
         <!-- Total a Recaudar -->
         <div class="mb-4">
             <label class="block text-sm font-medium text-gray-700">Total a Recaudar</label>
-            <input type="number" name="total_to_collect" id="total_to_collect" class="form-control" step="0.01" required>
+            <input type="number" name="total_to_collect" id="total_to_collect" class="form-control" step="0.01" max="2000000" required>
         </div>
 
         <!-- Total de Tickets -->
         <div class="mb-4">
             <label class="block text-sm font-medium text-gray-700">Total de Tickets</label>
-            <input type="number" name="total_tickets" id="total_tickets" class="form-control" required>
+            <input type="number" name="total_tickets" id="total_tickets" class="form-control" max="100" required>
         </div>
 
         <!-- Precio del Ticket -->
@@ -63,10 +61,7 @@
         </div>
 
         <!-- Tickets Vendidos -->
-        <div class="mb-4">
-            <label class="block text-sm font-medium text-gray-700">Tickets Vendidos</label>
-            <input type="number" name="tickets_sold" class="form-control">
-        </div>
+        <input type="hidden" name="tickets_sold" value="0">
 
         <!-- Descripción -->
         <div class="mb-4">
@@ -75,10 +70,7 @@
         </div>
 
         <!-- Fecha de Inicio -->
-        <div class="mb-4">
-            <label class="block text-sm font-medium text-gray-700">Fecha de Inicio</label>
-            <input type="datetime-local" name="start_date" class="form-control" required>
-        </div>
+        <input type="hidden" name="start_date" value="{{ now()->format('Y-m-d\TH:i') }}">
 
         <!-- Fecha de Finalización -->
         <div class="mb-4">

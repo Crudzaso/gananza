@@ -1,69 +1,53 @@
 <template>
-  <header :style="{ background: theme.gradient }" class="navbar p-4 border-b">
+  <header :class="['navbar p-4 border-b', theme.backgroundGradient]">
     <div class="container mx-auto flex justify-between items-center">
-      <!-- Logo -->
       <div class="flex items-center gap-4">
         <img :src="isDarkMode ? '/assets/media/auth/Logo-Gananza1.svg' : '/assets/media/auth/Logo-Gananza2.svg'"
-          alt="Logo Gananza" class="h-8 logo" />
+          alt="Logo Gananza" class="h-12 logo" />
       </div>
-
-      <!-- Menú Hamburguesa para móvil -->
-      <button class="menu-toggle md:hidden btn-icon glow-effect" @click="toggleMenu">
-        <img :src="isDarkMode ? '/assets/media/gananza/bars-light.svg' : '/assets/media/gananza/bars-dark.svg'"
-          alt="Menú" class="icon-img" />
-      </button>
-
-      <!-- Búsqueda -->
-      <div class="header-search hidden md:flex">
-        <form class="search-form">
-          <input type="text" class="search-input" placeholder="Buscar..."
-            :style="{ background: theme.cardBackground, color: theme.textPrimary, borderColor: theme.border }" />
-          <button type="submit" class="search-button">
-            <img :src="isDarkMode ? '/assets/media/gananza/search-light.svg' : '/assets/media/gananza/search-dark.svg'"
-              alt="Buscar" class="icon-img" />
-          </button>
-        </form>
-      </div>
-
-      <!-- Links de Navegación -->
-      <nav :class="['nav-links', { 'open': isMenuOpen }]"
-        :style="{ background: theme.navBackground, boxShadow: theme.navShadow }">
-        <!-- Botón para cerrar el menú -->
-        <button class="close-btn" @click="toggleMenu" :style="{ color: theme.textPrimary }">✖</button>
-        <h3 class="menu-title" :style="{ color: theme.textPrimary }">Navegación</h3>
-        <a href="/profile" class="nav-link" :style="{ color: theme.textPrimary, borderColor: theme.border }">Profile</a>
-        <a href="/admin" class="nav-link" :style="{ color: theme.textPrimary, borderColor: theme.border }">Panel de
-          Administrador</a>
-        <a href="/settings" class="nav-link"
-          :style="{ color: theme.textPrimary, borderColor: theme.border }">Settings</a>
-        <a href="/raffles" class="nav-link" :style="{ color: theme.textPrimary, borderColor: theme.border }">Rifas</a>
-        <a href="/points" class="nav-link" :style="{ color: theme.textPrimary, borderColor: theme.border }">Puntos</a>
-        <a @click.prevent="logout" class="nav-link logout-link"
-          :style="{ color: theme.textPrimary, borderColor: theme.border, cursor: 'pointer', zIndex: 1000 }">
+      <div class="flex items-center gap-2">
+        <button @click="goToProfile" :class="['hidden md:block font-semibold py-2 px-4 rounded-lg transition', theme.primaryButton]">
+          Perfil
+        </button>
+        <button
+          @click="handleExploreRaffles"
+          :class="['hidden md:block font-semibold py-2 px-4 rounded-lg transition', theme.primaryButton]"
+        >
+          Organizar Rifas
+        </button>
+        <button v-if="isAdmin"
+          @click="handleAdminPanel"
+          :class="['hidden md:block font-semibold py-2 px-4 rounded-lg transition', theme.secondaryButton]"
+        >
+          Panel de Administrador
+        </button>
+        <button @click="logout" :class="['hidden md:block font-semibold py-2 px-4 rounded-lg transition', theme.secondaryButton]">
           Logout
-        </a>
-      </nav>
-      <!-- Iconos y Botones -->
-      <div class="flex items-center gap-3">
+        </button>
+        <button class="menu-toggle btn-icon glow-effect" @click="toggleMenu">
+          <img :src="isDarkMode ? '/assets/media/gananza/bars-light.svg' : '/assets/media/gananza/bars-dark.svg'"
+            alt="Menú" class="icon-img" />
+        </button>
         <button @click="toggleDarkMode" class="btn-icon glow-effect" :style="{ background: theme.cardBackground }">
           <Sun v-if="isDarkMode" :size="20" :color="theme.emphasis" />
           <Moon v-else :size="20" :color="theme.primary" />
         </button>
-
-        <button class="btn-icon glow-effect">
-          <img
-            :src="isDarkMode ? '/assets/media/gananza/notification-light.svg' : '/assets/media/gananza/notification-dark.svg'"
-            alt="Notificaciones" class="icon-img" />
-        </button>
-
-        <button class="btn-icon glow-effect">
-          <a :href="`/profile/${authUser.id}`">
-            <img :src="isDarkMode ? '/assets/media/gananza/user-light.svg' : '/assets/media/gananza/user-dark.svg'"
-              alt="Perfil" class="icon-img" />
-          </a>
-        </button>
       </div>
     </div>
+    <nav :class="['nav-links', { 'open': isMenuOpen }]">
+      <button class="close-btn" @click="toggleMenu" :style="{ color: theme.textPrimary }">✖</button>
+      <h3 class="menu-title" :style="{ color: theme.textPrimary }">Navegación</h3>
+      <a @click.prevent="goToProfile" class="nav-link" :style="{ color: theme.textPrimary, borderColor: theme.border }">Perfil</a>
+      <a @click.prevent="handleExploreRaffles" class="nav-link" :style="{ color: theme.textPrimary, borderColor: theme.border }">
+        Organizar Rifas
+      </a>
+      <a v-if="isAdmin" @click.prevent="handleAdminPanel" class="nav-link" :style="{ color: theme.textPrimary, borderColor: theme.border }">
+        Panel de Administrador
+      </a>
+      <a @click.prevent="logout" class="nav-link" :style="{ color: theme.textPrimary, borderColor: theme.border }">
+        Logout
+      </a>
+    </nav>
   </header>
 </template>
 
@@ -74,8 +58,8 @@ import { router } from '@inertiajs/vue3';
 import { useDarkMode } from '@/composables/useDarkMode';
 import { usePage } from '@inertiajs/vue3';
 
-
 const authUser = computed(() => usePage().props.auth.user);
+const isAdmin = computed(() => authUser.value.roles && authUser.value.roles.includes('admin'));
 
 const { isDarkMode, toggleDarkMode } = useDarkMode();
 const isMenuOpen = ref(false);
@@ -84,10 +68,42 @@ const toggleMenu = () => {
   isMenuOpen.value = !isMenuOpen.value;
 };
 
+const handleExploreRaffles = () => {
+  const userRoles = authUser.value.roles;
+  if (userRoles.includes('organizador') || userRoles.includes('admin')) {
+    window.location.href = '/raffles/admin/rifas';
+  } else {
+    window.location.href = '/registro-organizador';
+  }};
+
+const handleAdminPanel = () => {
+  window.location.href = '/admin';
+};
+
+const goToProfile = () => {
+  window.location.href = `/profile/${authUser.value.id}`;
+};
+
+const logout = () => {
+  router.post(route('logout'), {}, {
+    onFinish: () => {
+      window.location.href = '/login';
+    },
+  });
+};
+
 const theme = computed(() => ({
-  primary: isDarkMode.value ? '#42A5F5' : '#1565C0',
-  textPrimary: isDarkMode.value ? '#E0E0E0' : '#212121',
-  textSecondary: isDarkMode.value ? '#B0BEC5' : '#757575',
+  backgroundGradient: isDarkMode.value
+    ? 'bg-[#1a1a1c] shadow-lg'
+    : 'bg-[#F5F5F7] shadow-sm',
+  textPrimary: isDarkMode.value ? 'text-white' : 'text-gray-900',
+  textSecondary: isDarkMode.value ? 'text-gray-300' : 'text-gray-700',
+  primaryButton: isDarkMode.value
+    ? 'bg-blue-700 text-white hover:bg-blue-800'
+    : 'bg-blue-600 text-white hover:bg-blue-700',
+  secondaryButton: isDarkMode.value
+    ? 'bg-red-700 text-white hover:bg-red-800'
+    : 'bg-red-600 text-white hover:bg-red-700',
   cardBackground: isDarkMode.value ? '#242526' : '#FFFFFF',
   navBackground: isDarkMode.value ? '#1E1E1E' : '#FFFFFF',
   navShadow: isDarkMode.value ? '0 8px 20px rgba(0, 0, 0, 0.8)' : '0 8px 20px rgba(0, 191, 255, 0.2)',
@@ -95,25 +111,17 @@ const theme = computed(() => ({
   gradient: isDarkMode.value ? 'linear-gradient(135deg, #1E1E1E 0%, #2A2A2A 100%)' : 'linear-gradient(135deg, #FFFFFF 0%, #F5F5F5 100%)',
   emphasis: isDarkMode.value ? '#FFCA28' : '#FFC107',
 }));
-
-const logout = () => {
-  console.log("Logout clickeado"); // Verificar si el clic está funcionando
-  router.post(route('logout'), {}, {
-    onFinish: () => {
-      window.location.href = '/login';
-    },
-  });
-};
 </script>
 
 <style scoped>
-/* Navbar */
 .navbar {
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
   z-index: 1001;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
-/* Logo */
 .logo {
   transition: transform 0.2s;
 }
@@ -122,44 +130,20 @@ const logout = () => {
   transform: scale(1.05);
 }
 
-/* Búsqueda */
-.search-form {
-  position: relative;
-}
-
-.search-input {
-  width: 250px;
-  padding: 8px 12px;
-  border-radius: 20px;
-  border: 1px solid;
-  transition: all 0.3s;
-}
-
-.search-input:focus {
-  outline: none;
-  box-shadow: 0 0 10px rgba(0, 191, 255, 0.3);
-}
-
-.search-button {
-  position: absolute;
-  right: 10px;
-  top: 50%;
-  transform: translateY(-50%);
-}
-
-/* Menú de Navegación */
 .nav-links {
   display: none;
   flex-direction: column;
   align-items: center;
-  gap: 1.5rem;
-  position: absolute;
-  top: 60px;
-  right: 10px;
+  justify-content: center;
+  gap: 2rem;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   padding: 20px;
-  border-radius: 15px;
-  width: 350px;
-  height: 600px;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(10px);
   transition: all 0.3s ease;
   z-index: 1002;
 }
@@ -169,15 +153,14 @@ const logout = () => {
   animation: slideIn 0.3s ease-out forwards;
 }
 
-/* Botón para cerrar el menú */
 .close-btn {
   align-self: flex-end;
-  font-size: 1.8rem;
+  font-size: 2rem;
   font-weight: bold;
   background: none;
   border: none;
   cursor: pointer;
-  margin-bottom: 15px;
+  margin-bottom: 20px;
   transition: transform 0.2s;
 }
 
@@ -185,45 +168,36 @@ const logout = () => {
   transform: scale(1.1) rotate(90deg);
 }
 
-/* Título del Menú */
 .menu-title {
-  font-size: 1.2rem;
+  font-size: 1.5rem;
   font-weight: bold;
   margin-bottom: 20px;
   text-align: center;
+  color: #fff;
 }
 
-/* Enlaces de Navegación */
 .nav-link {
   text-decoration: none;
-  font-size: 1.1rem;
-  padding: 10px 15px;
+  font-size: 1.2rem;
+  padding: 15px 20px;
   border-radius: 10px;
   border: 1px solid;
-  width: 100%;
+  width: 80%;
   text-align: center;
   transition: color 0.2s, background-color 0.3s, transform 0.2s;
+  color: #fff;
+  border-color: #fff;
 }
 
 .nav-link:hover {
   color: var(--emphasis);
-  background-color: rgba(0, 191, 255, 0.1);
+  background-color: rgba(255, 255, 255, 0.1);
   transform: scale(1.05);
 }
 
-/* Media Query para pantallas pequeñas */
 @media (max-width: 768px) {
   .nav-links {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
     padding: 40px 20px;
-    border-radius: 0;
-    justify-content: center;
-    align-items: center;
-    overflow-y: auto;
   }
 
   .close-btn {
@@ -236,9 +210,18 @@ const logout = () => {
     font-size: 1.3rem;
     padding: 20px;
   }
+
+  .menu-toggle {
+    display: block;
+  }
 }
 
-/* Animaciones */
+@media (min-width: 769px) {
+  .menu-toggle {
+    display: none;
+  }
+}
+
 @keyframes slideIn {
   from {
     opacity: 0;
@@ -251,12 +234,6 @@ const logout = () => {
   }
 }
 
-/* Menú Hamburguesa */
-.menu-toggle {
-  display: block;
-}
-
-/* Iconos */
 .icon-img {
   width: 24px;
   height: 24px;
@@ -267,7 +244,6 @@ const logout = () => {
   transform: rotate(10deg) scale(1.1);
 }
 
-/* Botones */
 .btn-icon {
   padding: 8px;
   border-radius: 50%;

@@ -1,4 +1,4 @@
-# 📱 Gananza
+# 📱 Gananza - v2.0
 
 ## 🌟 Visión
 **Gananza** busca convertirse en la plataforma líder para la organización y participación en rifas, ofreciendo una experiencia segura, intuitiva y accesible para todos los usuarios. Nuestra visión es facilitar el acceso a rifas en cualquier formato, ya sea virtual, presencial o híbrido, promoviendo la interacción y el entretenimiento.

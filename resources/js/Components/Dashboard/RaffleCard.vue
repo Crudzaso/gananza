@@ -1,10 +1,10 @@
 <template>
-  <!-- Main Container -->
   <div :class="['raffle-card shadow-lg rounded-lg p-4 flex flex-col items-center gap-4 mx-auto', theme.cardBackground]">
-    <!-- Raffle Image -->
-    <img src="../../../../public/assets/media/auth/Letra-Gananza.svg" alt="Prize"
-      class="h-32 w-32 object-cover rounded-lg mb-3" />
-    <!-- Raffle Title and Organizer -->
+    <img
+      src="../../../../public/assets/media/auth/Letra-Gananza.svg"
+      alt="Prize"
+      class="h-32 w-32 object-cover rounded-lg mb-3"
+    />
     <h3 :class="['text-lg font-semibold', theme.textPrimary]">{{ raffle.name }}</h3>
     <p :class="theme.textSecondary">Organizador: {{ raffle.organizer.name }}</p>
     <p :class="theme.textSecondary">
@@ -22,7 +22,6 @@
         class="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm">
         <TransitionChild as="template" enter="ease-out duration-300" leave="ease-in duration-200">
           <DialogPanel :class="[theme.modalBackground, 'w-full max-w-3xl p-8 rounded-2xl shadow-2xl flex gap-8']">
-            <!-- Number Selection -->
             <div class="w-2/3 flex flex-col items-center gap-4">
               <div class="grid grid-cols-5 gap-4 mb-4">
                 <button v-for="number in paginatedNumbers" :key="number" @click="handleNumberClick(number)"
@@ -30,7 +29,6 @@
                   {{ number }}
                 </button>
               </div>
-              <!-- Pagination for Numbers -->
               <div class="flex justify-center items-center w-full">
                 <button @click="goToPreviousPage" :disabled="currentPage === 1"
                   class="px-4 py-2 bg-gray-300 rounded-lg mx-2">
@@ -43,8 +41,6 @@
                 </button>
               </div>
             </div>
-
-            <!-- Invoice Section -->
             <div class="w-1/3 flex flex-col items-center justify-center bg-white p-4 rounded-lg shadow-lg">
               <h3 class="text-lg font-semibold mb-4">Factura</h3>
               <div class="w-full mb-4">
@@ -53,8 +49,7 @@
               </div>
               <div class="w-full mb-4">
                 <label class="text-gray-700">Numeros Seleccionados</label>
-                <div class="py-2 px-4 bg-gray-200 rounded-lg text-center">{{ selectedNumber.join(', ') || 'Ninguno' }}
-                </div>
+                <div class="py-2 px-4 bg-gray-200 rounded-lg text-center">{{ selectedNumber.join(', ') || 'Ninguno' }}</div>
               </div>
               <button @click="proceedToPaymentModal" :class="[theme.buttonPrimary, 'px-4 py-2 rounded-lg']">
                 Comprar
@@ -64,14 +59,11 @@
         </TransitionChild>
       </Dialog>
     </TransitionRoot>
-
-    <!-- Modal for Invoice -->
     <TransitionRoot appear :show="showModal" as="template">
       <Dialog as="div" @close="closeModal" class="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm">
         <TransitionChild as="template" enter="ease-out duration-300" leave="ease-in duration-200">
           <DialogPanel :class="[theme.modalBackground, 'w-full max-w-lg p-8 rounded-2xl shadow-2xl']">
             <div>
-              <!-- Invoice Table -->
               <table cellspacing="0" cellpadding="10" class="w-full text-left border-collapse">
                 <thead>
                   <tr>
@@ -85,8 +77,7 @@
                     <td class="border-t py-2">{{ userName }}</td>
                     <td class="border-t py-2">{{ selectedNumber.join(', ') || 'None' }}</td>
                     <td class="border-t py-2">
-                      ${{ selectedNumber.length > 0 ? (raffle.ticket_price * selectedNumber.length).toFixed(2) : '0.00'
-                      }}
+                      ${{ selectedNumber.length > 0 ? (raffle.ticket_price * selectedNumber.length).toFixed(2) : '0.00' }}
                     </td>
                   </tr>
                 </tbody>
@@ -114,7 +105,6 @@ import { usePage } from '@inertiajs/vue3';
 import { useDarkMode } from '@/composables/useDarkMode';
 import { TransitionRoot, TransitionChild, Dialog, DialogPanel } from '@headlessui/vue';
 
-/* Props and Reactive Data */
 const raffleProps = defineProps({ raffle: Object });
 const showSelectionModal = ref(false);
 const showModal = ref(false);
@@ -124,23 +114,21 @@ const referenceNumber = ref('');
 const numbers = ref([]);
 const selectedNumber = ref([]);
 
-/* Pagination Variables */
 const currentPage = ref(1);
 const itemsPerPage = 15;
 const totalPages = computed(() => Math.ceil(totalTickets.value / itemsPerPage));
 
-/* User and Theme Settings */
 const user = usePage().props.auth?.user || null;
 const userName = ref(user ? user.name : 'Unauthenticated User');
 const { isDarkMode } = useDarkMode();
 const theme = computed(() => ({
+  textPrimary: isDarkMode.value ? 'text-white' : 'text-black',
   cardBackground: isDarkMode.value ? 'bg-[#1c1c1e]' : 'bg-[#f9f9f9]',
   modalBackground: isDarkMode.value ? 'bg-[#2c2c2e]' : 'bg-white',
   buttonPrimary: 'bg-blue-600 text-white',
   buttonDanger: 'bg-red-500 text-white',
 }));
 
-/* Number Selection Logic */
 const initializeNumbers = () => {
   numbers.value = Array.from({ length: totalTickets.value }, (_, i) => i + 1);
 };
@@ -172,7 +160,6 @@ const handleNumberClick = (number) => {
   }
 };
 
-/* Modal Logic */
 const openSelectionModal = () => {
   initializeNumbers();
   showSelectionModal.value = true;
@@ -270,7 +257,6 @@ onMounted(() => {
 </script>
 
 <style scoped>
-/* Button Styles */
 .number-button {
   transition: transform 0.2s, box-shadow 0.2s;
 }
@@ -305,3 +291,4 @@ onMounted(() => {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 </style>
+

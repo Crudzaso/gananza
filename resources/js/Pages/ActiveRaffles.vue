@@ -38,15 +38,15 @@
                 @click="fetchRaffles(section.filter)">
                 <div class="flex flex-col items-center">
                     <div v-if="section.title === 'Rifas Populares'" class="mb-6">
-                        <img src="../../../public/assets/media/auth/custom-filter.webp" alt="custom-image"
+                        <img src="/assets/media/auth/custom-filter.webp" alt="custom-image"
                             class="w-48 h-48 object-cover rounded-lg">
                     </div>
                     <div v-else-if="section.title === 'Rifas Recientes'" class="mb-6">
-                        <img src="../../../public/assets/media/auth/cash-salary.webp" alt="cash-image"
+                        <img src="/assets/media/auth/cash-salary.webp" alt="cash-image"
                             class="w-48 h-48 object-cover rounded-lg">
                     </div>
                     <div v-else class="mb-6">
-                        <img src="../../../public/assets/media/auth/business-research.webp" alt="business-image"
+                        <img src="/assets/media/auth/business-research.webp" alt="business-image"
                             class="w-48 h-48 object-cover rounded-lg">
                     </div>
                     <h3 :style="{ color: theme.textPrimary }" class="text-2xl font-semibold mb-2">{{ section.title }}
@@ -116,7 +116,7 @@
 
                         <!-- Slider de rifas con Splide -->
                         <Splide :options="splideOptions" class="splide-slider">
-                            <SplideSlide v-for="raffle in raffles" :key="raffle.id" class="raffle-slide">
+                            <SplideSlide v-for="raffle in raffles" :key="raffle.id" class="raffle-slide" :style="{ color: theme.textPrimary }">
                                 <RaffleCard :raffle="raffle" />
                             </SplideSlide>
                         </Splide>
@@ -165,8 +165,6 @@ const sections = [
     { title: 'Última Oportunidad', description: 'Rifas por cerrar.', filter: 'last_chance' },
 ];
 
-
-
 const splideOptions = {
     type: 'loop',
     perPage: 2,
@@ -195,7 +193,7 @@ const applyManualFilter = async () => {
     loading.value = true;
     raffles.value = [];
     try {
-        const response = await axios.get(`/raffles-filtered?filter=${selectedFilter.value}&date=${selectedDate.value}`);
+        const response = await axios.get(`/raffles-filtered?filter=${selectedFilter}&date=${selectedDate}`);
         raffles.value = response.data.data;
         isModalOpen.value = true;
     } catch (error) {
