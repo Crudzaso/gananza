@@ -164,29 +164,42 @@ class RaffleController extends Controller
         $filter = $request->input('filter');
         $date = $request->input('date');
         $query = Raffle::with('organizer', 'lottery');
-
-        // Aplicar filtro adicional por fecha
+    
+        // Filtro adicional por fecha específica
         if ($date) {
             $query->whereDate('end_date', '>', $date);
         }
-
+    
         switch ($filter) {
             case 'popular':
+                // Rifas populares con más de 50 tickets vendidos y activas
                 $query->where('tickets_sold', '>=', 50)
-                      ->where('end_date', '>', now()->addDays(10));
+                      ->where('end_date', '>', now())
+                      ->orderBy('tickets_sold', 'desc');
                 break;
+    
             case 'last_chance':
-                $query->where('end_date', '<', now()->addDays(3));
+                // Rifas activas ordenadas por el end_date más próximo
+                $query->where('end_date', '>', now())
+                      ->orderBy('end_date', 'asc');
                 break;
+    
             case 'flash':
-                $query->where('total_tickets', '<=', 50);
+                // Rifas con menos de 50 tickets y activas, ordenadas por creación más reciente
+                $query->where('end_date', '>', now())
+                      ->orderBy('created_at', 'desc');
                 break;
+    
             default:
-                $query->where('end_date', '>', now());
+                // Por defecto, todas las rifas activas
+                $query->where('end_date', '>', now())
+                      ->orderBy('end_date', 'asc');
                 break;
         }
-
+    
         $raffles = $query->paginate(6);
         return response()->json($raffles);
     }
+    
+    
 }
