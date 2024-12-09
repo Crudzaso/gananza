@@ -2,58 +2,65 @@
 
 namespace App\Http\Controllers;
 
-use Carbon\Carbon;
+use App\Services\MPService;
 use Illuminate\Http\Request;
-use Modules\Payment\Models\Payment;
-use Modules\Raffle\Models\Raffle;
-use Modules\Ticket\Models\Ticket;
 
 class PaymentController extends Controller
 {
-    public function create(Request $request)
+    protected $mercadoPagoService;
+
+    public function __construct(MPService $mercadoPagoService)
     {
-        $raffle = Raffle::find($request->raffle_id);
-        $user = auth()->user();
-
-        // Datos del pago
-        $amount = $raffle->ticket_price;
-        $nequiNumber = config('services.nequi.number'); // Número de Nequi de la plataforma
-
-        // Generar enlace de pago
-        $paymentLink = "https://recarga.nequi.com/$nequiNumber?amount=$amount";
-
-        return response()->json([
-            'paymentLink' => $paymentLink,
-            'qrCode' => "https://api.qrserver.com/v1/create-qr-code/?data=$paymentLink",
-        ]);
+        $this->mercadoPagoService = $mercadoPagoService;
     }
 
-    public function store(Request $request)
+    // Mostrar el formulario de pago
+    public function showPaymentForm()
+    {
+        return view('mercadopago.payment');
+    }
+
+    // Crear la preferencia de pago
+    public function createPayment(Request $request)
     {
         $user = auth()->user();
-        $raffle = Raffle::find($request->raffle_id);
 
-        // Crear ticket
-        $ticket = Ticket::create([
-            'raffle_id' => $raffle->id,
-            'user_id' => $user->id,
-            'ticket_number' => $request->ticket_number,
-            'purchase_date' => Carbon::now(),
-            'verification_code' => uniqid(),
-        ]);
 
-        // Registrar pago
-        $payment = Payment::create([
-            'user_id' => $user->id,
-            'raffle_id' => $raffle->id,
-            'amount' => $raffle->ticket_price,
-            'payment_method' => 'Nequi',
-            'payment_date' => Carbon::now(),
-        ]);
+        $items = [
+            [
+                "id" => "1234567890",
+                "title" => "Producto 1",
+                "description" => "Descripción del producto 1",
+                "currency_id" => "COP",
+                "quantity" => 1,
+                "unit_price" => 1000.00
+            ]
+        ];
 
-        return response()->json([
-            'message' => 'Pago registrado exitosamente',
-            'ticket' => $ticket,
-            'payment' => $payment,
-        ]);
-    }}
+        $payer = [
+            "name" => $user->name,
+            "surname" => $user->lastname,
+            "email" => $user->email,
+        ];
+
+        $preference = $this->mercadoPagoService->createPaymentPreference($items, $payer);
+
+        if ($preference) {
+            return response()->json(['id' => $preference->id]); // Devolver el ID de la preferencia
+        } else {
+            return response()->json(['error' => 'No se pudo crear la preferencia de pago.'], 500);
+        }
+    }
+
+    // Página de éxito del pago
+    public function success()
+    {
+        return redirect()->route('mercadopago.payment');
+    }
+
+    // Página de fallo en el pago
+    public function failure()
+    {
+        return redirect()->route('mercadopago.payment');
+    }
+}
