@@ -20,6 +20,7 @@ class Raffle extends Model
         'lottery_id',
         'ticket_price',
         'total_tickets',
+        'winner_number',
         'tickets_sold',
         'total_sales',
         'description',

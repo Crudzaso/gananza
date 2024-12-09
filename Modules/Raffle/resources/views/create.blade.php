@@ -70,7 +70,7 @@
         </div>
 
         <!-- Fecha de Inicio -->
-        <input type="hidden" name="start_date" value="{{ now()->format('Y-m-d\TH:i') }}">
+        <input type="hidden" name="start_date" value="{{ now()->toDateTimeLocalString() }}">
 
         <!-- Fecha de Finalización -->
         <div class="mb-4">
