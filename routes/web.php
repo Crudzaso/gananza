@@ -90,10 +90,9 @@ Route::middleware(['auth'])->group(function () {
 
 Route::post('/users/{user}/update-photo', [UserController::class, 'updateProfilePhoto'])->name('user.update-photo');
 
-Route::post('/payment/create', [PaymentController::class, 'create']);
-Route::post('/payment/createPayment', [PaymentController::class, 'createPayment']);
-Route::post('/payment/store', [PaymentController::class, 'store']);
-
-Route::post('/verify-payment', [PaymentVerificationController::class, 'verifyPayment']);
+Route::get('mercadopago/pagar', [PaymentController::class, 'showPaymentForm'])->name('mercadopago.payment');
+Route::post('/api/mercadopago/create-payment', [PaymentController::class, 'createPayment'])->name('mercadopago.createPayment');
+Route::get('mercadopago/success', [PaymentController::class, 'success'])->name('mercadopago.success');
+Route::get('mercadopago/failure', [PaymentController::class, 'failure'])->name('mercadopago.failed');
 
 
