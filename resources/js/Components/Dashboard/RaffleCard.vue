@@ -39,7 +39,7 @@
           Números disponibles: <span class="font-medium">{{ raffle.total_tickets }}</span>
         </p>
         <p :class="theme.textSecondary">
-          Total vendido: <span class="font-medium">${{ raffle.total_sales }}</span>
+          Loteria: <span class="font-medium">{{ raffle.lottery ? raffle.lottery.name : 'No especificada' }}</span>
         </p>
       </div>
 
@@ -220,7 +220,6 @@ import { TransitionRoot, TransitionChild, Dialog, DialogPanel } from '@headlessu
 import axios from "axios";
 
 
-/* Props and Reactive Data */
 const raffleProps = defineProps({ raffle: Object });
 const showSelectionModal = ref(false);
 const showModal = ref(false);
@@ -333,7 +332,7 @@ const clearSelection = () => {
 const selectRandomNumbers = () => {
   const availableNumbers = paginatedNumbers.value;
   const randomNumbers = [];
-  while (randomNumbers.length < 5 && availableNumbers.length > 0) {
+  while (randomNumbers.length < 2 && availableNumbers.length > 0) {
     const randomIndex = Math.floor(Math.random() * availableNumbers.length);
     const number = availableNumbers[randomIndex];
     if (!randomNumbers.includes(number)) {
