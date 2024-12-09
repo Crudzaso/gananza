@@ -28,18 +28,12 @@
       <p :class="theme.textSecondary">Numeros disponibles: {{ raffle.total_tickets }}</p>
       <p :class="theme.textSecondary"> Total Vendido: $ {{ raffle.total_sales }}</p>
       <!-- Buy Button -->
-      <button
-        v-if="!countdownEnded"
-        @click.prevent="openSelectionModal"
-        :class="[theme.buttonPrimary, 'mt-4 py-2 px-4 rounded-lg hover:scale-105 transition']"
-      >
+      <button v-if="!countdownEnded" @click.prevent="openSelectionModal"
+        :class="[theme.buttonPrimary, 'mt-4 py-2 px-4 rounded-lg hover:scale-105 transition']">
         Comprar
       </button>
 
-      <p
-        v-else
-        class="text-gray-500 mt-4"
-      >
+      <p v-else class="text-gray-500 mt-4">
         Rifa finalizada
       </p>
 
@@ -94,9 +88,7 @@
                   <div class="py-2 px-4 bg-gray-200 rounded-lg text-center">{{ selectedNumber.join(', ') || 'Ninguno' }}
                   </div>
                 </div>
-                <button 
-                
-                @click="proceedToPaymentModal" :class="[theme.buttonPrimary, 'px-4 py-2 rounded-lg']">
+                <button @click="proceedToPaymentModal" :class="[theme.buttonPrimary, 'px-4 py-2 rounded-lg']">
                   Comprar
                 </button>
               </div>
@@ -167,8 +159,8 @@
           class="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm">
           <TransitionChild as="template" enter="ease-out duration-300" leave="ease-in duration-200">
             <DialogPanel :class="[theme.modalBackground, 'w-full max-w-lg p-8 rounded-2xl shadow-2xl']">
-              <h2>Aquí va la pasarela de pagos</h2>
-              <!-- Receipt Validation Form -->
+              <h2>MercadoPago</h2>
+              <div id="wallet_container" class="my-4"></div>
               <button @click="closeVerificationModal" :class="[theme.buttonDanger, 'px-4 py-2 rounded-lg mt-4']">
                 Cerrar
               </button>
@@ -187,6 +179,8 @@ import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { usePage } from '@inertiajs/vue3';
 import { useDarkMode } from '@/composables/useDarkMode';
 import { TransitionRoot, TransitionChild, Dialog, DialogPanel } from '@headlessui/vue';
+import axios from "axios";
+
 
 /* Props and Reactive Data */
 const raffleProps = defineProps({ raffle: Object });
@@ -332,15 +326,6 @@ const closeModal = () => {
   showModal.value = false;
 };
 
-const openVerificationModal = () => {
-  closeModal();
-  showVerificationModal.value = true;
-};
-
-const closeVerificationModal = () => {
-  showVerificationModal.value = false;
-};
-
 let timerInterval;
 onMounted(() => {
   calculateCountdown();
@@ -350,6 +335,73 @@ onMounted(() => {
 onUnmounted(() => {
   clearInterval(timerInterval);
 });
+
+const preferenceId = ref(null); // ID de la preferencia
+
+// Función para obtener el preferenceId desde el backend
+const fetchPreferenceId = async () => {
+  try {
+    const payload = {
+      amount: 1000, // Ajusta el monto dinámicamente
+      numbers: [1, 2, 3], // Números seleccionados
+    };
+    const response = await axios.post('/api/mercadopago/create-payment', payload);
+    if (response.data.id) {
+      preferenceId.value = response.data.id;
+      initializeMercadoPago(response.data.id); // Inicializa MercadoPago
+    } else {
+      throw new Error('No se recibió un ID de preferencia válido.');
+    }
+  } catch (error) {
+    console.error('Error obteniendo el preferenceId:', error);
+    alert('Ocurrió un error al obtener la preferencia de pago.');
+  }
+};
+
+// Función para inicializar MercadoPago
+const initializeMercadoPago = (preferenceId) => {
+  if (!window.MercadoPago) {
+    console.error('SDK de MercadoPago no cargado.');
+    return;
+  }
+  // Limpiar el contenedor antes de inicializar
+  const walletContainer = document.getElementById('wallet_container');
+  if (walletContainer) walletContainer.innerHTML = '';
+
+  // Inicializar MercadoPago
+  const mp = new window.MercadoPago('APP_USR-3f0baf72-345b-40ac-ba99-745f71d22b81', {
+    locale: 'es-MX', // Idioma
+  });
+
+  // Renderizar el botón de pago
+  mp.bricks().create('wallet', 'wallet_container', {
+    initialization: {
+      preferenceId: preferenceId,
+      redirectMode: 'modal', // Cambia a 'redirect' si prefieres redirección
+    },
+  });
+};
+
+// Abrir el modal y cargar el SDK si no está cargado
+const openVerificationModal = () => {
+  showVerificationModal.value = true;
+
+  if (!window.MercadoPago) {
+    // Cargar el script de MercadoPago
+    const script = document.createElement('script');
+    script.src = 'https://sdk.mercadopago.com/js/v2';
+    script.onload = fetchPreferenceId; // Cargar preferencia después de cargar el SDK
+    document.body.appendChild(script);
+  } else {
+    fetchPreferenceId(); // Si ya está cargado, solo obtener preferencia
+  }
+};
+
+// Cerrar el modal
+const closeVerificationModal = () => {
+  showVerificationModal.value = false;
+};
+
 </script>
 
 
