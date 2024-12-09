@@ -1,124 +1,129 @@
 <template>
   <!-- Main Container -->
   <div
-  :class="['raffle-card shadow-lg rounded-xl p-8 items-center gap-8 mx-auto flex flex-col md:flex-row w-full md:w-3/10', theme.cardBackground]"
->
-  <!-- Image and Countdown -->
-  <div class="flex flex-col items-center justify-center gap-6 w-full md:w-1/3">
-    <!-- Countdown Timer -->
-    <div
-      class="countdown py-2 px-4 rounded-full text-center text-sm font-semibold shadow-md"
-      :class="countdownEnded ? 'bg-red-500 text-white' : 'bg-yellow-500 text-white'"
-    >
-      <p v-if="countdownEnded">¡Ya terminó!</p>
-      <p v-else>
-        {{ countdown.days }} días, {{ countdown.hours }}:{{ countdown.minutes }}:{{ countdown.seconds }}
-      </p>
+    :class="['raffle-card shadow-lg rounded-xl p-8 items-center gap-8 mx-auto flex flex-col md:flex-row w-full md:w-3/10', theme.cardBackground]">
+    <!-- Image and Countdown -->
+    <div class="flex flex-col items-center justify-center gap-6 w-full md:w-1/3">
+      <!-- Countdown Timer -->
+      <div class="countdown py-2 px-4 rounded-full text-center text-sm font-semibold shadow-md"
+        :class="countdownEnded ? 'bg-red-500 text-white' : 'bg-yellow-500 text-white'">
+        <p v-if="countdownEnded">¡Ya terminó!</p>
+        <p v-else>
+          {{ countdown.days }} días, {{ countdown.hours }}:{{ countdown.minutes }}:{{ countdown.seconds }}
+        </p>
+      </div>
+
+      <!-- Raffle Image -->
+      <img :src="raffle.image ? `/storage/${raffle.image}` : '/assets/media/auth/Login-image.svg'" alt="Prize"
+        class="h-48 w-48 object-cover rounded-lg shadow-md" @error="handleImageError" />
     </div>
 
-    <!-- Raffle Image -->
-    <img
-      :src="raffle.image ? `/storage/${raffle.image}` : '/assets/media/auth/Login-image.svg'"
-      alt="Prize"
-      class="h-48 w-48 object-cover rounded-lg shadow-md"
-      @error="handleImageError"
-    />
-  </div>
+    <!-- Raffle Details -->
+    <div class="flex flex-col justify-between w-full md:w-2/3">
+      <!-- Title -->
+      <div>
+        <h3 class="text-2xl font-bold mb-4 text-center md:text-left" :class="[theme.textPrimary, 'text-shadow-md']">
+          {{ raffle.name }}
+        </h3>
+      </div>
 
-  <!-- Raffle Details -->
-  <div class="flex flex-col justify-between w-full md:w-2/3">
-    <!-- Title -->
-    <div>
-      <h3
-        class="text-2xl font-bold mb-4 text-center md:text-left"
-        :class="[theme.textPrimary, 'text-shadow-md']"
-      >
-        {{ raffle.name }}
-      </h3>
-    </div>
+      <!-- Organizer and Details -->
+      <div class="text-base mb-6 space-y-2">
+        <p :class="theme.textSecondary">
+          Organizador: <span class="font-medium">{{ raffle.organizer.name }}</span>
+        </p>
+        <p :class="theme.textSecondary">
+          Precio: <span class="font-semibold">${{ raffle.ticket_price }}</span>
+        </p>
+        <p :class="theme.textSecondary">
+          Números disponibles: <span class="font-medium">{{ raffle.total_tickets }}</span>
+        </p>
+        <p :class="theme.textSecondary">
+          Total vendido: <span class="font-medium">${{ raffle.total_sales }}</span>
+        </p>
+      </div>
 
-    <!-- Organizer and Details -->
-    <div class="text-base mb-6 space-y-2">
-      <p :class="theme.textSecondary">
-        Organizador: <span class="font-medium">{{ raffle.organizer.name }}</span>
-      </p>
-      <p :class="theme.textSecondary">
-        Precio: <span class="font-semibold">${{ raffle.ticket_price }}</span>
-      </p>
-      <p :class="theme.textSecondary">
-        Números disponibles: <span class="font-medium">{{ raffle.total_tickets }}</span>
-      </p>
-      <p :class="theme.textSecondary">
-        Total vendido: <span class="font-medium">${{ raffle.total_sales }}</span>
-      </p>
-    </div>
+      <!-- Buy Button -->
+      <div class="text-center">
+        <button v-if="!countdownEnded" @click.prevent="openSelectionModal"
+          :class="[theme.buttonPrimary, 'py-3 px-8 rounded-lg text-base font-semibold hover:scale-105 transition']">
+          Comprar
+        </button>
 
-    <!-- Buy Button -->
-    <div class="text-center">
-      <button
-        v-if="!countdownEnded"
-        @click.prevent="openSelectionModal"
-        :class="[theme.buttonPrimary, 'py-3 px-8 rounded-lg text-base font-semibold hover:scale-105 transition']"
-      >
-        Comprar
-      </button>
-
-      <p v-else class="text-gray-500 text-center">
-        Rifa finalizada
-      </p>
+        <p v-else class="text-gray-500 text-center">
+          Rifa finalizada
+        </p>
         <!-- Modal for Selecting Numbers -->
         <TransitionRoot appear :show="showSelectionModal" as="template">
           <Dialog as="div" @close="closeSelectionModal"
             class="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm">
             <TransitionChild as="template" enter="ease-out duration-300" leave="ease-in duration-200">
-              <DialogPanel :class="[theme.modalBackground, 'w-full max-w-3xl p-8 rounded-2xl shadow-2xl flex gap-8']">
+              <DialogPanel
+                :class="['w-full max-w-3xl p-8 rounded-2xl shadow-2xl flex gap-8', theme.modalBackground, 'border border-gray-600']">
                 <!-- Number Selection -->
-                <div class="w-2/3 grid grid-col items-center justify-cente gap-x-6">
+                <div class="w-2/3 grid items-center gap-x-6">
                   <div class="grid grid-cols-5 gap-4 mb-4">
-                    <button v-for="number in paginatedNumbers" :key="number" @click="handleNumberClick(number)"
-                      :class="['number-button py-2 px-4 rounded-lg transition', selectedNumber.includes(number) ? 'bg-blue-600 text-white' : 'bg-gray-200 hover:bg-blue-600 hover:text-white']">
+                    <button v-for="number in paginatedNumbers" :key="number" @click="handleNumberClick(number)" :class="[
+                      'number-button py-2 px-4 rounded-lg transition',
+                      selectedNumber.includes(number)
+                        ? 'bg-blue-500 text-white'
+                        : theme.buttonNeutral,
+                    ]">
                       {{ number }}
                     </button>
+
                   </div>
 
                   <!-- Buttons: "Limpiar" and "Random" -->
-                  <div class="flex justify-evenly mt-2 p-6 ">
-                    <button @click="clearSelection" :class="[theme.buttonDanger, 'px-4 py-2 rounded-lg']">
+                  <div class="flex justify-evenly mt-2 p-6">
+                    <button @click="clearSelection"
+                      :class="[theme.buttonDanger, 'px-4 py-2 rounded-lg text-base font-semibold']">
                       Limpiar
                     </button>
-                    <button @click="selectRandomNumbers" :class="[theme.buttonPrimary, 'px-4 py-2 rounded-lg']">
+                    <button @click="selectRandomNumbers"
+                      :class="[theme.buttonPrimary, 'px-4 py-2 rounded-lg text-base font-semibold']">
                       Random
                     </button>
                   </div>
 
+
                   <!-- Pagination for Numbers -->
                   <div class="flex justify-center items-center w-full">
                     <button @click="goToPreviousPage" :disabled="currentPage === 1"
-                      class="px-4 py-2 bg-gray-300 rounded-lg mx-2">
-                      < </button>
-
-                        <button @click="goToNextPage" :disabled="currentPage === totalPages"
-                          class="px-4 py-2 bg-gray-300 rounded-lg mx-2">
-                          >
-                        </button>
+                      :class="[theme.buttonNeutral, 'px-4 py-2 rounded-lg mx-2']">
+                      &lt;
+                    </button>
+                    <button @click="goToNextPage" :disabled="currentPage === totalPages"
+                      :class="[theme.buttonNeutral, 'px-4 py-2 rounded-lg mx-2']">
+                      &gt;
+                    </button>
                   </div>
-                  <div><span> Página {{ currentPage }} de {{ totalPages }}</span></div>
+
+                  <div class="text-center text-gray-300 mt-4" :class="theme.textPrimary">
+                    Página {{ currentPage }} de {{ totalPages }}
+                  </div>
                 </div>
 
                 <!-- Invoice Section -->
-                <div class="w-1/3 flex flex-col items-center justify-center bg-white p-4 rounded-lg shadow-lg">
-                  <h3 class="text-lg font-semibold mb-4">Factura</h3>
+                <div class="w-1/3 flex flex-col items-center justify-center p-4 rounded-lg shadow-lg"
+                  :class="theme.invoiceBackground">
+                  <h3 class="text-lg font-semibold mb-4" :class="theme.textPrimary">
+                    Factura
+                  </h3>
                   <div class="w-full mb-4">
-                    <label class="text-gray-700">Usuario</label>
-                    <div class="py-2 px-4 bg-gray-200 rounded-lg text-center">{{ userName || 'None' }}</div>
-                  </div>
-                  <div class="w-full mb-4">
-                    <label class="text-gray-700">Numeros Seleccionados</label>
-                    <div class="py-2 px-4 bg-gray-200 rounded-lg text-center">{{ selectedNumber.join(', ') || 'Ninguno'
-                      }}
+                    <label :class="theme.textSecondary">Usuario</label>
+                    <div class="py-2 px-4 rounded-lg text-center" :class="theme.buttonNeutral, theme.textPrimary">
+                      {{ userName || 'None' }}
                     </div>
                   </div>
-                  <button @click="proceedToPaymentModal" :class="[theme.buttonPrimary, 'px-4 py-2 rounded-lg']">
+                  <div class="w-full mb-4">
+                    <label :class="theme.textSecondary">Números Seleccionados</label>
+                    <div class="py-2 px-4 rounded-lg text-center" :class="theme.buttonNeutral, theme.textPrimary">
+                      {{ selectedNumber.join(', ') || 'Ninguno' }}
+                    </div>
+                  </div>
+                  <button @click="proceedToPaymentModal"
+                    :class="[theme.buttonPrimary, 'px-4 py-2 rounded-lg text-base font-semibold']">
                     Comprar
                   </button>
                 </div>
@@ -126,6 +131,7 @@
             </TransitionChild>
           </Dialog>
         </TransitionRoot>
+
         <TransitionRoot appear :show="showWarningModal" as="template">
           <Dialog as="div" @close="closeWarningModal"
             class="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm">
@@ -271,11 +277,20 @@ const user = usePage().props.auth?.user || null;
 const userName = ref(user ? user.name : 'Unauthenticated User');
 const { isDarkMode } = useDarkMode();
 const theme = computed(() => ({
-  cardBackground: isDarkMode.value ? 'bg-[#1c1c1e]' : 'bg-[#f9f9f9]',
-  modalBackground: isDarkMode.value ? 'bg-[#2c2c2e]' : 'bg-white',
-  buttonPrimary: 'bg-blue-600 text-white',
-  buttonDanger: 'bg-red-500 text-white',
-  textSecondary: isDarkMode.value ? 'text-gray-400' : 'text-gray-600',
+  cardBackground: isDarkMode.value ? 'bg-[#1c1c1e]' : 'bg-[#ffffff]', // Blanco puro para Light Mode
+  modalBackground: isDarkMode.value ? 'bg-[#2E2E38]' : 'bg-[#f9f9f9]', // Fondo claro para modales en Light Mode
+  invoiceBackground: isDarkMode.value ? 'bg-[#3E3E4A]' : 'bg-[#ffffff]', // Fondo limpio para Light Mode
+  buttonPrimary: isDarkMode.value
+    ? 'bg-blue-500 text-white hover:bg-blue-400'
+    : 'bg-blue-600 text-white hover:bg-blue-500', // Azul vibrante para ambos modos
+  buttonDanger: isDarkMode.value
+    ? 'bg-red-500 text-white hover:bg-red-400'
+    : 'bg-red-600 text-white hover:bg-red-500', // Rojo más claro en Light Mode
+  textPrimary: isDarkMode.value ? 'text-white' : 'text-gray-900', // Texto principal
+  textSecondary: isDarkMode.value ? 'text-gray-400' : 'text-gray-700', // Texto secundario
+  buttonNeutral: isDarkMode.value
+    ? 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+    : 'bg-gray-200 text-gray-600 hover:bg-gray-300', // Botones neutrales claros en Light Mode
 }));
 
 /* Number Selection Logic */
