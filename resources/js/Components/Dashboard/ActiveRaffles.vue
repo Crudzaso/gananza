@@ -3,12 +3,18 @@
     <h2 :class="['text-2xl font-bold mb-6 text-center', theme.textPrimary]">Rifas Activas</h2>
 
     <!-- Mensaje si no hay rifas -->
-    <div v-if="raffles.data.length === 0" :class="theme.textSecondary">
+    <div
+      v-if="raffles.data.length === 0"
+      :class="theme.textSecondary"
+    >
       No hay rifas activas en este momento.
     </div>
 
     <!-- Grid de Rifas (1 fila con 3 cartas) -->
-    <div v-else class="container mx-auto w-full grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div
+      v-else
+      class="container mx-auto w-full grid grid-cols-1 md:grid-cols-3 gap-10"
+    >
       <RaffleCard
         v-for="raffle in raffles.data.slice(0, 3)"
         :key="raffle.id"
