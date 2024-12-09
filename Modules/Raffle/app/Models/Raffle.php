@@ -45,4 +45,5 @@ public function tickets()
 {
     return $this->hasMany(Ticket::class, 'raffle_id');
 }
+
 }
