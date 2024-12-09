@@ -39,8 +39,18 @@ class RaffleController extends Controller
             'description' => 'nullable|string',
             'start_date' => 'required|date',
             'end_date' => 'required|date|after:start_date',
+            'image' => 'nullable|image|max:2048', // Validar si es una imagen
         ]);
-
+    
+        $imagePath = null;
+    
+        // Verificar si se subió una imagen
+        if ($request->hasFile('image')) {
+            // Guardar la imagen en el disco 'public' y obtener la ruta
+            $imagePath = $request->file('image')->store('raffle_images', 'public');
+        }
+    
+        // Crear la rifa
         Raffle::create([
             'name' => $request->name,
             'organizer_id' => $request->organizer_id,
@@ -51,11 +61,13 @@ class RaffleController extends Controller
             'description' => $request->description,
             'start_date' => $request->start_date,
             'end_date' => $request->end_date,
-            'total_sales' => 0, // valor predeterminado de total_sales
+            'total_sales' => 0, // Valor predeterminado
+            'image' => $imagePath, // Guardar la ruta de la imagen en la base de datos
         ]);
-
+    
         return redirect()->route('raffles.index')->with('success', 'Rifa creada exitosamente.');
     }
+    
 
     public function edit($id)
     {
@@ -102,22 +114,32 @@ class RaffleController extends Controller
 
     public function getRaffles(Request $request)
     {
-        $query = Raffle::with('organizer', 'lottery');
-
+        // Comenzamos la consulta con las relaciones
+        $query = Raffle::with('organizer', 'lottery')
+            // Filtramos por rifas activas, aquellas cuyo end_date aún no ha pasado
+            ->where('end_date', '>=', now())
+            // Ordenamos por la fecha de creación o fin, de más reciente a más antiguo
+            ->orderBy('created_at', 'desc');
+    
+        // Filtros de precio mínimo y máximo
         if ($request->has('min_price')) {
             $query->where('ticket_price', '>=', $request->input('min_price'));
         }
         if ($request->has('max_price')) {
             $query->where('ticket_price', '<=', $request->input('max_price'));
         }
-
+    
+        // Filtramos por la fecha de fin si se proporciona
         if ($request->has('end_date')) {
             $query->where('end_date', '<=', $request->input('end_date'));
         }
-
+    
+        // Paginamos los resultados (6 resultados por página)
         $raffles = $query->paginate(6);
+    
         return response()->json($raffles);
     }
+    
 
     public function getLastChanceRaffles()
     {
@@ -142,29 +164,42 @@ class RaffleController extends Controller
         $filter = $request->input('filter');
         $date = $request->input('date');
         $query = Raffle::with('organizer', 'lottery');
-
-        // Aplicar filtro adicional por fecha
+    
+        // Filtro adicional por fecha específica
         if ($date) {
             $query->whereDate('end_date', '>', $date);
         }
-
+    
         switch ($filter) {
             case 'popular':
+                // Rifas populares con más de 50 tickets vendidos y activas
                 $query->where('tickets_sold', '>=', 50)
-                      ->where('end_date', '>', now()->addDays(10));
+                      ->where('end_date', '>', now())
+                      ->orderBy('tickets_sold', 'desc');
                 break;
+    
             case 'last_chance':
-                $query->where('end_date', '<', now()->addDays(3));
+                // Rifas activas ordenadas por el end_date más próximo
+                $query->where('end_date', '>', now())
+                      ->orderBy('end_date', 'asc');
                 break;
+    
             case 'flash':
-                $query->where('total_tickets', '<=', 50);
+                // Rifas con menos de 50 tickets y activas, ordenadas por creación más reciente
+                $query->where('end_date', '>', now())
+                      ->orderBy('created_at', 'desc');
                 break;
+    
             default:
-                $query->where('end_date', '>', now());
+                // Por defecto, todas las rifas activas
+                $query->where('end_date', '>', now())
+                      ->orderBy('end_date', 'asc');
                 break;
         }
-
+    
         $raffles = $query->paginate(6);
         return response()->json($raffles);
     }
+    
+    
 }
