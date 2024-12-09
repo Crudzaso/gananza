@@ -1,15 +1,11 @@
 <template>
   <!-- Main Container -->
   <div
-    :class="['raffle-card shadow-lg rounded-lg p-6 items-center gap-5 mx-auto grid grid-cols-2', theme.cardBackground]"
-  >
-    <!-- Raffle Image and Countdown -->
+    :class="['raffle-card shadow-lg rounded-lg p-4 items-center gap-10 mx-auto grid grid-cols-2', theme.cardBackground]">
     <div>
       <!-- Countdown Timer -->
-      <div
-        class="countdown p-0.3 x-sm rounded-lg text-center"
-        :class="countdownEnded ? 'bg-red-600 text-white' : 'bg-yellow-600 text-white'"
-      >
+      <div class="countdown p-0.3 x-sm rounded-lg text-center"
+        :class="countdownEnded ? 'bg-red-600 text-white' : 'bg-yellow-600 text-white'">
         <p v-if="countdownEnded">¡Ya terminó!</p>
         <p v-else>
           {{ countdown.days }} :
@@ -18,24 +14,19 @@
           {{ countdown.seconds }}
         </p>
       </div>
-      <img
-        src="../../../../public/assets/media/auth/Logo-Gananza2.svg"
-        alt="Prize"
-        class="h-32 w-32 flex items-center justify-center rounded-lg mb-3"
-      />
+      <img src="../../../../public/assets/media/auth/Logo-Gananza2.svg" alt="Prize"
+        class="h-32 w-32 flex items-center justify-center rounded-lg mb-3" />
     </div>
-
-    <!-- Raffle Details -->
-    <div class="flex flex-col justify-center">
-      <h3 :class="['text-lg font-semibold', theme.textPrimary]">{{ raffle.name }}</h3>
-      <p :class="theme.textSecondary">Organizador: {{ raffle.organizer.name }}</p>
+    <!-- Raffle Title and Organizer -->
+    <div>
+      <h3 :class="theme.textSecondary">{{ raffle.name }}</h3>
+      <p :class="theme.textSecondary">Organizador: <br> {{ raffle.organizer.name }}</p>
       <p :class="theme.textSecondary">
-        Precio: <span :class="theme.textHighlight">${{ raffle.ticket_price }}</span>
+        Precio <span :class="theme.textHighlight">${{ raffle.ticket_price }}</span>
       </p>
-      <p :class="theme.textSecondary">Números disponibles: {{ raffle.total_tickets }}</p>
-      <p :class="theme.textSecondary">Total vendido: ${{ raffle.total_sales }}</p>
-      <p :class="theme.textSecondary">Fecha de juego: <br>{{ raffle.end_date }}</p>
-
+      <br>
+      <p :class="theme.textSecondary">Numeros disponibles: {{ raffle.total_tickets }}</p>
+      <p :class="theme.textSecondary"> Total Vendido: $ {{ raffle.total_sales }}</p>
       <!-- Buy Button -->
       <button
         v-if="!countdownEnded"
@@ -44,119 +35,169 @@
       >
         Comprar
       </button>
+
       <p
         v-else
         class="text-gray-500 mt-4"
       >
         Rifa finalizada
       </p>
-    </div>
 
-    <!-- Modal for Selecting Numbers -->
-    <TransitionRoot
-      appear
-      :show="showSelectionModal"
-      as="template"
-    >
-      <Dialog
-        as="div"
-        @close="closeSelectionModal"
-        class="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm"
-      >
-        <TransitionChild
-          as="template"
-          enter="ease-out duration-300"
-          leave="ease-in duration-200"
-        >
-          <DialogPanel :class="[theme.modalBackground, 'w-full max-w-3xl p-8 rounded-2xl shadow-2xl flex gap-8']">
-            <!-- Number Selection -->
-            <div class="w-2/3 grid items-center gap-x-6">
-              <div class="grid grid-cols-5 gap-4 mb-4">
-                <button
-                  v-for="number in paginatedNumbers"
-                  :key="number"
-                  @click="handleNumberClick(number)"
-                  :class="['number-button py-2 px-4 rounded-lg transition', selectedNumber.includes(number) ? 'bg-blue-600 text-white' : 'bg-gray-200 hover:bg-blue-600 hover:text-white']"
-                >
-                  {{ number }}
-                </button>
-              </div>
-
-              <!-- Buttons: "Limpiar" and "Random" -->
-              <div class="flex justify-evenly mt-2 p-6">
-                <button
-                  @click="clearSelection"
-                  :class="[theme.buttonDanger, 'px-4 py-2 rounded-lg']"
-                >
-                  Limpiar
-                </button>
-                <button
-                  @click="selectRandomNumbers"
-                  :class="[theme.buttonPrimary, 'px-4 py-2 rounded-lg']"
-                >
-                  Random
-                </button>
-              </div>
-
-              <!-- Pagination for Numbers -->
-              <div class="flex justify-center items-center w-full">
-                <button
-                  @click="goToPreviousPage"
-                  :disabled="currentPage === 1"
-                  class="px-4 py-2 bg-gray-300 rounded-lg mx-2"
-                >
-                  &lt;
-                </button>
-                <button
-                  @click="goToNextPage"
-                  :disabled="currentPage === totalPages"
-                  class="px-4 py-2 bg-gray-300 rounded-lg mx-2"
-                >
-                  &gt;
-                </button>
-              </div>
-              <div><span>Página {{ currentPage }} de {{ totalPages }}</span></div>
-            </div>
-            <div class="w-1/3 flex flex-col items-center justify-center bg-white p-4 rounded-lg shadow-lg">
-              <h3 class="text-lg font-semibold mb-4">Factura</h3>
-              <div class="w-full mb-4">
-                <label class="text-gray-700">Usuario</label>
-                <div class="py-2 px-4 bg-gray-200 rounded-lg text-center">{{ userName || 'None' }}</div>
-              </div>
-              <div class="w-full mb-4">
-                <label class="text-gray-700">Números Seleccionados</label>
-                <div class="py-2 px-4 bg-gray-200 rounded-lg text-center">
-                  {{ selectedNumber.join(', ') || 'Ninguno' }}
+      <!-- Modal for Selecting Numbers -->
+      <TransitionRoot appear :show="showSelectionModal" as="template">
+        <Dialog as="div" @close="closeSelectionModal"
+          class="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm">
+          <TransitionChild as="template" enter="ease-out duration-300" leave="ease-in duration-200">
+            <DialogPanel :class="[theme.modalBackground, 'w-full max-w-3xl p-8 rounded-2xl shadow-2xl flex gap-8']">
+              <!-- Number Selection -->
+              <div class="w-2/3 grid grid-col items-center justify-cente gap-x-6">
+                <div class="grid grid-cols-5 gap-4 mb-4">
+                  <button v-for="number in paginatedNumbers" :key="number" @click="handleNumberClick(number)"
+                    :class="['number-button py-2 px-4 rounded-lg transition', selectedNumber.includes(number) ? 'bg-blue-600 text-white' : 'bg-gray-200 hover:bg-blue-600 hover:text-white']">
+                    {{ number }}
+                  </button>
                 </div>
+
+                <!-- Buttons: "Limpiar" and "Random" -->
+                <div class="flex justify-evenly mt-2 p-6 ">
+                  <button @click="clearSelection" :class="[theme.buttonDanger, 'px-4 py-2 rounded-lg']">
+                    Limpiar
+                  </button>
+                  <button @click="selectRandomNumbers" :class="[theme.buttonPrimary, 'px-4 py-2 rounded-lg']">
+                    Random
+                  </button>
+                </div>
+
+                <!-- Pagination for Numbers -->
+                <div class="flex justify-center items-center w-full">
+                  <button @click="goToPreviousPage" :disabled="currentPage === 1"
+                    class="px-4 py-2 bg-gray-300 rounded-lg mx-2">
+                    < </button>
+
+                      <button @click="goToNextPage" :disabled="currentPage === totalPages"
+                        class="px-4 py-2 bg-gray-300 rounded-lg mx-2">
+                        >
+                      </button>
+                </div>
+                <div><span> Página {{ currentPage }} de {{ totalPages }}</span></div>
               </div>
-              <button
-                @click="proceedToPaymentModal"
-                :class="[theme.buttonPrimary, 'px-4 py-2 rounded-lg']"
-              >
-                Comprar
+
+              <!-- Invoice Section -->
+              <div class="w-1/3 flex flex-col items-center justify-center bg-white p-4 rounded-lg shadow-lg">
+                <h3 class="text-lg font-semibold mb-4">Factura</h3>
+                <div class="w-full mb-4">
+                  <label class="text-gray-700">Usuario</label>
+                  <div class="py-2 px-4 bg-gray-200 rounded-lg text-center">{{ userName || 'None' }}</div>
+                </div>
+                <div class="w-full mb-4">
+                  <label class="text-gray-700">Numeros Seleccionados</label>
+                  <div class="py-2 px-4 bg-gray-200 rounded-lg text-center">{{ selectedNumber.join(', ') || 'Ninguno' }}
+                  </div>
+                </div>
+                <button 
+                
+                @click="proceedToPaymentModal" :class="[theme.buttonPrimary, 'px-4 py-2 rounded-lg']">
+                  Comprar
+                </button>
+              </div>
+            </DialogPanel>
+          </TransitionChild>
+        </Dialog>
+      </TransitionRoot>
+      <TransitionRoot appear :show="showWarningModal" as="template">
+        <Dialog as="div" @close="closeWarningModal"
+          class="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm">
+          <TransitionChild as="template" enter="ease-out duration-300" leave="ease-in duration-200">
+            <DialogPanel :class="[theme.modalBackground, 'w-full max-w-md p-8 rounded-2xl shadow-2xl']">
+              <h2 class="text-lg font-semibold mb-4 ">Ops</h2>
+              <p class="mb-4 p-14 text-xl text-center">¡Por favor, selecciona al menos un número antes de continuar con
+                la compra!
+              </p>
+              <button @click="closeWarningModal" :class="[theme.buttonDanger, 'px-4 py-2 rounded-lg']">
+                Cerrar
               </button>
-            </div>
-          </DialogPanel>
-        </TransitionChild>
-      </Dialog>
-    </TransitionRoot>
+            </DialogPanel>
+          </TransitionChild>
+        </Dialog>
+      </TransitionRoot>
+
+      <TransitionRoot appear :show="showModal" as="template">
+        <Dialog as="div" @close="closeModal"
+          class="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm">
+          <TransitionChild as="template" enter="ease-out duration-300" leave="ease-in duration-200">
+            <DialogPanel :class="[theme.modalBackground, 'w-full max-w-lg p-14 rounded-2xl shadow-2xl ']">
+              <div class="py-10">
+                <!-- Invoice Table -->
+                <table cellspacing="10" cellpadding="10" class="w-full text-left border-collapse ">
+                  <thead>
+                    <tr>
+                      <th class="border-b-2 py-2">Nombre</th>
+                      <th class="border-b-2 py-2">Tus Numeros</th>
+                      <th class="border-b-2 py-2">Total a pagar</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td class="border-t py-2">{{ userName }}</td>
+                      <td class="border-t py-2">{{ selectedNumber.join(', ') || 'None' }}</td>
+                      <td class="border-t py-2">
+                        ${{ selectedNumber.length > 0 ? (raffle.ticket_price * selectedNumber.length).toFixed(2) :
+                          '0.00'
+                        }}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <!-- Payment and Close Buttons -->
+              <button @click="openVerificationModal" :class="[theme.buttonPrimary, 'px-4 py-2 rounded-lg mr-2']">
+                Ir a pagar
+              </button>
+              <button @click="closeModal" :class="[theme.buttonDanger, 'px-4 py-2 rounded-lg']">
+                Cerrar
+              </button>
+            </DialogPanel>
+          </TransitionChild>
+        </Dialog>
+      </TransitionRoot>
+
+      <!-- Payment Verification Modal -->
+      <TransitionRoot appear :show="showVerificationModal" as="template">
+        <Dialog as="div" @close="closeVerificationModal"
+          class="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm">
+          <TransitionChild as="template" enter="ease-out duration-300" leave="ease-in duration-200">
+            <DialogPanel :class="[theme.modalBackground, 'w-full max-w-lg p-8 rounded-2xl shadow-2xl']">
+              <h2>Aquí va la pasarela de pagos</h2>
+              <!-- Receipt Validation Form -->
+              <button @click="closeVerificationModal" :class="[theme.buttonDanger, 'px-4 py-2 rounded-lg mt-4']">
+                Cerrar
+              </button>
+            </DialogPanel>
+          </TransitionChild>
+        </Dialog>
+      </TransitionRoot>
+
+    </div>
   </div>
 </template>
 
 <script setup>
+/* Imports and Setup */
 import { ref, computed, onMounted, onUnmounted } from 'vue';
+import { usePage } from '@inertiajs/vue3';
 import { useDarkMode } from '@/composables/useDarkMode';
 import { TransitionRoot, TransitionChild, Dialog, DialogPanel } from '@headlessui/vue';
 
 /* Props and Reactive Data */
-const raffleProps = defineProps({
-  raffle: {
-    type: Object,
-    required: true,
-  },
-});
+const raffleProps = defineProps({ raffle: Object });
 const showSelectionModal = ref(false);
+const showModal = ref(false);
+const showVerificationModal = ref(false);
+const totalTickets = ref(raffleProps.raffle.total_tickets || 0);
+const referenceNumber = ref('');
+const numbers = ref([]);
 const selectedNumber = ref([]);
+const showWarningModal = ref(false);
 const countdown = ref({
   days: 0,
   hours: 0,
@@ -164,15 +205,6 @@ const countdown = ref({
   seconds: 0,
 });
 const countdownEnded = ref(false);
-
-/* Methods */
-const openSelectionModal = () => {
-  if (!raffleProps.raffle.total_tickets || raffleProps.raffle.total_tickets <= 0) {
-    alert('No hay boletos disponibles');
-    return;
-  }
-  showSelectionModal.value = true;
-};
 
 const calculateCountdown = () => {
   const now = new Date();
@@ -196,35 +228,158 @@ const calculateCountdown = () => {
   };
 };
 
-/* Lifecycle */
+
+
+/* Pagination Variables */
+const currentPage = ref(1);
+const itemsPerPage = 15;
+const totalPages = computed(() => Math.ceil(totalTickets.value / itemsPerPage));
+
+/* User and Theme Settings */
+const user = usePage().props.auth?.user || null;
+const userName = ref(user ? user.name : 'Unauthenticated User');
+const { isDarkMode } = useDarkMode();
+const theme = computed(() => ({
+  cardBackground: isDarkMode.value ? 'bg-[#1c1c1e]' : 'bg-[#f9f9f9]',
+  modalBackground: isDarkMode.value ? 'bg-[#2c2c2e]' : 'bg-white',
+  buttonPrimary: 'bg-blue-600 text-white',
+  buttonDanger: 'bg-red-500 text-white',
+  textSecondary: isDarkMode.value ? 'text-gray-400' : 'text-gray-600',
+}));
+
+/* Number Selection Logic */
+const initializeNumbers = () => {
+  numbers.value = Array.from({ length: totalTickets.value }, (_, i) => i + 1);
+};
+
+const paginatedNumbers = computed(() => {
+  const start = (currentPage.value - 1) * itemsPerPage;
+  const end = start + itemsPerPage;
+  return numbers.value.slice(start, end);
+});
+
+const goToNextPage = () => {
+  if (currentPage.value < totalPages.value) {
+    currentPage.value += 1;
+  }
+};
+
+const goToPreviousPage = () => {
+  if (currentPage.value > 1) {
+    currentPage.value -= 1;
+  }
+};
+
+const handleNumberClick = (number) => {
+  const index = selectedNumber.value.indexOf(number);
+  if (index === -1) {
+    selectedNumber.value.push(number);
+  } else {
+    selectedNumber.value.splice(index, 1);
+  }
+};
+
+/* New Functions for Buttons */
+const clearSelection = () => {
+  selectedNumber.value = [];
+};
+
+const selectRandomNumbers = () => {
+  const availableNumbers = paginatedNumbers.value;
+  const randomNumbers = [];
+  while (randomNumbers.length < 5 && availableNumbers.length > 0) {
+    const randomIndex = Math.floor(Math.random() * availableNumbers.length);
+    const number = availableNumbers[randomIndex];
+    if (!randomNumbers.includes(number)) {
+      randomNumbers.push(number);
+    }
+  }
+  selectedNumber.value = randomNumbers;
+};
+
+/* Modal Logic */
+const openSelectionModal = () => {
+  initializeNumbers();
+  showSelectionModal.value = true;
+};
+
+const closeSelectionModal = () => {
+  showSelectionModal.value = false;
+};
+const openWarningModal = () => {
+  showWarningModal.value = true;
+};
+
+const closeWarningModal = () => {
+  showWarningModal.value = false;
+};
+
+
+const proceedToPaymentModal = () => {
+  if (selectedNumber.value.length === 0) {
+    openWarningModal();
+    return;
+  }
+  closeSelectionModal();
+  showModal.value = true;
+};
+
+const openModal = () => {
+  showModal.value = true;
+};
+
+const closeModal = () => {
+  showModal.value = false;
+};
+
+const openVerificationModal = () => {
+  closeModal();
+  showVerificationModal.value = true;
+};
+
+const closeVerificationModal = () => {
+  showVerificationModal.value = false;
+};
+
 let timerInterval;
 onMounted(() => {
   calculateCountdown();
   timerInterval = setInterval(calculateCountdown, 1000);
 });
+
 onUnmounted(() => {
   clearInterval(timerInterval);
 });
-
-/* Theme Configuration */
-const { isDarkMode } = useDarkMode();
-const theme = computed(() => ({
-  textPrimary: isDarkMode.value ? 'text-white' : 'text-black',
-  cardBackground: isDarkMode.value ? 'bg-[#1c1c1e]' : 'bg-[#f9f9f9]',
-  textSecondary: isDarkMode.value ? 'text-gray-400' : 'text-gray-600',
-  textHighlight: isDarkMode.value ? 'text-yellow-300' : 'text-yellow-600',
-  buttonPrimary: 'bg-blue-600 text-white',
-  modalBackground: isDarkMode.value ? 'bg-[#2c2c2e]' : 'bg-white',
-}));
 </script>
 
+
 <style scoped>
-.raffle-card {
-  max-width: 500px;
+/* Button Styles */
+.number-button {
+  transition: transform 0.2s, box-shadow 0.2s;
 }
 
-.countdown {
-  font-size: 1.2rem;
-  font-weight: bold;
+.number-button:hover {
+  cursor: pointer;
+  transform: scale(1.05);
+}
+
+.number-button:active,
+.number-button.bg-blue-600 {
+  transform: scale(0.95);
+  box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.2);
+}
+
+.number-button.bg-blue-600 {
+  background-color: #2563eb;
+  color: #fff;
+}
+
+.number-button.bg-gray-200 {
+  background-color: #f9f9f9;
+}
+
+.number-button.selected {
+  background-color: #2563eb;
 }
 </style>

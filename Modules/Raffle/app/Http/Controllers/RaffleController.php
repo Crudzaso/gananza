@@ -102,22 +102,32 @@ class RaffleController extends Controller
 
     public function getRaffles(Request $request)
     {
-        $query = Raffle::with('organizer', 'lottery');
-
+        // Comenzamos la consulta con las relaciones
+        $query = Raffle::with('organizer', 'lottery')
+            // Filtramos por rifas activas, aquellas cuyo end_date aún no ha pasado
+            ->where('end_date', '>=', now())
+            // Ordenamos por la fecha de creación o fin, de más reciente a más antiguo
+            ->orderBy('created_at', 'desc');
+    
+        // Filtros de precio mínimo y máximo
         if ($request->has('min_price')) {
             $query->where('ticket_price', '>=', $request->input('min_price'));
         }
         if ($request->has('max_price')) {
             $query->where('ticket_price', '<=', $request->input('max_price'));
         }
-
+    
+        // Filtramos por la fecha de fin si se proporciona
         if ($request->has('end_date')) {
             $query->where('end_date', '<=', $request->input('end_date'));
         }
-
+    
+        // Paginamos los resultados (6 resultados por página)
         $raffles = $query->paginate(6);
+    
         return response()->json($raffles);
     }
+    
 
     public function getLastChanceRaffles()
     {

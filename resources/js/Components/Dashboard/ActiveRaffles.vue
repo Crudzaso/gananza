@@ -60,7 +60,7 @@ const redirectToRaffles = () => {
 
 const fetchRaffles = async () => {
   try {
-    const response = await fetch('/raffles-actives');
+    const response = await fetch('/raffles-actives');  // Llama al endpoint correcto
     if (!response.ok) {
       throw new Error('Error al obtener las rifas activas');
     }
